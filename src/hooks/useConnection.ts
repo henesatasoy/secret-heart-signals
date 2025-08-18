@@ -233,18 +233,18 @@ export const useConnection = (myConnectionId: string) => {
         throw myError;
       }
 
-      // Also update partner's connection to remove me
+      // Also update partner's connection to remove me - use partner_id filter
       const { error: partnerError } = await supabase
         .from('connections')
         .update({ 
           partner_id: null, 
           is_connected: false 
         })
-        .eq('connection_id', partnerId);
+        .eq('partner_id', myConnectionId)  // Use partner_id filter instead of connection_id
 
-      // Don't throw error if partner update fails (RLS might prevent it)
+      // Don't throw error if partner update fails (expected behavior)
       if (partnerError) {
-        console.log('Partner connection update failed (expected due to RLS):', partnerError);
+        console.log('Partner connection update result:', partnerError);
       }
 
       // Update local state regardless

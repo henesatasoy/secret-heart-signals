@@ -66,9 +66,16 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           console.log('Received message for me:', payload);
           const newMessage = payload.new as Message
           
-          // Only add if it's from my partner
+          // Only add if it's from my partner and not already in the array
           if (newMessage.from_connection_id === partnerId) {
-            setMessages(prev => [...prev, newMessage])
+            setMessages(prev => {
+              // Check if message already exists to prevent duplicates
+              const messageExists = prev.some(msg => msg.id === newMessage.id);
+              if (!messageExists) {
+                return [...prev, newMessage];
+              }
+              return prev;
+            })
             toast({
               title: "Yeni mesaj! 💕",
               description: newMessage.message,
@@ -88,9 +95,16 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           console.log('Sent message confirmed:', payload);
           const newMessage = payload.new as Message
           
-          // Only add if it's to my partner
+          // Only add if it's to my partner and not already in the array
           if (newMessage.to_connection_id === partnerId) {
-            setMessages(prev => [...prev, newMessage])
+            setMessages(prev => {
+              // Check if message already exists to prevent duplicates
+              const messageExists = prev.some(msg => msg.id === newMessage.id);
+              if (!messageExists) {
+                return [...prev, newMessage];
+              }
+              return prev;
+            })
           }
         }
       )
