@@ -105,9 +105,9 @@ export const useLanguage = () => {
   };
 
   const getLanguages = () => [
-    { code: 'tr' as Language, name: t('turkish') },
-    { code: 'en' as Language, name: t('english') },
-    { code: 'es' as Language, name: t('spanish') }
+    { code: 'tr' as Language, name: 'Türkçe' },
+    { code: 'en' as Language, name: 'English' },
+    { code: 'es' as Language, name: 'Español' }
   ];
 
   return {
