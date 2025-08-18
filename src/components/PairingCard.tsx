@@ -92,7 +92,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       {/* Invisible Fire Button - Küçültülmüş */}
       <div 
         onClick={handleCopyLink}
-        className="relative w-16 h-16 mx-auto cursor-pointer group transition-transform"
+        className="relative w-16 h-16 cursor-pointer group transition-transform"
       >
         {/* Base invisible button area */}
         <div className="absolute inset-0 bg-transparent"></div>
