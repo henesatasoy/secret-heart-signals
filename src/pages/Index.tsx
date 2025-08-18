@@ -140,10 +140,10 @@ const Index = () => {
       />
       
       {/* Invisible button over the blue orb in background animation */}
-      <div className="fixed top-4 left-4 z-[100]">
+      <div className="fixed top-[65px] left-[20px] z-[100]">
         <button
           onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-          className="w-12 h-12 bg-blue-500/20 hover:bg-blue-500/30 rounded-full transition-all duration-300 cursor-pointer border border-blue-300/20"
+          className="w-16 h-16 bg-transparent hover:bg-blue-500/10 rounded-full transition-all duration-300 cursor-pointer"
           title="Ayarlar"
         />
         
