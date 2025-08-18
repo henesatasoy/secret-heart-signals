@@ -168,14 +168,12 @@ const Index = () => {
           </div>
         ) : !isConnected ? (
           <>
-            {/* Link sharing button positioned responsively */}
-            <div className="flex-1 flex items-center justify-center px-4 py-8">
-              <div className="w-full max-w-sm flex flex-col items-center justify-center min-h-[60vh]">
-                <ScrollConnection 
-                  connectionId={connectionId}
-                  onConnect={handleConnect} 
-                />
-              </div>
+            {/* Link sharing button positioned at bottom */}
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
+              <ScrollConnection 
+                connectionId={connectionId}
+                onConnect={handleConnect} 
+              />
             </div>
           </>
         ) : user ? ( // Only show connected state if user is authenticated
