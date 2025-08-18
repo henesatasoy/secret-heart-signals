@@ -182,9 +182,9 @@ const Index = () => {
                 className="w-32 h-32 bg-transparent hover:bg-orange-500/20 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
                 title="Campfire'a tıkla ve sevgiline bağlan"
               >
-                {/* Hover glow effect - magical visible glow */}
-<div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-400/40 via-yellow-400/50 to-orange-400/40 opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm" />
-<div className="absolute inset-4 rounded-full bg-orange-300/30 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                {/* Hover glow effect - visible magical glow */}
+                <div className="absolute inset-0 rounded-full bg-orange-400/60 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                <div className="absolute inset-2 rounded-full bg-yellow-300/50 opacity-0 group-hover:opacity-100 transition-all duration-400" />
                 {/* Click ripple effect */}
                 <div className="absolute inset-0 rounded-full bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity" />
               </button>
