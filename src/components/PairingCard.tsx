@@ -14,37 +14,8 @@ interface ScrollConnectionProps {
 export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollConnectionProps) => {
   const [myLink, setMyLink] = useState("");
   const [copied, setCopied] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const { toast } = useToast();
   const { isConnected, partnerId, connectWith } = useConnection(connectionId);
-
-  // Global mouse events for dragging
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      
-      const newX = e.clientX - dragOffset.x;
-      const newY = e.clientY - dragOffset.y;
-      
-      setPosition({ x: newX, y: newY });
-    };
-
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-  }, [isDragging, dragOffset]);
 
   // Only initialize if we have a valid connectionId (user is logged in)
   const isValid = connectionId && connectionId.length > 0;
@@ -88,23 +59,6 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     }
   }, [isConnected, partnerId, onConnect]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-    e.stopPropagation(); // Prevent click from firing
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    // Only trigger copy link if not dragging
-    if (!isDragging) {
-      handleCopyLink();
-    }
-  };
-
   const handleCopyLink = async () => {
     if (!isValid) {
       toast({
@@ -135,17 +89,10 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
 
   return (
     <div className={cn("text-center", className)}>
-      {/* Draggable Invisible Button with Glow Effect */}
+      {/* Fixed Invisible Button with Glow Effect */}
       <div 
-        onMouseDown={handleMouseDown}
-        onClick={handleClick}
-        style={{
-          position: 'fixed',
-          left: position.x,
-          top: position.y,
-          transform: 'translate(-50%, -50%)'
-        }}
-        className={`relative w-16 h-16 cursor-${isDragging ? 'grabbing' : 'grab'} group transition-all duration-200 ${isDragging ? 'z-50' : 'z-20'} select-none`}
+        onClick={handleCopyLink}
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 cursor-pointer group transition-all duration-200 z-20"
       >
         {/* Base invisible button area */}
         <div className="absolute inset-0 bg-transparent"></div>
