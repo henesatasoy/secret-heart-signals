@@ -16,6 +16,7 @@ const Messages = () => {
   const [customMessage, setCustomMessage] = useState("");
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
   const [showTestEmojis, setShowTestEmojis] = useState(false);
+  const [showCompleteVideo, setShowCompleteVideo] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -45,6 +46,20 @@ const Messages = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // Show completion video when messages page loads after connection
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showVideo') === 'true') {
+      setShowCompleteVideo(true);
+      const timer = setTimeout(() => {
+        setShowCompleteVideo(false);
+        // Clear the URL parameter
+        window.history.replaceState({}, '', '/messages');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Redirect if not connected
   useEffect(() => {
@@ -250,6 +265,18 @@ const Messages = () => {
           </Button>
         </div>
       </div>
+      
+      {/* Completion Video Overlay */}
+      {showCompleteVideo && (
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+          <video
+            src="/connection-complete.mp4"
+            autoPlay
+            muted
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
     </div>
   );
 };

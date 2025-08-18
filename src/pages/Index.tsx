@@ -65,15 +65,10 @@ const Index = () => {
     }
   }, [isConnected, partnerId, showConnectionVideo]);
 
-  // Show completion video and redirect when connection is fully ready
+  // Navigate to messages when connection is ready, then show completion video there
   useEffect(() => {
     if (isConnected && partnerId && showConnectionVideo && messages.length > 0) {
-      setShowCompleteVideo(true);
-      const timer = setTimeout(() => {
-        navigate('/messages');
-      }, 3000); // Duration of completion video
-      
-      return () => clearTimeout(timer);
+      navigate('/messages?showVideo=true');
     }
   }, [isConnected, partnerId, showConnectionVideo, messages.length, navigate]);
 
@@ -282,17 +277,6 @@ const Index = () => {
               </div>
             )}
             
-            {/* Show completion video when connection is fully ready */}
-            {showCompleteVideo && (
-              <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-                <video
-                  src="/connection-complete.mp4"
-                  autoPlay
-                  muted
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
             
             {!showConnectionVideo && (
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
