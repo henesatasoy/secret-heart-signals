@@ -54,7 +54,14 @@ const Index = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+   }, [navigate]);
+
+  // Redirect to messages when connected
+  useEffect(() => {
+    if (isConnected && partnerId) {
+      navigate('/messages');
+    }
+  }, [isConnected, partnerId, navigate]);
 
   // Initialize mobile features on app start
   useEffect(() => {
@@ -249,59 +256,13 @@ const Index = () => {
           </>
         ) : (
           <>
-            {/* Connected state - floating UI elements */}
-            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-80">
-              {/* 16bit Mood Selector */}
-              <div className="bg-gradient-to-b from-stone-300 to-stone-400 border-3 border-stone-600 rounded-none shadow-[4px_4px_0px_0px_rgba(68,64,60,1)] p-4 mb-4">
-                <div className="grid grid-cols-4 gap-3">
-                  {moods.map((mood) => (
-                    <button
-                      key={mood.id}
-                      onClick={async () => {
-                        await hapticFeedback.light();
-                        setSelectedMood(mood.id as any);
-                      }}
-                      className={`
-                        p-3 rounded-none transition-all border-2
-                        ${selectedMood === mood.id 
-                          ? 'bg-gradient-to-b from-amber-300 to-amber-500 border-amber-700 shadow-[3px_3px_0px_0px_rgba(146,64,14,1)] translate-x-0.5 translate-y-0.5' 
-                          : 'bg-gradient-to-b from-slate-300 to-slate-400 border-slate-600 shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5'}
-                      `}
-                    >
-                      <mood.icon className={`h-5 w-5 mx-auto ${selectedMood === mood.id ? 'text-amber-900' : 'text-slate-700'}`} />
-                    </button>
-                  ))}
-                </div>
+            {/* Connection established - show simple connected state before redirect */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+              <div className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-4 border-emerald-700 rounded-none shadow-[6px_6px_0px_0px_rgba(4,120,87,1)] p-8">
+                <Heart className="h-16 w-16 mx-auto mb-4 text-emerald-900" />
+                <h2 className="text-emerald-900 font-mono font-bold text-2xl mb-2">Bağlandı! 💕</h2>
+                <p className="text-emerald-800 font-mono">Mesaj sayfasına yönlendiriliyor...</p>
               </div>
-
-              {/* 16bit Letter Grid */}
-              <div className="grid grid-cols-3 gap-4">
-                {predefinedLetters.map((letter, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSendLetter(letter.message)}
-                    className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-3 border-emerald-700 rounded-none shadow-[4px_4px_0px_0px_rgba(4,120,87,1)] hover:shadow-[2px_2px_0px_0px_rgba(4,120,87,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all active:shadow-none active:translate-x-1 active:translate-y-1 p-6 flex items-center justify-center"
-                  >
-                    <span className="text-2xl drop-shadow-lg">{letter.message}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 16bit Disconnect button */}
-            <div className="absolute bottom-20 right-6">
-              <button
-                onClick={disconnectPartner}
-                className="w-14 h-14 bg-gradient-to-b from-red-400 to-red-600 border-3 border-red-800 rounded-none shadow-[5px_5px_0px_0px_rgba(127,29,29,1)] hover:shadow-[3px_3px_0px_0px_rgba(127,29,29,1)] hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center active:shadow-none active:translate-x-1.5 active:translate-y-1.5"
-                title={t('disconnectPartner')}
-              >
-                <Heart className="h-6 w-6 text-red-900 rotate-180" />
-              </button>
-            </div>
-
-            {/* Stats positioned at bottom */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-              <ManuscriptStats />
             </div>
           </>
         )}
