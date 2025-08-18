@@ -92,7 +92,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       {/* Fixed Invisible Button with Glow Effect */}
       <div 
         onClick={handleCopyLink}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 cursor-pointer group transition-all duration-200 z-20"
+        className="w-16 h-16 cursor-pointer group transition-all duration-200 z-20"
       >
         {/* Base invisible button area */}
         <div className="absolute inset-0 bg-transparent"></div>
