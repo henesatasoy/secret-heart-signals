@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      connections: {
+        Row: {
+          connection_id: string
+          created_at: string
+          id: string
+          is_connected: boolean
+          partner_id: string | null
+        }
+        Insert: {
+          connection_id: string
+          created_at?: string
+          id?: string
+          is_connected?: boolean
+          partner_id?: string | null
+        }
+        Update: {
+          connection_id?: string
+          created_at?: string
+          id?: string
+          is_connected?: boolean
+          partner_id?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          created_at: string
+          from_connection_id: string
+          id: string
+          message: string
+          mood: string
+          to_connection_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_connection_id: string
+          id?: string
+          message: string
+          mood: string
+          to_connection_id: string
+        }
+        Update: {
+          created_at?: string
+          from_connection_id?: string
+          id?: string
+          message?: string
+          mood?: string
+          to_connection_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

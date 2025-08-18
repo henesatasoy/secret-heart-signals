@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 
 export const useConnection = (myConnectionId: string) => {
@@ -15,7 +15,7 @@ export const useConnection = (myConnectionId: string) => {
         .from('connections')
         .select('*')
         .eq('connection_id', myConnectionId)
-        .single()
+        .maybeSingle()
 
       if (!existing) {
         // Create new connection
