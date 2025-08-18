@@ -20,6 +20,7 @@ const Index = () => {
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [showConnectionVideo, setShowConnectionVideo] = useState(false);
+  const [showCompleteVideo, setShowCompleteVideo] = useState(false);
   const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -64,17 +65,17 @@ const Index = () => {
     }
   }, [isConnected, partnerId, showConnectionVideo]);
 
-  // Only redirect when connection is fully established and both users are ready
+  // Show completion video and redirect when connection is fully ready
   useEffect(() => {
-    if (isConnected && partnerId && showConnectionVideo) {
-      // Add a small delay to ensure connection is stable
+    if (isConnected && partnerId && showConnectionVideo && messages.length > 0) {
+      setShowCompleteVideo(true);
       const timer = setTimeout(() => {
         navigate('/messages');
-      }, 1000);
+      }, 3000); // Duration of completion video
       
       return () => clearTimeout(timer);
     }
-  }, [isConnected, partnerId, showConnectionVideo, navigate]);
+  }, [isConnected, partnerId, showConnectionVideo, messages.length, navigate]);
 
   // Initialize mobile features on app start
   useEffect(() => {
@@ -270,10 +271,22 @@ const Index = () => {
         ) : (
           <>
             {/* Connection established - show video */}
-            {showConnectionVideo && (
+            {showConnectionVideo && !showCompleteVideo && (
               <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
                 <video
                   src="/connection-success.mp4"
+                  autoPlay
+                  muted
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            {/* Show completion video when connection is fully ready */}
+            {showCompleteVideo && (
+              <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+                <video
+                  src="/connection-complete.mp4"
                   autoPlay
                   muted
                   className="w-full h-full object-cover"
