@@ -169,7 +169,7 @@ const Index = () => {
         ) : !isConnected ? (
           <>
             {/* Invisible clickable area over campfire */}
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-30">
+            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-30">
               <button
                 onClick={() => {
                   // Use ScrollConnection component logic but as invisible button
