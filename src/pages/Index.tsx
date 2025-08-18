@@ -182,11 +182,11 @@ const Index = () => {
                 className="w-32 h-32 bg-transparent hover:bg-orange-500/20 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
                 title="Campfire'a tıkla ve sevgiline bağlan"
               >
-                {/* Continuous magical pixel glow - star/diamond shapes */}
-                <div className="absolute inset-0 rotate-45 bg-orange-300/25 animate-pulse" style={{ imageRendering: 'pixelated', clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />
-                <div className="absolute inset-4 bg-yellow-200/20 animate-pulse" style={{ imageRendering: 'pixelated', animationDelay: '1s', clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }} />
-                {/* Hover effect separate - diamond */}
-                <div className="absolute inset-2 rotate-45 bg-amber-200/30 opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ imageRendering: 'pixelated' }} />
+                {/* Continuous magical pixel glow */}
+                <div className="absolute inset-0 rounded-full bg-orange-300/25 animate-pulse" style={{ imageRendering: 'pixelated' }} />
+                <div className="absolute inset-3 rounded-full bg-yellow-200/20 animate-pulse" style={{ imageRendering: 'pixelated', animationDelay: '1s' }} />
+                {/* Hover effect separate - pixel style */}
+                <div className="absolute inset-0 rounded-full bg-amber-200/30 opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ imageRendering: 'pixelated' }} />
                 {/* Click ripple effect */}
                 <div className="absolute inset-0 rounded-full bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity" />
               </button>
