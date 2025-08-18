@@ -15,6 +15,7 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -137,12 +138,48 @@ const Index = () => {
       {/* Invisible button over the blue orb in background animation - top left */}
       <div className="absolute top-16 left-8 z-50">
         <button
-          onClick={() => {
-            alert("Ayarlar menüsü yakında gelecek!");
-          }}
+          onClick={() => setShowSettingsMenu(!showSettingsMenu)}
           className="w-8 h-8 bg-transparent hover:bg-blue-500/20 rounded-full transition-all duration-300 cursor-pointer"
           title="Ayarlar"
         />
+        
+        {/* Settings Dropdown Menu */}
+        {showSettingsMenu && (
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 z-40"
+              onClick={() => setShowSettingsMenu(false)}
+            />
+            
+            {/* Settings Menu */}
+            <div className="absolute top-10 left-0 z-50 bg-gradient-to-b from-stone-200 to-stone-300 border-3 border-stone-600 rounded-none shadow-[6px_6px_0px_0px_rgba(68,64,60,1)] p-4 w-64">
+              <h3 className="text-stone-800 font-mono font-bold mb-4 text-lg">Ayarlar</h3>
+              
+              {/* Language Settings */}
+              <div className="mb-4">
+                <button className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2">
+                  <span className="text-slate-800 font-mono font-bold">🌍 Dil Ayarları</span>
+                </button>
+              </div>
+              
+              {/* Account Settings */}
+              <div className="mb-4">
+                <button className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2">
+                  <span className="text-slate-800 font-mono font-bold">👤 Hesap Bilgileri</span>
+                </button>
+              </div>
+              
+              {/* Logout Button */}
+              <button
+                onClick={handleSignOut}
+                className="w-full text-left p-3 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[3px_3px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+              >
+                <span className="text-red-900 font-mono font-bold">🚪 Çıkış Yap</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Top buttons - 16bit cozy style */}
@@ -165,13 +202,6 @@ const Index = () => {
           <div className="bg-gradient-to-b from-stone-200 to-stone-300 border-2 border-stone-500 rounded-none shadow-[3px_3px_0px_0px_rgba(68,64,60,1)] px-4 py-2">
             <p className="text-stone-800 text-sm font-mono font-bold">{user.email}</p>
           </div>
-          <button 
-            onClick={handleSignOut}
-            className="w-12 h-12 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[4px_4px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1"
-            title="Çıkış Yap"
-          >
-            <LogOut className="h-5 w-5 text-red-900" />
-          </button>
         </div>
       )}
 
