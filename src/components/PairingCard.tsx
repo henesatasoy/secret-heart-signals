@@ -33,8 +33,13 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     
     const urlParams = new URLSearchParams(window.location.search);
     const connectId = urlParams.get('connect');
+    
     if (connectId && connectId !== connectionId) {
+      console.log('URL connection request detected:', connectId);
       connectWith(connectId);
+      
+      // Clean up URL after attempting connection
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [connectionId, connectWith, isValid]);
 

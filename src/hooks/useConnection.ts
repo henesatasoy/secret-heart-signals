@@ -123,20 +123,32 @@ export const useConnection = (myConnectionId: string) => {
     console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
     
     try {
-      // First ensure partner connection exists
-      const { data: partnerExists } = await supabase
+      // First ensure partner connection exists, if not create it
+      let { data: partnerExists } = await supabase
         .from('connections')
         .select('id')
         .eq('connection_id', partnerConnectionId)
         .maybeSingle()
 
       if (!partnerExists) {
-        toast({
-          title: "Bağlantı hatası",
-          description: "Partner bulunamadı",
-          variant: "destructive"
-        });
-        return;
+        console.log('Partner connection not found, creating it...');
+        
+        // Create partner connection
+        const { error: createError } = await supabase
+          .from('connections')
+          .insert({ connection_id: partnerConnectionId })
+
+        if (createError) {
+          console.error('Error creating partner connection:', createError);
+          toast({
+            title: "Bağlantı hatası",
+            description: "Partner bağlantısı oluşturulamadı",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        console.log('Partner connection created successfully');
       }
 
       // Update my connection with partner
@@ -148,7 +160,10 @@ export const useConnection = (myConnectionId: string) => {
         })
         .eq('connection_id', myConnectionId)
 
-      if (myError) throw myError;
+      if (myError) {
+        console.error('Error updating my connection:', myError);
+        throw myError;
+      }
 
       // Update partner's connection with me
       const { error: partnerError } = await supabase
@@ -159,11 +174,19 @@ export const useConnection = (myConnectionId: string) => {
         })
         .eq('connection_id', partnerConnectionId)
 
-      if (partnerError) throw partnerError;
+      if (partnerError) {
+        console.error('Error updating partner connection:', partnerError);
+        throw partnerError;
+      }
 
       console.log('Connection established successfully');
       setIsConnected(true)
       setPartnerId(partnerConnectionId)
+      
+      toast({
+        title: "Bağlantı kuruldu! 💕",
+        description: "Sevgilinle artık mesajlaşabilirsin",
+      })
       
     } catch (error) {
       console.error('Connection error:', error)
