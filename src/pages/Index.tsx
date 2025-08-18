@@ -66,25 +66,13 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-purple-900 via-purple-700 to-pink-600">
-      {/* Magical forest background effect */}
-      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 via-purple-600/60 to-indigo-800/70"></div>
-      
-      {/* Floating lights effect */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <div 
-            key={i}
-            className={`absolute w-2 h-2 bg-yellow-300 rounded-full animate-pulse opacity-70`}
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Full screen background image */}
+      <img 
+        src="/lovable-uploads/de0d5b01-9671-41c9-964c-4e061a1785d1.png"
+        alt="Magical Forest Background"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+      />
       
       {/* Info Button - positioned to match the circular element in top left */}
       <button className="absolute top-6 left-6 z-50 w-10 h-10 rounded-full bg-blue-500/30 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/40 transition-all">
