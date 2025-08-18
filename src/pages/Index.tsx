@@ -134,14 +134,6 @@ const Index = () => {
         className="absolute inset-0 w-full h-full object-contain"
       />
       
-      {/* Görünmez glowing buton */}
-      <button 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-transparent border-none opacity-0 hover:opacity-100 transition-all duration-300 rounded-full hover:shadow-[0_0_30px_rgba(255,69,0,0.8),0_0_60px_rgba(255,140,0,0.6),0_0_90px_rgba(255,165,0,0.4)] hover:bg-gradient-to-r hover:from-red-500/20 hover:via-orange-500/20 hover:to-yellow-500/20"
-        onClick={() => console.log('Gizli buton tıklandı!')}
-      >
-        🔥
-      </button>
-
       {/* Top buttons - 16bit cozy style */}
       <div className="absolute top-6 left-6 z-50 flex gap-3">
         <button className="w-12 h-12 bg-gradient-to-b from-amber-300 to-amber-500 border-2 border-amber-600 rounded-none shadow-[4px_4px_0px_0px_rgba(146,64,14,1)] hover:shadow-[2px_2px_0px_0px_rgba(146,64,14,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1">
