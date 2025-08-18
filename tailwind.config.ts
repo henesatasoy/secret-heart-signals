@@ -34,13 +34,17 @@ export default {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
-				romantic: {
-					DEFAULT: 'hsl(var(--romantic))',
-					foreground: 'hsl(var(--romantic-foreground))'
+				parchment: {
+					DEFAULT: 'hsl(var(--parchment))',
+					foreground: 'hsl(var(--parchment-foreground))'
 				},
-				warm: {
-					DEFAULT: 'hsl(var(--warm))',
-					foreground: 'hsl(var(--warm-foreground))'
+				ink: {
+					DEFAULT: 'hsl(var(--ink))',
+					foreground: 'hsl(var(--ink-foreground))'
+				},
+				scroll: {
+					DEFAULT: 'hsl(var(--scroll))',
+					foreground: 'hsl(var(--scroll-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -64,16 +68,16 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'gradient-romantic': 'var(--gradient-romantic)',
-				'gradient-warm': 'var(--gradient-warm)',
-				'gradient-soft': 'var(--gradient-soft)',
-				'gradient-glow': 'var(--gradient-glow)'
+				'gradient-parchment': 'var(--gradient-parchment)',
+				'gradient-scroll': 'var(--gradient-scroll)',
+				'gradient-gold': 'var(--gradient-gold)',
+				'gradient-ink': 'var(--gradient-ink)'
 			},
 			boxShadow: {
-				'romantic': 'var(--shadow-romantic)',
-				'warm': 'var(--shadow-warm)',
-				'soft': 'var(--shadow-soft)',
-				'glow': 'var(--shadow-glow)'
+				'parchment': 'var(--shadow-parchment)',
+				'scroll': 'var(--shadow-scroll)',
+				'quill': 'var(--shadow-quill)',
+				'dove': 'var(--shadow-dove)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -89,48 +93,46 @@ export default {
 					from: { height: 'var(--radix-accordion-content-height)' },
 					to: { height: '0' }
 				},
-				'float': {
-					'0%, 100%': { transform: 'translateY(0px)' },
-					'50%': { transform: 'translateY(-10px)' }
+				'flutter': {
+					'0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+					'25%': { transform: 'translateY(-3px) rotate(1deg)' },
+					'50%': { transform: 'translateY(-5px) rotate(0deg)' },
+					'75%': { transform: 'translateY(-2px) rotate(-1deg)' }
 				},
-				'pulse-romantic': {
-					'0%, 100%': { transform: 'scale(1)', opacity: '1' },
-					'50%': { transform: 'scale(1.05)', opacity: '0.9' }
+				'quill-write': {
+					'0%, 100%': { transform: 'translateX(0) rotate(0deg)' },
+					'25%': { transform: 'translateX(2px) rotate(1deg)' },
+					'50%': { transform: 'translateX(0) rotate(0deg)' },
+					'75%': { transform: 'translateX(-2px) rotate(-1deg)' }
 				},
-				'bounce-soft': {
-					'0%, 20%, 53%, 80%, 100%': { transform: 'translateY(0)' },
-					'40%, 43%': { transform: 'translateY(-8px)' },
-					'70%': { transform: 'translateY(-4px)' },
-					'90%': { transform: 'translateY(-2px)' }
+				'scroll-unfurl': {
+					'0%': { transform: 'scaleY(0) rotateX(90deg)', opacity: '0' },
+					'50%': { transform: 'scaleY(0.5) rotateX(45deg)', opacity: '0.5' },
+					'100%': { transform: 'scaleY(1) rotateX(0deg)', opacity: '1' }
 				},
-				'heart-beat': {
-					'0%, 100%': { transform: 'scale(1)' },
-					'25%': { transform: 'scale(1.1)' },
-					'50%': { transform: 'scale(1)' },
-					'75%': { transform: 'scale(1.05)' }
-				},
-				'shimmer': {
-					'0%': { transform: 'translateX(-100%)' },
-					'100%': { transform: 'translateX(100%)' }
+				'dove-fly': {
+					'0%, 100%': { transform: 'translateY(0px) translateX(0px) rotate(0deg)' },
+					'25%': { transform: 'translateY(-8px) translateX(5px) rotate(2deg)' },
+					'50%': { transform: 'translateY(-12px) translateX(0px) rotate(0deg)' },
+					'75%': { transform: 'translateY(-8px) translateX(-5px) rotate(-2deg)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'float': 'float 3s ease-in-out infinite',
-				'pulse-romantic': 'pulse-romantic 2s ease-in-out infinite',
-				'bounce-soft': 'bounce-soft 0.6s ease-out',
-				'heart-beat': 'heart-beat 1.5s ease-in-out infinite',
-				'shimmer': 'shimmer 2s linear infinite'
+				'flutter': 'flutter 2s ease-in-out infinite',
+				'quill-write': 'quill-write 3s ease-in-out infinite',
+				'scroll-unfurl': 'scroll-unfurl 0.8s ease-out',
+				'dove-fly': 'dove-fly 4s ease-in-out infinite'
 			},
 			fontSize: {
-				'hero': 'var(--font-size-hero)',
-				'title': 'var(--font-size-title)',
-				'subtitle': 'var(--font-size-subtitle)'
+				'manuscript': 'var(--font-size-manuscript)',
+				'scroll': 'var(--font-size-scroll)',
+				'letter': 'var(--font-size-letter)'
 			},
 			transitionTimingFunction: {
-				'romantic': 'var(--transition-romantic)',
-				'bounce': 'var(--transition-bounce)'
+				'quill': 'var(--transition-quill)',
+				'flutter': 'var(--transition-flutter)'
 			}
 		}
 	},

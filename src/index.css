@@ -2,74 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dürtü - Romantic Nudge App Design System
-All colors are HSL values for consistent theming and romantic ambiance.
+/* Dürtü - Medieval Hand-drawn Love Letter App Design System
+Colors inspired by medieval manuscripts, parchment, and ink
 */
 
 @layer base {
   :root {
-    /* Romantic Color Palette */
-    --background: 350 25% 98%;
-    --foreground: 340 15% 25%;
+    /* Medieval Parchment Color Palette */
+    --background: 45 25% 96%;
+    --foreground: 30 15% 20%;
 
-    --card: 350 30% 97%;
-    --card-foreground: 340 15% 25%;
+    --card: 42 35% 94%;
+    --card-foreground: 30 15% 20%;
 
-    --popover: 350 25% 98%;
-    --popover-foreground: 340 15% 25%;
+    --popover: 45 25% 96%;
+    --popover-foreground: 30 15% 20%;
 
-    /* Primary: Soft Rose */
-    --primary: 340 75% 75%;
-    --primary-foreground: 350 25% 98%;
-    --primary-light: 340 65% 85%;
-    --primary-dark: 340 85% 65%;
+    /* Primary: Antique Gold */
+    --primary: 45 65% 55%;
+    --primary-foreground: 42 35% 94%;
+    --primary-light: 45 55% 65%;
+    --primary-dark: 45 75% 45%;
 
-    /* Secondary: Lavender */
-    --secondary: 270 50% 85%;
-    --secondary-foreground: 340 15% 25%;
+    /* Secondary: Medieval Brown */
+    --secondary: 25 35% 75%;
+    --secondary-foreground: 30 15% 20%;
 
-    /* Romantic Accent Colors */
-    --romantic: 320 60% 80%;
-    --romantic-foreground: 350 25% 98%;
+    /* Medieval Accent Colors */
+    --parchment: 42 40% 88%;
+    --parchment-foreground: 30 15% 20%;
     
-    --warm: 25 85% 88%;
-    --warm-foreground: 340 15% 25%;
+    --ink: 220 15% 25%;
+    --ink-foreground: 42 35% 94%;
 
-    --muted: 340 20% 92%;
-    --muted-foreground: 340 15% 55%;
+    --scroll: 35 30% 82%;
+    --scroll-foreground: 30 15% 20%;
 
-    --accent: 270 50% 85%;
-    --accent-foreground: 340 15% 25%;
+    --muted: 40 20% 85%;
+    --muted-foreground: 30 15% 45%;
 
-    --destructive: 0 75% 70%;
-    --destructive-foreground: 350 25% 98%;
+    --accent: 25 35% 75%;
+    --accent-foreground: 30 15% 20%;
 
-    --border: 340 25% 88%;
-    --input: 340 25% 95%;
-    --ring: 340 75% 75%;
+    --destructive: 0 55% 55%;
+    --destructive-foreground: 42 35% 94%;
 
-    --radius: 1rem;
+    --border: 35 25% 78%;
+    --input: 42 30% 92%;
+    --ring: 45 65% 55%;
 
-    /* Romantic Gradients */
-    --gradient-romantic: linear-gradient(135deg, hsl(340 75% 75%), hsl(270 50% 85%));
-    --gradient-warm: linear-gradient(45deg, hsl(25 85% 88%), hsl(340 75% 85%));
-    --gradient-soft: linear-gradient(180deg, hsl(350 25% 98%), hsl(340 25% 95%));
-    --gradient-glow: radial-gradient(circle, hsl(340 75% 75% / 0.3), transparent 70%);
+    --radius: 0.75rem;
 
-    /* Romantic Shadows */
-    --shadow-romantic: 0 10px 25px -5px hsl(340 75% 75% / 0.25);
-    --shadow-warm: 0 4px 20px -2px hsl(25 85% 88% / 0.4);
-    --shadow-soft: 0 2px 15px -3px hsl(340 25% 85% / 0.3);
-    --shadow-glow: 0 0 30px hsl(340 75% 75% / 0.6);
+    /* Medieval Gradients */
+    --gradient-parchment: linear-gradient(135deg, hsl(42 40% 88%), hsl(35 35% 85%));
+    --gradient-scroll: linear-gradient(45deg, hsl(35 30% 82%), hsl(42 35% 88%));
+    --gradient-gold: linear-gradient(180deg, hsl(45 75% 65%), hsl(45 85% 55%));
+    --gradient-ink: radial-gradient(circle, hsl(220 15% 25% / 0.1), transparent 70%);
 
-    /* Animation Variables */
-    --transition-romantic: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Medieval Hand-drawn Shadows */
+    --shadow-parchment: 0 8px 20px -4px hsl(35 30% 70% / 0.3);
+    --shadow-scroll: 0 6px 15px -2px hsl(30 25% 65% / 0.4);
+    --shadow-quill: 0 4px 12px -3px hsl(220 15% 25% / 0.2);
+    --shadow-dove: 0 0 25px hsl(45 65% 55% / 0.4);
 
-    /* Typography Scale */
-    --font-size-hero: 2.5rem;
-    --font-size-title: 1.875rem;
-    --font-size-subtitle: 1.125rem;
+    /* Medieval Animation Variables */
+    --transition-quill: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-flutter: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Medieval Typography */
+    --font-size-manuscript: 2.25rem;
+    --font-size-scroll: 1.75rem;
+    --font-size-letter: 1.125rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -89,54 +92,57 @@ All colors are HSL values for consistent theming and romantic ambiance.
   }
 
   .dark {
-    /* Dark Romantic Theme */
-    --background: 340 25% 8%;
-    --foreground: 350 25% 95%;
+    /* Dark Medieval Theme */
+    --background: 30 15% 12%;
+    --foreground: 42 35% 90%;
 
-    --card: 340 25% 10%;
-    --card-foreground: 350 25% 95%;
+    --card: 30 20% 15%;
+    --card-foreground: 42 35% 90%;
 
-    --popover: 340 25% 8%;
-    --popover-foreground: 350 25% 95%;
+    --popover: 30 15% 12%;
+    --popover-foreground: 42 35% 90%;
 
-    --primary: 340 75% 70%;
-    --primary-foreground: 340 25% 8%;
-    --primary-light: 340 65% 80%;
-    --primary-dark: 340 85% 60%;
+    --primary: 45 55% 50%;
+    --primary-foreground: 30 15% 12%;
+    --primary-light: 45 45% 60%;
+    --primary-dark: 45 65% 40%;
 
-    --secondary: 270 35% 25%;
-    --secondary-foreground: 350 25% 95%;
+    --secondary: 25 25% 25%;
+    --secondary-foreground: 42 35% 90%;
 
-    --romantic: 320 50% 65%;
-    --romantic-foreground: 340 25% 8%;
+    --parchment: 35 25% 22%;
+    --parchment-foreground: 42 35% 90%;
     
-    --warm: 25 60% 45%;
-    --warm-foreground: 350 25% 95%;
+    --ink: 42 35% 85%;
+    --ink-foreground: 30 15% 12%;
 
-    --muted: 340 15% 15%;
-    --muted-foreground: 340 15% 65%;
+    --scroll: 30 20% 20%;
+    --scroll-foreground: 42 35% 90%;
 
-    --accent: 270 35% 25%;
-    --accent-foreground: 350 25% 95%;
+    --muted: 30 15% 18%;
+    --muted-foreground: 30 15% 60%;
 
-    --destructive: 0 65% 60%;
-    --destructive-foreground: 350 25% 95%;
+    --accent: 25 25% 25%;
+    --accent-foreground: 42 35% 90%;
 
-    --border: 340 20% 18%;
-    --input: 340 20% 12%;
-    --ring: 340 75% 70%;
+    --destructive: 0 45% 50%;
+    --destructive-foreground: 42 35% 90%;
 
-    /* Dark Gradients */
-    --gradient-romantic: linear-gradient(135deg, hsl(340 75% 70%), hsl(270 50% 60%));
-    --gradient-warm: linear-gradient(45deg, hsl(25 60% 45%), hsl(340 75% 65%));
-    --gradient-soft: linear-gradient(180deg, hsl(340 25% 8%), hsl(340 25% 12%));
-    --gradient-glow: radial-gradient(circle, hsl(340 75% 70% / 0.4), transparent 70%);
+    --border: 30 20% 22%;
+    --input: 30 20% 16%;
+    --ring: 45 55% 50%;
 
-    /* Dark Shadows */
-    --shadow-romantic: 0 10px 25px -5px hsl(340 75% 70% / 0.4);
-    --shadow-warm: 0 4px 20px -2px hsl(25 60% 45% / 0.6);
-    --shadow-soft: 0 2px 15px -3px hsl(340 25% 5% / 0.8);
-    --shadow-glow: 0 0 30px hsl(340 75% 70% / 0.8);
+    /* Dark Medieval Gradients */
+    --gradient-parchment: linear-gradient(135deg, hsl(35 25% 22%), hsl(30 25% 20%));
+    --gradient-scroll: linear-gradient(45deg, hsl(30 20% 20%), hsl(35 25% 22%));
+    --gradient-gold: linear-gradient(180deg, hsl(45 65% 60%), hsl(45 75% 50%));
+    --gradient-ink: radial-gradient(circle, hsl(42 35% 85% / 0.1), transparent 70%);
+
+    /* Dark Medieval Shadows */
+    --shadow-parchment: 0 8px 20px -4px hsl(30 15% 8% / 0.6);
+    --shadow-scroll: 0 6px 15px -2px hsl(30 15% 8% / 0.8);
+    --shadow-quill: 0 4px 12px -3px hsl(30 15% 8% / 0.4);
+    --shadow-dove: 0 0 25px hsl(45 55% 50% / 0.6);
   }
 }
 
@@ -146,109 +152,151 @@ All colors are HSL values for consistent theming and romantic ambiance.
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
-    background: var(--gradient-soft);
+    @apply bg-background text-foreground;
+    background: var(--gradient-parchment);
+    font-family: 'Georgia', 'Times New Roman', serif;
   }
 
-  /* Romantic Component Classes */
-  .romantic-gradient {
-    background: var(--gradient-romantic);
+  /* Medieval Component Classes */
+  .parchment-gradient {
+    background: var(--gradient-parchment);
   }
 
-  .warm-gradient {
-    background: var(--gradient-warm);
+  .scroll-gradient {
+    background: var(--gradient-scroll);
   }
 
-  .glow-effect {
-    box-shadow: var(--shadow-glow);
+  .quill-shadow {
+    box-shadow: var(--shadow-quill);
   }
 
-  .romantic-shadow {
-    box-shadow: var(--shadow-romantic);
+  .parchment-shadow {
+    box-shadow: var(--shadow-parchment);
   }
 
-  /* Romantic Animations */
-  .float {
-    animation: float 3s ease-in-out infinite;
+  /* Medieval Hand-drawn Animations */
+  .flutter {
+    animation: flutter 2s ease-in-out infinite;
   }
 
-  .pulse-romantic {
-    animation: pulse-romantic 2s ease-in-out infinite;
+  .quill-write {
+    animation: quill-write 3s ease-in-out infinite;
   }
 
-  .bounce-soft {
-    animation: bounce-soft 0.6s ease-out;
+  .scroll-unfurl {
+    animation: scroll-unfurl 0.8s ease-out;
   }
 
-  .heart-beat {
-    animation: heart-beat 1.5s ease-in-out infinite;
+  .dove-fly {
+    animation: dove-fly 4s ease-in-out infinite;
+  }
+
+  /* Medieval handwriting effect */
+  .handwritten {
+    font-family: 'Brush Script MT', cursive;
+    letter-spacing: 0.5px;
   }
 }
 
 @layer components {
-  /* Nudge Button Styles */
-  .nudge-button {
-    @apply relative overflow-hidden rounded-2xl px-6 py-4;
-    @apply bg-gradient-to-r from-primary to-romantic;
-    @apply text-primary-foreground font-medium;
-    @apply transform transition-all duration-300;
+  /* Medieval Letter Button */
+  .letter-button {
+    @apply relative overflow-hidden rounded-lg px-6 py-4;
+    @apply bg-gradient-to-b from-parchment to-scroll;
+    @apply text-ink border-2 border-primary/30;
+    @apply font-medium shadow-md;
+    @apply transform transition-all duration-500;
     @apply hover:scale-105 hover:shadow-lg;
     @apply active:scale-95;
-    box-shadow: var(--shadow-romantic);
+    background-image: 
+      linear-gradient(45deg, transparent 24%, hsl(var(--primary) / 0.05) 25%, hsl(var(--primary) / 0.05) 26%, transparent 27%, transparent 74%, hsl(var(--primary) / 0.05) 75%, hsl(var(--primary) / 0.05) 76%, transparent 77%);
+    background-size: 20px 20px;
+    box-shadow: var(--shadow-parchment);
   }
 
-  .nudge-button:hover {
-    box-shadow: var(--shadow-glow);
+  .letter-button:hover {
+    box-shadow: var(--shadow-dove);
   }
 
-  .nudge-button::before {
+  .letter-button::before {
     content: '';
-    @apply absolute inset-0 bg-white opacity-0;
-    @apply transition-opacity duration-300;
+    @apply absolute inset-0 bg-primary opacity-0;
+    @apply transition-opacity duration-500;
   }
 
-  .nudge-button:hover::before {
-    @apply opacity-20;
+  .letter-button:hover::before {
+    @apply opacity-10;
   }
 
-  /* Romantic Card */
-  .romantic-card {
-    @apply bg-card border border-border rounded-3xl p-6;
-    @apply backdrop-blur-sm;
-    background: linear-gradient(145deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.6));
-    box-shadow: var(--shadow-soft);
+  /* Medieval Scroll Card */
+  .scroll-card {
+    @apply bg-card border-2 border-primary/20 rounded-xl p-6;
+    @apply backdrop-blur-sm relative;
+    background: linear-gradient(145deg, hsl(var(--card) / 0.9), hsl(var(--parchment) / 0.8));
+    box-shadow: var(--shadow-scroll);
+    background-image: 
+      radial-gradient(circle at 20% 50%, transparent 20%, hsl(var(--primary) / 0.03) 21%, hsl(var(--primary) / 0.03) 30%, transparent 31%),
+      linear-gradient(90deg, transparent 49%, hsl(var(--primary) / 0.03) 50%, transparent 51%);
   }
 
-  /* Romantic Input */
-  .romantic-input {
-    @apply w-full px-4 py-3 rounded-2xl border border-border;
-    @apply bg-input text-foreground;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
-    @apply transition-all duration-300;
+  .scroll-card::before {
+    content: '';
+    @apply absolute top-2 left-2 right-2 h-1 bg-primary/20 rounded-full;
+  }
+
+  .scroll-card::after {
+    content: '';
+    @apply absolute bottom-2 left-2 right-2 h-1 bg-primary/20 rounded-full;
+  }
+
+  /* Medieval Quill Input */
+  .quill-input {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-primary/30;
+    @apply bg-parchment text-ink;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
+    @apply transition-all duration-500;
+    background-image: linear-gradient(to right, transparent 0px, hsl(var(--primary) / 0.1) 1px, transparent 2px);
+    background-size: 25px 100%;
+    font-family: 'Georgia', serif;
+  }
+
+  /* Wax Seal Effect */
+  .wax-seal {
+    @apply relative w-12 h-12 rounded-full;
+    background: radial-gradient(circle, hsl(var(--primary)), hsl(var(--primary-dark)));
+    box-shadow: inset 0 2px 4px hsl(var(--primary-dark) / 0.3);
+  }
+
+  .wax-seal::after {
+    content: '♥';
+    @apply absolute inset-0 flex items-center justify-center text-white text-lg font-bold;
   }
 }
 
-/* Romantic Keyframes */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+/* Medieval Handwritten Keyframes */
+@keyframes flutter {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(1deg); }
+  50% { transform: translateY(-5px) rotate(0deg); }
+  75% { transform: translateY(-2px) rotate(-1deg); }
 }
 
-@keyframes pulse-romantic {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.9; }
+@keyframes quill-write {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(2px) rotate(1deg); }
+  50% { transform: translateX(0) rotate(0deg); }
+  75% { transform: translateX(-2px) rotate(-1deg); }
 }
 
-@keyframes bounce-soft {
-  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
-  40%, 43% { transform: translateY(-8px); }
-  70% { transform: translateY(-4px); }
-  90% { transform: translateY(-2px); }
+@keyframes scroll-unfurl {
+  0% { transform: scaleY(0) rotateX(90deg); opacity: 0; }
+  50% { transform: scaleY(0.5) rotateX(45deg); opacity: 0.5; }
+  100% { transform: scaleY(1) rotateX(0deg); opacity: 1; }
 }
 
-@keyframes heart-beat {
-  0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.1); }
-  50% { transform: scale(1); }
-  75% { transform: scale(1.05); }
+@keyframes dove-fly {
+  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+  25% { transform: translateY(-8px) translateX(5px) rotate(2deg); }
+  50% { transform: translateY(-12px) translateX(0px) rotate(0deg); }
+  75% { transform: translateY(-8px) translateX(-5px) rotate(-2deg); }
 }

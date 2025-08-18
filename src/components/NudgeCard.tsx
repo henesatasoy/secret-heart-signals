@@ -1,10 +1,10 @@
-import { Heart, Sparkles, Moon, Sun } from "lucide-react";
-import { RomanticButton } from "@/components/ui/romantic-button";
+import { Heart, Sparkles, Moon, Sun, Feather, Scroll, Mail } from "lucide-react";
+import { MedievalButton } from "@/components/ui/romantic-button";
 import { cn } from "@/lib/utils";
 
-interface NudgeCardProps {
+interface LetterCardProps {
   message: string;
-  icon: "heart" | "sparkles" | "moon" | "sun";
+  icon: "heart" | "sparkles" | "moon" | "sun" | "feather" | "scroll";
   mood?: "happy" | "romantic" | "silly" | "sleepy";
   onClick?: () => void;
   className?: string;
@@ -15,50 +15,53 @@ const iconMap = {
   sparkles: Sparkles,
   moon: Moon,
   sun: Sun,
+  feather: Feather,
+  scroll: Scroll,
 };
 
 const moodColors = {
-  happy: "from-warm to-primary",
-  romantic: "from-primary to-romantic",
-  silly: "from-accent to-warm",
-  sleepy: "from-secondary to-primary",
+  happy: "from-primary to-scroll",
+  romantic: "from-primary-dark to-primary",
+  silly: "from-accent to-primary",
+  sleepy: "from-secondary to-ink",
 };
 
-export const NudgeCard = ({ 
+export const LetterCard = ({ 
   message, 
   icon, 
   mood = "romantic", 
   onClick, 
   className 
-}: NudgeCardProps) => {
+}: LetterCardProps) => {
   const IconComponent = iconMap[icon];
   const gradientClass = moodColors[mood];
 
   return (
-    <div className={cn("romantic-card group cursor-pointer", className)} onClick={onClick}>
-      <div className="flex items-center space-x-4">
-        <div className={cn(
-          "p-3 rounded-2xl bg-gradient-to-br",
-          gradientClass,
-          "group-hover:scale-110 transition-transform duration-300"
-        )}>
-          <IconComponent className="h-6 w-6 text-white" />
+    <div className={cn("scroll-card group cursor-pointer hover:shadow-dove transition-all duration-500", className)} onClick={onClick}>
+      <div className="flex items-start space-x-4">
+        <div className="wax-seal flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
+          <IconComponent className="absolute inset-0 m-auto h-5 w-5 text-white" />
         </div>
         <div className="flex-1">
-          <p className="text-foreground font-medium text-base leading-relaxed">
+          <p className="text-ink font-medium text-base leading-relaxed handwritten text-lg">
             {message}
           </p>
         </div>
       </div>
-      <div className="mt-4 flex justify-end">
-        <RomanticButton 
-          variant="soft" 
+      <div className="mt-6 flex justify-end">
+        <MedievalButton 
+          variant="scroll" 
           size="sm"
-          className="group-hover:scale-105 transition-transform duration-300"
+          className="group-hover:scale-105 transition-transform duration-500"
         >
-          Send Nudge
-        </RomanticButton>
+          <Mail className="h-4 w-4 mr-2" />
+          Mektup Gönder
+        </MedievalButton>
       </div>
+      
+      {/* Decorative scroll ends */}
+      <div className="absolute -top-1 left-4 right-4 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full" />
+      <div className="absolute -bottom-1 left-4 right-4 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full" />
     </div>
   );
 };
