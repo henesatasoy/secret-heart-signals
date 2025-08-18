@@ -140,7 +140,7 @@ const Index = () => {
       />
       
       {/* Invisible button over the blue orb in background animation - top left */}
-      <div className="absolute top-12 left-4 z-50">
+      <div className="absolute top-14 left-4 z-50">
         <button
           onClick={() => setShowSettingsMenu(!showSettingsMenu)}
           className="w-10 h-10 bg-transparent hover:bg-blue-500/20 rounded-full transition-all duration-300 cursor-pointer"
