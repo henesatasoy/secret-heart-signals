@@ -214,8 +214,13 @@ export const useConnection = (myConnectionId: string) => {
     try {
       console.log('Disconnecting from partner...');
       
+      if (!partnerId) {
+        console.log('No partner to disconnect from');
+        return;
+      }
+
       // Update my connection to remove partner
-      const { error } = await supabase
+      const { error: myError } = await supabase
         .from('connections')
         .update({ 
           partner_id: null, 
@@ -223,17 +228,26 @@ export const useConnection = (myConnectionId: string) => {
         })
         .eq('connection_id', myConnectionId);
 
-      if (error) {
-        console.error('Error disconnecting:', error);
-        toast({
-          title: "Bağlantı koparılamadı",
-          description: "Bir hata oluştu, tekrar deneyin",
-          variant: "destructive",
-        });
-        return;
+      if (myError) {
+        console.error('Error disconnecting my connection:', myError);
+        throw myError;
       }
 
-      // Update local state
+      // Also update partner's connection to remove me
+      const { error: partnerError } = await supabase
+        .from('connections')
+        .update({ 
+          partner_id: null, 
+          is_connected: false 
+        })
+        .eq('connection_id', partnerId);
+
+      // Don't throw error if partner update fails (RLS might prevent it)
+      if (partnerError) {
+        console.log('Partner connection update failed (expected due to RLS):', partnerError);
+      }
+
+      // Update local state regardless
       setIsConnected(false);
       setPartnerId(null);
       
@@ -246,7 +260,7 @@ export const useConnection = (myConnectionId: string) => {
       console.error('Error in disconnectPartner:', error);
       toast({
         title: "Bağlantı koparılamadı",
-        description: "Bir hata oluştu",
+        description: "Bir hata oluştu: " + (error as any).message,
         variant: "destructive",
       });
     }
