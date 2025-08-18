@@ -179,7 +179,7 @@ const Index = () => {
                     handleConnect(partnerCode.trim());
                   }
                 }}
-                className="w-32 h-32 bg-transparent hover:bg-orange-500/20 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
+                className="w-32 h-32 bg-transparent rounded-full active:scale-95 cursor-pointer group"
                 title="Campfire'a tıkla ve sevgiline bağlan"
               >
                 {/* Continuous magical flame glow */}
@@ -196,14 +196,6 @@ const Index = () => {
                     imageRendering: 'pixelated', 
                     animationDelay: '1s',
                     clipPath: 'polygon(50% 10%, 70% 30%, 90% 50%, 70% 70%, 50% 90%, 30% 70%, 10% 50%, 30% 30%)'
-                  }} 
-                />
-                {/* Hover effect separate - diamond style */}
-                <div 
-                  className="absolute inset-1 bg-amber-200/30 opacity-0 group-hover:opacity-100 transition-all duration-500" 
-                  style={{ 
-                    imageRendering: 'pixelated',
-                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
                   }} 
                 />
                 {/* Click ripple effect */}
