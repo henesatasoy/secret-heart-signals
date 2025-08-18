@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, ArrowLeft, Send } from "lucide-react";
+import { Heart, ArrowLeft, Send, TestTube, ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useMessages } from "@/hooks/useMessages";
@@ -15,6 +15,7 @@ const Messages = () => {
   const [user, setUser] = useState<User | null>(null);
   const [customMessage, setCustomMessage] = useState("");
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
+  const [showTestEmojis, setShowTestEmojis] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -62,6 +63,16 @@ const Messages = () => {
     { message: "💕", icon: "heart" as const },
     { message: "🌙", icon: "moon" as const },
   ];
+
+  // Test emoji kategorileri
+  const testEmojiCategories = {
+    hearts: ["💖", "💝", "💗", "💓", "💞", "💘", "💌", "💋"],
+    faces: ["😍", "🥰", "😘", "😚", "🤗", "🤭", "😉", "😁"],
+    nature: ["🌺", "🌸", "🌹", "🌻", "🌷", "🦋", "🌈", "⭐"],
+    food: ["🍓", "🍑", "🍒", "🍯", "🍰", "🎂", "🍫", "☕"],
+    activities: ["💃", "🕺", "🎵", "🎶", "🎸", "🎤", "🎭", "🎨"],
+    symbols: ["💎", "👑", "🔥", "⚡", "🌟", "💫", "✨", "🎉"]
+  };
 
   const handleSendLetter = async (message: string) => {
     if (!partnerId) return;
@@ -156,8 +167,55 @@ const Messages = () => {
         ))}
       </div>
 
-      {/* Quick Letters */}
+      {/* Quick Letters & Test Emojis */}
       <div className="relative z-10 p-4 bg-gradient-to-b from-stone-200 to-stone-300 border-t-4 border-stone-600">
+        {/* Test Emoji Toggle */}
+        <div className="mb-3">
+          <button
+            onClick={() => setShowTestEmojis(!showTestEmojis)}
+            className="w-full bg-gradient-to-b from-purple-300 to-purple-500 border-2 border-purple-700 rounded-none shadow-[3px_3px_0px_0px_rgba(88,28,135,1)] hover:shadow-[2px_2px_0px_0px_rgba(88,28,135,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all p-3 flex items-center justify-center gap-2"
+          >
+            <TestTube className="h-5 w-5 text-purple-900" />
+            <span className="text-purple-900 font-mono font-bold">Test Emoji Paneli</span>
+            {showTestEmojis ? 
+              <ChevronUp className="h-4 w-4 text-purple-900" /> : 
+              <ChevronDown className="h-4 w-4 text-purple-900" />
+            }
+          </button>
+        </div>
+
+        {/* Test Emoji Categories */}
+        {showTestEmojis && (
+          <div className="mb-4 bg-gradient-to-b from-gray-100 to-gray-200 border-2 border-gray-600 rounded-none shadow-[4px_4px_0px_0px_rgba(75,85,99,1)] p-3">
+            <h3 className="text-gray-800 font-mono font-bold text-center mb-3">🧪 Test Emojileri</h3>
+            
+            {Object.entries(testEmojiCategories).map(([category, emojis]) => (
+              <div key={category} className="mb-3 last:mb-0">
+                <h4 className="text-gray-700 font-mono text-sm uppercase mb-2 text-center">
+                  {category === 'hearts' ? '💕 Kalpler' :
+                   category === 'faces' ? '😊 Yüzler' :
+                   category === 'nature' ? '🌸 Doğa' :
+                   category === 'food' ? '🍓 Yiyecek' :
+                   category === 'activities' ? '🎵 Aktivite' :
+                   '✨ Semboller'}
+                </h4>
+                <div className="grid grid-cols-8 gap-1">
+                  {emojis.map((emoji, index) => (
+                    <button
+                      key={`${category}-${index}`}
+                      onClick={() => handleSendLetter(emoji)}
+                      className="bg-gradient-to-b from-yellow-200 to-yellow-400 border border-yellow-600 rounded-none shadow-[2px_2px_0px_0px_rgba(161,98,7,1)] hover:shadow-[1px_1px_0px_0px_rgba(161,98,7,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all active:shadow-none active:translate-x-1 active:translate-y-1 p-2 text-lg"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Quick Letters */}
         <div className="grid grid-cols-4 gap-2 mb-3">
           {predefinedLetters.map((letter, index) => (
             <button
