@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
-import { Heart, Mail, Lock } from 'lucide-react'
+import { Heart, Mail, Lock, ArrowLeft } from 'lucide-react'
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
@@ -76,6 +76,16 @@ const Auth = () => {
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
       
+      {/* Back button for logged in users */}
+      <div className="absolute top-6 left-6 z-50">
+        <button 
+          onClick={() => navigate('/')}
+          className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
+        >
+          <ArrowLeft className="h-4 w-4 text-white" />
+        </button>
+      </div>
+
       {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
         <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border-white/20">
