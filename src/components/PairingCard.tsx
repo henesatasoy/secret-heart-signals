@@ -29,17 +29,26 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
 
   // Check if someone is trying to connect via URL parameter
   useEffect(() => {
-    if (!isValid) return;
+    if (!isValid) {
+      console.log('URL parameter check skipped - invalid connection ID');
+      return;
+    }
     
     const urlParams = new URLSearchParams(window.location.search);
     const connectId = urlParams.get('connect');
     
+    console.log('URL parameter check:', { connectId, myConnectionId: connectionId });
+    
     if (connectId && connectId !== connectionId) {
-      console.log('URL connection request detected:', connectId);
+      console.log('URL connection request detected, attempting to connect:', connectId);
       connectWith(connectId);
       
       // Clean up URL after attempting connection
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (connectId === connectionId) {
+      console.log('Self-connection detected, ignoring');
+    } else {
+      console.log('No connection parameter in URL');
     }
   }, [connectionId, connectWith, isValid]);
 

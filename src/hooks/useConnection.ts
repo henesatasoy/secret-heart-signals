@@ -9,18 +9,26 @@ export const useConnection = (myConnectionId: string) => {
 
   // Initialize and load connection state
   useEffect(() => {
-    if (!myConnectionId || myConnectionId.length === 0) return;
+    if (!myConnectionId || myConnectionId.length === 0) {
+      console.log('Skipping connection init - no connection ID');
+      return;
+    }
 
     const initConnection = async () => {
       console.log('Initializing connection for:', myConnectionId);
       
       try {
         // First check if connection exists
-        const { data: existing } = await supabase
+        const { data: existing, error: fetchError } = await supabase
           .from('connections')
           .select('*')
           .eq('connection_id', myConnectionId)
           .maybeSingle()
+
+        if (fetchError) {
+          console.error('Error fetching connection:', fetchError);
+          return;
+        }
 
         if (existing) {
           console.log('Existing connection found:', existing);
@@ -42,6 +50,8 @@ export const useConnection = (myConnectionId: string) => {
             });
           } else {
             console.log('New connection created successfully');
+            setIsConnected(false);
+            setPartnerId(null);
           }
         }
       } catch (error) {
