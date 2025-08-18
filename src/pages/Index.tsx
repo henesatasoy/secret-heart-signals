@@ -95,10 +95,26 @@ const Index = () => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
-      navigate('/auth');
+      // Clean up auth state first
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Attempt global sign out (ignore errors)
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.log('Logout error (ignored):', err);
+      }
+      
+      // Force page reload for clean state
+      window.location.href = '/auth';
     } catch (error) {
       console.error('Logout error:', error);
+      // Force redirect even if logout fails
+      window.location.href = '/auth';
     }
   };
 
