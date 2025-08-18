@@ -140,7 +140,7 @@ const Index = () => {
       />
       
       {/* Settings button - visible for positioning */}
-      <div className="fixed top-16 left-4 z-[100]">
+      <div className="fixed top-[60px] left-[15px] z-[100]">
         <button
           onClick={() => setShowSettingsMenu(!showSettingsMenu)}
           className="w-12 h-12 bg-blue-500/50 hover:bg-blue-500/70 rounded-full transition-all duration-300 cursor-pointer border-2 border-white/30"
