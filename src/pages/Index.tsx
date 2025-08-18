@@ -160,17 +160,17 @@ const Index = () => {
       {/* Content overlay */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {!user ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-white">
+          <div className="flex-1 flex items-center justify-center px-4 py-8">
+            <div className="text-center text-white max-w-sm">
               <Heart className="h-16 w-16 mx-auto mb-4 text-pink-300" />
               <p className="text-lg">Yükleniyor...</p>
             </div>
           </div>
         ) : !isConnected ? (
           <>
-            {/* Link sharing button positioned at the campfire */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="absolute" style={{ bottom: '25%' }}>
+            {/* Link sharing button positioned responsively */}
+            <div className="flex-1 flex items-center justify-center px-4 py-8">
+              <div className="w-full max-w-sm flex flex-col items-center justify-center min-h-[60vh]">
                 <ScrollConnection 
                   connectionId={connectionId}
                   onConnect={handleConnect} 
