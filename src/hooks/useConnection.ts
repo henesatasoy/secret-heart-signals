@@ -7,72 +7,99 @@ export const useConnection = (myConnectionId: string) => {
   const [partnerId, setPartnerId] = useState<string | null>(null)
   const { toast } = useToast()
 
-  // Load initial connection state
+  // Initialize and load connection state
   useEffect(() => {
-    const loadConnectionState = async () => {
-      const { data: existing } = await supabase
-        .from('connections')
-        .select('*')
-        .eq('connection_id', myConnectionId)
-        .maybeSingle()
+    if (!myConnectionId || myConnectionId.length === 0) return;
 
-      if (existing) {
-        setIsConnected(existing.is_connected || false)
-        setPartnerId(existing.partner_id || null)
-      }
-    }
-
-    loadConnectionState()
-  }, [myConnectionId])
-
-  // Initialize connection if not exists
-  useEffect(() => {
     const initConnection = async () => {
-      const { data: existing } = await supabase
-        .from('connections')
-        .select('*')
-        .eq('connection_id', myConnectionId)
-        .maybeSingle()
-
-      if (!existing) {
-        await supabase
+      console.log('Initializing connection for:', myConnectionId);
+      
+      try {
+        // First check if connection exists
+        const { data: existing } = await supabase
           .from('connections')
-          .insert({ connection_id: myConnectionId })
+          .select('*')
+          .eq('connection_id', myConnectionId)
+          .maybeSingle()
+
+        if (existing) {
+          console.log('Existing connection found:', existing);
+          setIsConnected(existing.is_connected || false)
+          setPartnerId(existing.partner_id || null)
+        } else {
+          // Create new connection
+          console.log('Creating new connection for:', myConnectionId);
+          const { error } = await supabase
+            .from('connections')
+            .insert({ connection_id: myConnectionId })
+          
+          if (error) {
+            console.error('Error creating connection:', error);
+            toast({
+              title: "Bağlantı hatası",
+              description: "Connection oluşturulamadı: " + error.message,
+              variant: "destructive"
+            });
+          } else {
+            console.log('New connection created successfully');
+          }
+        }
+      } catch (error) {
+        console.error('Connection initialization error:', error);
+        toast({
+          title: "Bağlantı hatası", 
+          description: "Sistem hatası oluştu",
+          variant: "destructive"
+        });
       }
     }
 
     initConnection()
-  }, [myConnectionId])
+  }, [myConnectionId, toast])
 
-  // Listen for connection updates - both for my connection and when I'm someone's partner
+  // Listen for connection updates - simplified filtering
   useEffect(() => {
+    if (!myConnectionId || myConnectionId.length === 0) return;
+    
+    console.log('Setting up realtime listener for:', myConnectionId);
+    
     const channel = supabase
-      .channel('connections')
+      .channel(`connection_updates_${myConnectionId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'connections',
-          filter: `or(connection_id.eq.${myConnectionId},partner_id.eq.${myConnectionId})`,
+          filter: `connection_id=eq.${myConnectionId}`,
         },
         (payload) => {
-          console.log('Connection update received:', payload)
+          console.log('My connection update received:', payload)
           const connection = payload.new as any
           
-          // If this is my connection record being updated
-          if (connection?.connection_id === myConnectionId) {
-            if (connection?.partner_id && connection?.is_connected) {
-              setIsConnected(true)
-              setPartnerId(connection.partner_id)
-              toast({
-                title: "Bağlantı kuruldu! 💕",
-                description: "Sevgilinle artık mesajlaşabilirsin",
-              })
-            }
+          if (connection?.partner_id && connection?.is_connected) {
+            setIsConnected(true)
+            setPartnerId(connection.partner_id)
+            toast({
+              title: "Bağlantı kuruldu! 💕",
+              description: "Sevgilinle artık mesajlaşabilirsin",
+            })
           }
-          // If I'm being set as someone's partner
-          else if (connection?.partner_id === myConnectionId && connection?.is_connected) {
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*', 
+          schema: 'public',
+          table: 'connections',
+          filter: `partner_id=eq.${myConnectionId}`,
+        },
+        (payload) => {
+          console.log('Partner connection update received:', payload)
+          const connection = payload.new as any
+          
+          if (connection?.is_connected) {
             setIsConnected(true)
             setPartnerId(connection.connection_id)
             toast({
@@ -85,14 +112,35 @@ export const useConnection = (myConnectionId: string) => {
       .subscribe()
 
     return () => {
+      console.log('Cleaning up connection listener');
       supabase.removeChannel(channel)
     }
-  }, [myConnectionId])
+  }, [myConnectionId, toast])
 
   const connectWith = async (partnerConnectionId: string) => {
+    if (!myConnectionId || myConnectionId === partnerConnectionId) return;
+    
+    console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
+    
     try {
+      // First ensure partner connection exists
+      const { data: partnerExists } = await supabase
+        .from('connections')
+        .select('id')
+        .eq('connection_id', partnerConnectionId)
+        .maybeSingle()
+
+      if (!partnerExists) {
+        toast({
+          title: "Bağlantı hatası",
+          description: "Partner bulunamadı",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Update my connection with partner
-      await supabase
+      const { error: myError } = await supabase
         .from('connections')
         .update({ 
           partner_id: partnerConnectionId, 
@@ -100,8 +148,10 @@ export const useConnection = (myConnectionId: string) => {
         })
         .eq('connection_id', myConnectionId)
 
+      if (myError) throw myError;
+
       // Update partner's connection with me
-      await supabase
+      const { error: partnerError } = await supabase
         .from('connections')
         .update({ 
           partner_id: myConnectionId, 
@@ -109,13 +159,17 @@ export const useConnection = (myConnectionId: string) => {
         })
         .eq('connection_id', partnerConnectionId)
 
+      if (partnerError) throw partnerError;
+
+      console.log('Connection established successfully');
       setIsConnected(true)
       setPartnerId(partnerConnectionId)
+      
     } catch (error) {
       console.error('Connection error:', error)
       toast({
         title: "Bağlantı hatası",
-        description: "Lütfen tekrar dene",
+        description: "Lütfen tekrar dene: " + (error as any).message,
         variant: "destructive"
       })
     }

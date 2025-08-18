@@ -15,45 +15,60 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
   const [messages, setMessages] = useState<Message[]>([])
   const { toast } = useToast()
 
-  // Load existing messages
+  // Load existing messages  
   useEffect(() => {
-    if (!partnerId) return
+    if (!partnerId || !myConnectionId) return
 
     const loadMessages = async () => {
-      const { data } = await supabase
-        .from('messages')
-        .select('*')
-        .or(`and(from_connection_id.eq.${myConnectionId},to_connection_id.eq.${partnerId}),and(from_connection_id.eq.${partnerId},to_connection_id.eq.${myConnectionId})`)
-        .order('created_at', { ascending: true })
+      console.log('Loading messages between', myConnectionId, 'and', partnerId);
+      
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .or(`and(from_connection_id.eq.${myConnectionId},to_connection_id.eq.${partnerId}),and(from_connection_id.eq.${partnerId},to_connection_id.eq.${myConnectionId})`)
+          .order('created_at', { ascending: true })
 
-      if (data) {
-        setMessages(data)
+        if (error) {
+          console.error('Error loading messages:', error);
+          return;
+        }
+
+        if (data) {
+          console.log('Loaded', data.length, 'messages');
+          setMessages(data)
+        }
+      } catch (error) {
+        console.error('Message loading error:', error);
       }
     }
 
     loadMessages()
   }, [myConnectionId, partnerId])
 
-  // Listen for new messages in both directions
+  // Listen for new messages - simplified filtering
   useEffect(() => {
-    if (!partnerId) return
+    if (!partnerId || !myConnectionId) return
+
+    console.log('Setting up message listener between', myConnectionId, 'and', partnerId);
 
     const channel = supabase
-      .channel('messages')
+      .channel(`messages_${myConnectionId}_${partnerId}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `or(and(from_connection_id.eq.${myConnectionId},to_connection_id.eq.${partnerId}),and(from_connection_id.eq.${partnerId},to_connection_id.eq.${myConnectionId}))`,
+          filter: `from_connection_id=eq.${partnerId}`,
         },
         (payload) => {
+          console.log('Received message from partner:', payload);
           const newMessage = payload.new as Message
-          setMessages(prev => [...prev, newMessage])
           
-          // Show notification only for received messages (not sent by me)
-          if (newMessage.from_connection_id !== myConnectionId) {
+          // Only add if it's for me
+          if (newMessage.to_connection_id === myConnectionId) {
+            setMessages(prev => [...prev, newMessage])
             toast({
               title: "Yeni mesaj! 💕",
               description: newMessage.message,
@@ -61,18 +76,42 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           }
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `from_connection_id=eq.${myConnectionId}`,
+        },
+        (payload) => {
+          console.log('Sent message confirmed:', payload);
+          const newMessage = payload.new as Message
+          
+          // Only add if it's to my partner
+          if (newMessage.to_connection_id === partnerId) {
+            setMessages(prev => [...prev, newMessage])
+          }
+        }
+      )
       .subscribe()
 
     return () => {
+      console.log('Cleaning up message listener');
       supabase.removeChannel(channel)
     }
-  }, [myConnectionId, partnerId])
+  }, [myConnectionId, partnerId, toast])
 
   const sendMessage = async (message: string, mood: string) => {
-    if (!partnerId) return
+    if (!partnerId || !myConnectionId) {
+      console.error('Cannot send message: missing partnerId or myConnectionId');
+      return;
+    }
+
+    console.log('Sending message from', myConnectionId, 'to', partnerId, ':', message);
 
     try {
-      await supabase
+      const { error } = await supabase
         .from('messages')
         .insert({
           from_connection_id: myConnectionId,
@@ -81,6 +120,17 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           mood
         })
 
+      if (error) {
+        console.error('Send message error:', error);
+        toast({
+          title: "Mesaj gönderilemedi",
+          description: "Error: " + error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('Message sent successfully');
       toast({
         title: "Mesaj gönderildi! 💕",
         description: message,
