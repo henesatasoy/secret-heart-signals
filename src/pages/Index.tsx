@@ -184,18 +184,16 @@ const Index = () => {
               >
                 {/* Continuous magical flame glow */}
                 <div 
-                  className="absolute inset-2 bg-orange-300/15 animate-pulse" 
+                  className="absolute inset-2 bg-orange-300/15 animate-pulse rounded-full" 
                   style={{ 
-                    imageRendering: 'pixelated',
-                    clipPath: 'polygon(50% 0%, 80% 20%, 100% 50%, 80% 80%, 50% 100%, 20% 80%, 0% 50%, 20% 20%)'
+                    imageRendering: 'pixelated'
                   }} 
                 />
                 <div 
-                  className="absolute inset-4 bg-yellow-200/12 animate-pulse" 
+                  className="absolute inset-4 bg-yellow-200/12 animate-pulse rounded-full" 
                   style={{ 
                     imageRendering: 'pixelated', 
-                    animationDelay: '1s',
-                    clipPath: 'polygon(50% 10%, 70% 30%, 90% 50%, 70% 70%, 50% 90%, 30% 70%, 10% 50%, 30% 30%)'
+                    animationDelay: '1s'
                   }} 
                 />
                 {/* Click ripple effect */}
