@@ -89,43 +89,40 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
 
   return (
     <div className={cn("text-center", className)}>
-      {/* Animated Campfire */}
+      {/* 16-bit Pixel Campfire */}
       <div 
         onClick={handleCopyLink}
-        className="relative w-32 h-32 mx-auto cursor-pointer group"
+        className="relative w-32 h-32 mx-auto cursor-pointer group transition-transform hover:scale-110"
       >
-        {/* Base/Logs */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-6 bg-gradient-to-r from-amber-800 to-amber-900 rounded-full"></div>
-        <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 rotate-12 w-16 h-4 bg-gradient-to-r from-amber-700 to-amber-800 rounded-full"></div>
-        <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 -rotate-12 w-14 h-4 bg-gradient-to-r from-amber-700 to-amber-800 rounded-full"></div>
+        {/* Base Logs - 16bit chunky style */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-amber-800 border-2 border-amber-900"></div>
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 translate-x-2 w-16 h-3 bg-amber-700 border border-amber-800"></div>
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 -translate-x-2 w-14 h-3 bg-amber-700 border border-amber-800"></div>
         
-        {/* Main Flame */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-20 bg-gradient-to-t from-red-600 via-orange-500 to-yellow-300 rounded-full animate-pulse"></div>
+        {/* Main Flame - Pixelated */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-8 h-16 bg-red-600 border-2 border-red-700 animate-pulse"></div>
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-6 h-12 bg-orange-500 border border-orange-600"></div>
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-4 h-8 bg-yellow-400 border border-yellow-500 animate-pulse delay-100"></div>
         
-        {/* Dancing Flames */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 -translate-x-2 w-8 h-16 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 rounded-full animate-bounce delay-75"></div>
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 translate-x-2 w-6 h-14 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 rounded-full animate-pulse delay-150"></div>
+        {/* Side Flames - 16bit blocks */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 -translate-x-4 w-4 h-10 bg-red-500 border border-red-600 animate-bounce delay-200"></div>
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 translate-x-4 w-4 h-8 bg-orange-400 border border-orange-500 animate-pulse delay-300"></div>
         
-        {/* Flickering Inner Flames */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-6 h-12 bg-gradient-to-t from-yellow-400 to-yellow-100 rounded-full animate-ping"></div>
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 -translate-x-1 w-4 h-8 bg-gradient-to-t from-yellow-300 to-white rounded-full animate-pulse delay-300"></div>
+        {/* Top Flame Tips - Pixelated */}
+        <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-yellow-300 border border-yellow-400 animate-ping"></div>
+        <div className="absolute bottom-14 left-1/2 transform -translate-x-1/2 -translate-x-2 w-2 h-3 bg-yellow-200 animate-pulse delay-400"></div>
+        <div className="absolute bottom-14 left-1/2 transform -translate-x-1/2 translate-x-2 w-2 h-3 bg-orange-300 animate-bounce delay-500"></div>
         
-        {/* Glow Effect */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-orange-400 rounded-full opacity-30 blur-xl animate-pulse"></div>
+        {/* 16bit Sparks */}
+        <div className="absolute bottom-18 left-1/2 transform -translate-x-1/2 translate-x-6 w-1 h-1 bg-yellow-200 animate-ping delay-600"></div>
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-x-5 w-1 h-1 bg-orange-300 animate-ping delay-800"></div>
+        <div className="absolute bottom-19 left-1/2 transform -translate-x-1/2 translate-x-3 w-1 h-1 bg-yellow-100 animate-pulse delay-1000"></div>
         
-        {/* Sparks */}
-        <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 translate-x-4 w-1 h-1 bg-yellow-200 rounded-full animate-ping delay-500"></div>
-        <div className="absolute bottom-18 left-1/2 transform -translate-x-1/2 -translate-x-3 w-1 h-1 bg-orange-300 rounded-full animate-ping delay-700"></div>
+        {/* 16bit Glow Effect - Chunky */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-8 bg-orange-400 opacity-20 blur-sm animate-pulse"></div>
         
         {/* Hover Effect */}
-        <div className="absolute inset-0 bg-orange-400 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-      </div>
-      
-      {/* Status Text */}
-      <div className="mt-4">
-        <p className="text-sm font-bold text-amber-100 bg-gradient-to-b from-amber-900/80 to-amber-800/80 border-2 border-amber-700 rounded-none px-4 py-2 shadow-[3px_3px_0px_0px_rgba(120,53,15,1)] backdrop-blur-sm">
-          {copied ? "🔥 Bağlantı kopyalandı!" : "🔥 Ateşe tıkla ve bağlan"}
-        </p>
+        <div className="absolute inset-0 bg-orange-300 opacity-0 group-hover:opacity-10 transition-opacity duration-200 border-2 border-transparent group-hover:border-orange-500"></div>
       </div>
     </div>
   );
