@@ -216,5 +216,47 @@ export const useConnection = (myConnectionId: string) => {
     }
   }
 
-  return { isConnected, partnerId, connectWith }
+  const disconnectPartner = async () => {
+    try {
+      console.log('Disconnecting from partner...');
+      
+      // Update my connection to remove partner
+      const { error } = await supabase
+        .from('connections')
+        .update({ 
+          partner_id: null, 
+          is_connected: false 
+        })
+        .eq('connection_id', myConnectionId);
+
+      if (error) {
+        console.error('Error disconnecting:', error);
+        toast({
+          title: "Bağlantı koparılamadı",
+          description: "Bir hata oluştu, tekrar deneyin",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Update local state
+      setIsConnected(false);
+      setPartnerId(null);
+      
+      toast({
+        title: "Bağlantı koptu 💔",
+        description: "Artık bağlı değilsiniz",
+      });
+      
+    } catch (error) {
+      console.error('Error in disconnectPartner:', error);
+      toast({
+        title: "Bağlantı koparılamadı",
+        description: "Bir hata oluştu",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return { isConnected, partnerId, connectWith, disconnectPartner }
 }

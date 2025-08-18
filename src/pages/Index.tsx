@@ -20,7 +20,7 @@ const Index = () => {
   
   // Use user ID as connection ID for consistent identification - only if user exists
   const connectionId = user?.id || '';
-  const { isConnected, partnerId, connectWith } = useConnection(user?.id || '');
+  const { isConnected, partnerId, connectWith, disconnectPartner } = useConnection(user?.id || '');
   const { messages, sendMessage } = useMessages(user?.id || '', partnerId);
 
   // Authentication setup
@@ -225,6 +225,17 @@ const Index = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Disconnect button */}
+            <div className="absolute bottom-20 right-6">
+              <button
+                onClick={disconnectPartner}
+                className="w-12 h-12 rounded-full bg-red-500/30 backdrop-blur-sm border border-red-300/30 flex items-center justify-center hover:bg-red-400/40 transition-all"
+                title="Bağlantıyı Kes"
+              >
+                <Heart className="h-5 w-5 text-white rotate-180" />
+              </button>
             </div>
 
             {/* Stats positioned at bottom */}
