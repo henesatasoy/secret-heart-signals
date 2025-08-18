@@ -165,20 +165,16 @@ export const useConnection = (myConnectionId: string) => {
       }
 
       if (!partnerExists) {
-        console.log('Partner connection not found, creating it automatically');
-        // Create partner connection automatically
-        const { error: createPartnerError } = await supabase
-          .from('connections')
-          .insert({ connection_id: partnerConnectionId })
-        
-        if (createPartnerError) {
-          console.error('Error creating partner connection:', createPartnerError);
-          throw createPartnerError;
-        }
-        console.log('Partner connection created successfully');
-      } else {
-        console.log('Partner connection found:', partnerExists);
+        console.log('Partner connection not found - they need to open the app first');
+        toast({
+          title: "Partner henüz bağlantı oluşturmamış",
+          description: "Partner'ın önce uygulamayı açması ve giriş yapması gerekiyor",
+          variant: "destructive"
+        });
+        return;
       }
+
+      console.log('Partner connection found:', partnerExists);
 
       // Update my connection with partner
       const { error: myError } = await supabase
