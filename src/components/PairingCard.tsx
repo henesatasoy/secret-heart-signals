@@ -58,30 +58,36 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   };
 
   return (
-    <div className={cn("pixel-card", className)}>
-      <div className="text-center mb-4">
-        <Heart className="h-8 w-8 mx-auto text-primary mb-2 pixel-glow" />
-        <h2 className="text-lg pixel-font-bold text-ink mb-2">Bağlan</h2>
+    <div className={cn("relative", className)}>
+      {/* Fire-like connection button */}
+      <div className="w-20 h-20 mx-auto mb-4 relative">
+        <button 
+          onClick={handleCopyLink}
+          className="w-full h-full rounded-full bg-gradient-to-t from-orange-600 via-orange-400 to-yellow-300 border-2 border-orange-300 shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
+        >
+          {/* Fire effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 opacity-80 animate-pulse"></div>
+          <div className="relative z-10">
+            {copied ? (
+              <span className="text-white text-lg">✓</span>
+            ) : (
+              <Link className="h-6 w-6 text-white" />
+            )}
+          </div>
+        </button>
       </div>
 
-      <div className="space-y-4">
-        {/* My Link */}
-        <div className="text-center p-3 bg-pixel-sunset/20 border border-primary">
-          <p className="text-xs pixel-font text-muted-foreground mb-1">Paylaşım Linkin</p>
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <Link className="h-4 w-4 text-primary" />
-            <span className="text-xs pixel-font text-primary">Sevgilinle paylaş</span>
-          </div>
-          <button onClick={handleCopyLink} className="pixel-button text-sm w-full">
-            {copied ? "✓ Kopyalandı" : "📋 Linki Kopyala"}
-          </button>
-        </div>
-
-        <div className="text-center p-4 bg-primary/10 border border-primary/30 rounded">
-          <p className="text-sm pixel-font text-muted-foreground mb-2">
-            Sevgilinin sana gönderdiği linke tıkla veya bu sayfayı ziyaret ettiğinde otomatik bağlanacaksınız! 💕
+      {/* Floating text near the fire */}
+      <div className="text-center">
+        <p className="text-sm text-white/90 bg-black/30 rounded-lg px-3 py-1 backdrop-blur-sm mb-2">
+          {copied ? "Link kopyalandı! 🔥" : "Ateşe dokunarak sevgilinle bağlan 🔥"}
+        </p>
+        
+        {!copied && (
+          <p className="text-xs text-white/70 bg-black/20 rounded px-2 py-1 backdrop-blur-sm">
+            Linki kopyala ve sevgiline gönder
           </p>
-        </div>
+        )}
       </div>
     </div>
   );

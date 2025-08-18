@@ -66,10 +66,15 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-b from-pixel-cloud to-pixel-sky">
-      {/* Info Button */}
-      <button className="fixed top-4 right-4 z-50 pixel-button bg-pixel-sunset hover:bg-pixel-mountain">
-        <Info className="h-4 w-4" />
+    <div 
+      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `url('/magical-forest-bg.png')`
+      }}
+    >
+      {/* Info Button - positioned to match the circular element in top left */}
+      <button className="absolute top-8 left-8 z-50 w-12 h-12 rounded-full bg-blue-500/20 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/30 transition-all">
+        <Info className="h-5 w-5 text-blue-200" />
       </button>
 
       {/* Header */}
@@ -80,12 +85,17 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto space-y-4">
+      <main className="max-w-lg mx-auto space-y-4 relative z-10">
         {!isConnected ? (
-          <ScrollConnection 
-            connectionId={connectionId}
-            onConnect={handleConnect} 
-          />
+          <>
+            {/* Link sharing button positioned at the campfire */}
+            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
+              <ScrollConnection 
+                connectionId={connectionId}
+                onConnect={handleConnect} 
+              />
+            </div>
+          </>
         ) : (
           <>
             {/* Mood Selector */}
