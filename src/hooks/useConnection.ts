@@ -152,29 +152,8 @@ export const useConnection = (myConnectionId: string) => {
         }
       }
 
-      // Check if partner connection exists
-      let { data: partnerExists, error: partnerFetchError } = await supabase
-        .from('connections')
-        .select('id, connection_id, is_connected')
-        .eq('connection_id', partnerConnectionId)
-        .maybeSingle()
-
-      if (partnerFetchError) {
-        console.error('Error fetching partner connection:', partnerFetchError);
-        throw partnerFetchError;
-      }
-
-      if (!partnerExists) {
-        console.log('Partner connection not found - they need to open the app first');
-        toast({
-          title: "Partner henüz bağlantı oluşturmamış",
-          description: "Partner'ın önce uygulamayı açması ve giriş yapması gerekiyor",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      console.log('Partner connection found:', partnerExists);
+      // Try to update both connections directly - don't check partner existence first
+      console.log('Attempting to establish connection between users');
 
       // Update my connection with partner
       const { error: myError } = await supabase
