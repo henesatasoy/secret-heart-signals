@@ -182,13 +182,37 @@ const Index = () => {
                 className="w-32 h-32 bg-transparent hover:bg-orange-500/20 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
                 title="Campfire'a tıkla ve sevgiline bağlan"
               >
-                {/* Continuous magical pixel glow */}
-                <div className="absolute inset-0 rounded-full bg-orange-300/25 animate-pulse" style={{ imageRendering: 'pixelated' }} />
-                <div className="absolute inset-3 rounded-full bg-yellow-200/20 animate-pulse" style={{ imageRendering: 'pixelated', animationDelay: '1s' }} />
-                {/* Hover effect separate - pixel style */}
-                <div className="absolute inset-0 rounded-full bg-amber-200/30 opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ imageRendering: 'pixelated' }} />
+                {/* Continuous magical flame glow */}
+                <div 
+                  className="absolute inset-2 bg-orange-300/25 animate-pulse" 
+                  style={{ 
+                    imageRendering: 'pixelated',
+                    clipPath: 'polygon(50% 0%, 80% 20%, 100% 50%, 80% 80%, 50% 100%, 20% 80%, 0% 50%, 20% 20%)'
+                  }} 
+                />
+                <div 
+                  className="absolute inset-4 bg-yellow-200/20 animate-pulse" 
+                  style={{ 
+                    imageRendering: 'pixelated', 
+                    animationDelay: '1s',
+                    clipPath: 'polygon(50% 10%, 70% 30%, 90% 50%, 70% 70%, 50% 90%, 30% 70%, 10% 50%, 30% 30%)'
+                  }} 
+                />
+                {/* Hover effect separate - diamond style */}
+                <div 
+                  className="absolute inset-1 bg-amber-200/30 opacity-0 group-hover:opacity-100 transition-all duration-500" 
+                  style={{ 
+                    imageRendering: 'pixelated',
+                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+                  }} 
+                />
                 {/* Click ripple effect */}
-                <div className="absolute inset-0 rounded-full bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity" />
+                <div 
+                  className="absolute inset-0 bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity"
+                  style={{
+                    clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)'
+                  }}
+                />
               </button>
             </div>
           </>
