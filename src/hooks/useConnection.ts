@@ -141,24 +141,13 @@ export const useConnection = (myConnectionId: string) => {
         .maybeSingle()
 
       if (!partnerExists) {
-        console.log('Partner connection not found, creating it...');
-        
-        // Create partner connection
-        const { error: createError } = await supabase
-          .from('connections')
-          .insert({ connection_id: partnerConnectionId })
-
-        if (createError) {
-          console.error('Error creating partner connection:', createError);
-          toast({
-            title: "Bağlantı hatası",
-            description: "Partner bağlantısı oluşturulamadı",
-            variant: "destructive"
-          });
-          return;
-        }
-
-        console.log('Partner connection created successfully');
+        console.log('Partner connection not found - partner needs to create their own connection first');
+        toast({
+          title: "Partner bağlantısı yok",
+          description: "Partner'ın önce uygulamaya giriş yapması gerekiyor",
+          variant: "destructive"
+        });
+        return;
       }
 
       // Update my connection with partner
