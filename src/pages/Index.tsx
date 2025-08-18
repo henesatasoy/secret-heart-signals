@@ -140,7 +140,7 @@ const Index = () => {
       />
       
       {/* Settings button - responsive positioning for mobile and desktop */}
-      <div className="absolute z-50 top-8 left-8 sm:top-[40px] sm:left-[50px]">
+      <div className="absolute z-50" style={{ top: '60px', left: '15px' }}>
         <button
           onClick={() => setShowSettingsMenu(!showSettingsMenu)}
           className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500/30 hover:bg-blue-500/50 rounded-full transition-all duration-300 cursor-pointer border border-blue-400/50"
