@@ -27,30 +27,26 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     }
   }, [connectionId, isValid]);
 
-  // Check if someone is trying to connect via URL parameter
+  // Check if someone is trying to connect via URL parameter - only once
   useEffect(() => {
     if (!isValid) {
-      console.log('URL parameter check skipped - invalid connection ID');
       return;
     }
     
     const urlParams = new URLSearchParams(window.location.search);
     const connectId = urlParams.get('connect');
     
-    console.log('URL parameter check:', { connectId, myConnectionId: connectionId });
-    
+    // Only process if there's a connect parameter and it's different from my ID
     if (connectId && connectId !== connectionId) {
       console.log('URL connection request detected, attempting to connect:', connectId);
       connectWith(connectId);
-      
-      // Clean up URL after attempting connection
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (connectId === connectionId) {
-      console.log('Self-connection detected, ignoring');
-    } else {
-      console.log('No connection parameter in URL');
     }
-  }, [connectionId, connectWith, isValid]);
+    
+    // Always clean up URL parameter after processing
+    if (connectId) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []); // Empty dependency array - only run once on mount
 
   // Notify parent when connection is established
   useEffect(() => {
