@@ -177,7 +177,7 @@ export const useConnection = (myConnectionId: string) => {
         throw myError;
       }
 
-      // First ensure partner connection exists, create if needed
+      // First ensure partner connection exists, create if needed using UPSERT
       let { data: partnerConnection } = await supabase
         .from('connections')
         .select('id')
@@ -188,7 +188,12 @@ export const useConnection = (myConnectionId: string) => {
         console.log('Creating partner connection first');
         const { error: createPartnerError } = await supabase
           .from('connections')
-          .insert({ connection_id: partnerConnectionId })
+          .upsert({ 
+            connection_id: partnerConnectionId,
+            is_connected: false 
+          }, {
+            onConflict: 'connection_id'
+          })
         
         if (createPartnerError) {
           console.error('Error creating partner connection:', createPartnerError);
