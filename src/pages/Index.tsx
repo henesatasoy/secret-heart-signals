@@ -276,7 +276,6 @@ const Index = () => {
                   src="/connection-success.mp4"
                   autoPlay
                   muted
-                  loop
                   className="w-full h-full object-cover"
                 />
               </div>
