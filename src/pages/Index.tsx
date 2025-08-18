@@ -139,14 +139,6 @@ const Index = () => {
         <button className="w-12 h-12 bg-gradient-to-b from-amber-300 to-amber-500 border-2 border-amber-600 rounded-none shadow-[4px_4px_0px_0px_rgba(146,64,14,1)] hover:shadow-[2px_2px_0px_0px_rgba(146,64,14,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1">
           <Info className="h-5 w-5 text-amber-900" />
         </button>
-        {user && (
-          <button 
-            onClick={handleSignOut}
-            className="w-12 h-12 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[4px_4px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1"
-          >
-            <LogOut className="h-5 w-5 text-red-900" />
-          </button>
-        )}
       </div>
 
       {/* User info - 16bit cozy style */}
