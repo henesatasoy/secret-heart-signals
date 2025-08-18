@@ -58,36 +58,28 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   };
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("text-center", className)}>
       {/* Fire-like connection button */}
-      <div className="w-20 h-20 mx-auto mb-4 relative">
-        <button 
-          onClick={handleCopyLink}
-          className="w-full h-full rounded-full bg-gradient-to-t from-orange-600 via-orange-400 to-yellow-300 border-2 border-orange-300 shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center relative overflow-hidden group"
-        >
-          {/* Fire effect */}
-          <div className="absolute inset-0 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 opacity-80 animate-pulse"></div>
-          <div className="relative z-10">
-            {copied ? (
-              <span className="text-white text-lg">✓</span>
-            ) : (
-              <Link className="h-6 w-6 text-white" />
-            )}
-          </div>
-        </button>
-      </div>
+      <button 
+        onClick={handleCopyLink}
+        className="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-t from-orange-600 via-orange-400 to-yellow-300 shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center relative overflow-hidden animate-pulse"
+      >
+        {/* Fire effect */}
+        <div className="absolute inset-0 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 opacity-80"></div>
+        <div className="relative z-10">
+          {copied ? (
+            <span className="text-white text-lg font-bold">✓</span>
+          ) : (
+            <Link className="h-5 w-5 text-white drop-shadow-lg" />
+          )}
+        </div>
+      </button>
 
-      {/* Floating text near the fire */}
+      {/* Subtle text */}
       <div className="text-center">
-        <p className="text-sm text-white/90 bg-black/30 rounded-lg px-3 py-1 backdrop-blur-sm mb-2">
-          {copied ? "Link kopyalandı! 🔥" : "Ateşe dokunarak sevgilinle bağlan 🔥"}
+        <p className="text-xs text-white/90 bg-black/40 rounded-full px-3 py-1 backdrop-blur-sm">
+          {copied ? "🔥 Kopyalandı!" : "🔥 Ateşe dokun"}
         </p>
-        
-        {!copied && (
-          <p className="text-xs text-white/70 bg-black/20 rounded px-2 py-1 backdrop-blur-sm">
-            Linki kopyala ve sevgiline gönder
-          </p>
-        )}
       </div>
     </div>
   );

@@ -66,80 +66,82 @@ const Index = () => {
   ];
 
   return (
-    <div 
-      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `url('/magical-forest-bg.png')`
-      }}
-    >
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Full screen background image */}
+      <div 
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('/magical-forest-bg.png')`
+        }}
+      />
+      
       {/* Info Button - positioned to match the circular element in top left */}
-      <button className="absolute top-8 left-8 z-50 w-12 h-12 rounded-full bg-blue-500/20 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/30 transition-all">
-        <Info className="h-5 w-5 text-blue-200" />
+      <button className="absolute top-6 left-6 z-50 w-10 h-10 rounded-full bg-blue-500/30 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/40 transition-all">
+        <Info className="h-4 w-4 text-white" />
       </button>
 
-      {/* Header */}
-      <header className="max-w-lg mx-auto mb-6 text-center">
-        <div className="inline-flex items-center space-x-2 pixel-card mb-4">
-          <Heart className="h-6 w-6 text-primary pixel-glow" />
-          <h1 className="text-2xl pixel-font-bold text-ink">Dürtü</h1>
-        </div>
-      </header>
-
-      <main className="max-w-lg mx-auto space-y-4 relative z-10">
+      {/* Content overlay */}
+      <div className="relative z-10 min-h-screen flex flex-col">
         {!isConnected ? (
           <>
             {/* Link sharing button positioned at the campfire */}
-            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
-              <ScrollConnection 
-                connectionId={connectionId}
-                onConnect={handleConnect} 
-              />
+            <div className="flex-1 flex items-center justify-center">
+              <div className="absolute" style={{ bottom: '25%' }}>
+                <ScrollConnection 
+                  connectionId={connectionId}
+                  onConnect={handleConnect} 
+                />
+              </div>
             </div>
           </>
         ) : (
           <>
-            {/* Mood Selector */}
-            <div className="pixel-card">
-              <div className="grid grid-cols-4 gap-2">
-                {moods.map((mood) => (
+            {/* Connected state - floating UI elements */}
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-80">
+              {/* Mood Selector */}
+              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 mb-4">
+                <div className="grid grid-cols-4 gap-2">
+                  {moods.map((mood) => (
+                    <button
+                      key={mood.id}
+                      onClick={async () => {
+                        await hapticFeedback.light();
+                        setSelectedMood(mood.id as any);
+                      }}
+                      className={`
+                        p-2 rounded-lg transition-all backdrop-blur-sm
+                        ${selectedMood === mood.id 
+                          ? 'bg-white/30 scale-105' 
+                          : 'bg-white/10 hover:bg-white/20'}
+                      `}
+                    >
+                      <mood.icon className="h-4 w-4 mx-auto text-white" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Letter Grid */}
+              <div className="grid grid-cols-3 gap-3">
+                {predefinedLetters.map((letter, index) => (
                   <button
-                    key={mood.id}
-                    onClick={async () => {
-                      await hapticFeedback.light();
-                      setSelectedMood(mood.id as any);
-                    }}
-                    className={`
-                      pixel-button text-xs p-2
-                      ${selectedMood === mood.id 
-                        ? 'bg-primary scale-105' 
-                        : 'bg-pixel-cloud hover:bg-primary/70'}
-                    `}
+                    key={index}
+                    onClick={() => handleSendLetter(letter.message)}
+                    className="bg-white/10 backdrop-blur-sm rounded-lg p-4 hover:bg-white/20 transition-all hover:scale-105 border border-white/20"
                   >
-                    <mood.icon className="h-4 w-4 mx-auto" />
+                    <span className="text-xl">{letter.message}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Letter Grid */}
-            <div className="grid grid-cols-3 gap-3">
-              {predefinedLetters.map((letter, index) => (
-                <LetterCard
-                  key={index}
-                  message={letter.message}
-                  icon={letter.icon}
-                  mood={selectedMood}
-                  onClick={() => handleSendLetter(letter.message)}
-                  className="pixel-float"
-                />
-              ))}
+            {/* Stats positioned at bottom */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+              <ManuscriptStats />
             </div>
-
-            {/* Stats */}
-            <ManuscriptStats />
           </>
         )}
-      </main>
+      </div>
     </div>
   );
 };
