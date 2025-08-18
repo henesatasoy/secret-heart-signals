@@ -6,7 +6,7 @@ const translations = {
   tr: {
     // Main UI
     loading: "Yükleniyor...",
-    connectToPartner: "Kampateş'a tıkla ve sevgiline bağlan",
+    connectToPartner: "Kampateş'a tıkla ve bağlantı linkini kopyala",
     disconnectPartner: "Bağlantıyı Kes",
     
     // Messages
@@ -36,7 +36,7 @@ const translations = {
   en: {
     // Main UI
     loading: "Loading...",
-    connectToPartner: "Click the campfire to connect with your partner",
+    connectToPartner: "Click the campfire to copy connection link",
     disconnectPartner: "Disconnect",
     
     // Messages
@@ -66,7 +66,7 @@ const translations = {
   es: {
     // Main UI
     loading: "Cargando...",
-    connectToPartner: "Haz clic en la fogata para conectarte con tu pareja",
+    connectToPartner: "Haz clic en la fogata para copiar el enlace de conexión",
     disconnectPartner: "Desconectar",
     
     // Messages

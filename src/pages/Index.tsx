@@ -243,12 +243,34 @@ const Index = () => {
             {/* Invisible clickable area over campfire */}
             <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-30">
               <button
-                onClick={() => {
-                  // Use ScrollConnection component logic but as invisible button
-                  const partnerCode = prompt(t('enterPartnerCode'));
-                  if (partnerCode && partnerCode.trim()) {
-                    connectWith(partnerCode.trim());
-                    handleConnect(partnerCode.trim());
+                onClick={async () => {
+                  // Copy connection link instead of asking for code
+                  if (!user?.id) {
+                    toast({
+                      title: t('noConnection'),
+                      description: "Lütfen önce giriş yapın",
+                      variant: "destructive"
+                    });
+                    return;
+                  }
+                  
+                  await hapticFeedback.medium();
+                  
+                  const currentUrl = window.location.origin;
+                  const connectionLink = `${currentUrl}?connect=${user.id}`;
+                  
+                  try {
+                    await navigator.clipboard.writeText(connectionLink);
+                    toast({
+                      title: "Bağlantı linki kopyalandı! 💕",
+                      description: "Bu linki sevgilinle paylaş",
+                    });
+                  } catch (err) {
+                    toast({
+                      title: "Link kopyalanamadı",
+                      description: "Lütfen manuel olarak kopyala: " + connectionLink,
+                      variant: "destructive",
+                    });
                   }
                 }}
                 className="w-32 h-32 bg-transparent rounded-full active:scale-95 cursor-pointer group"
@@ -277,6 +299,13 @@ const Index = () => {
                 />
               </button>
             </div>
+            
+            {/* Check for incoming connections via URL */}
+            <ScrollConnection 
+              connectionId={user?.id || ''} 
+              className="hidden"
+              onConnect={handleConnect}
+            />
           </>
         ) : user ? ( // Only show connected state if user is authenticated
           <>
