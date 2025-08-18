@@ -300,7 +300,7 @@ const Index = () => {
               </button>
             </div>
             
-            {/* Check for incoming connections via URL */}
+            {/* Connection handler - hidden component for URL processing */}
             <ScrollConnection 
               connectionId={user?.id || ''} 
               className="hidden"
