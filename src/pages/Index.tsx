@@ -168,11 +168,13 @@ const Index = () => {
           </div>
         ) : !isConnected ? (
           <>
-            {/* Draggable button */}
-            <ScrollConnection 
-              connectionId={connectionId}
-              onConnect={handleConnect} 
-            />
+            {/* Button positioned where you left it */}
+            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
+              <ScrollConnection 
+                connectionId={connectionId}
+                onConnect={handleConnect} 
+              />
+            </div>
           </>
         ) : user ? ( // Only show connected state if user is authenticated
           <>
