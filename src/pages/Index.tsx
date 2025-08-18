@@ -131,7 +131,7 @@ const Index = () => {
       <img 
         src="/background-animation.gif"
         alt="Animated Background"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-contain"
       />
       
       {/* Top buttons - 16bit cozy style */}
