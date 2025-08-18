@@ -127,11 +127,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
-      {/* Full screen background image - mobile optimized */}
+      {/* Full screen background GIF - mobile optimized */}
       <img 
-        src="/lovable-uploads/de0d5b01-9671-41c9-964c-4e061a1785d1.png"
-        alt="Magical Forest Background"
-        className="absolute inset-0 w-full h-full object-contain"
+        src="/background-animation.gif"
+        alt="Animated Background"
+        className="absolute inset-0 w-full h-full object-cover"
       />
       
       {/* Top buttons - 16bit cozy style */}
