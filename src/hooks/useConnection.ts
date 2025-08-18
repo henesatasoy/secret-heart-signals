@@ -7,10 +7,27 @@ export const useConnection = (myConnectionId: string) => {
   const [partnerId, setPartnerId] = useState<string | null>(null)
   const { toast } = useToast()
 
-  // Initialize connection
+  // Load initial connection state
+  useEffect(() => {
+    const loadConnectionState = async () => {
+      const { data: existing } = await supabase
+        .from('connections')
+        .select('*')
+        .eq('connection_id', myConnectionId)
+        .maybeSingle()
+
+      if (existing) {
+        setIsConnected(existing.is_connected || false)
+        setPartnerId(existing.partner_id || null)
+      }
+    }
+
+    loadConnectionState()
+  }, [myConnectionId])
+
+  // Initialize connection if not exists
   useEffect(() => {
     const initConnection = async () => {
-      // Check if connection already exists
       const { data: existing } = await supabase
         .from('connections')
         .select('*')
@@ -18,7 +35,6 @@ export const useConnection = (myConnectionId: string) => {
         .maybeSingle()
 
       if (!existing) {
-        // Create new connection
         await supabase
           .from('connections')
           .insert({ connection_id: myConnectionId })
@@ -28,7 +44,7 @@ export const useConnection = (myConnectionId: string) => {
     initConnection()
   }, [myConnectionId])
 
-  // Listen for connection updates
+  // Listen for connection updates - both for my connection and when I'm someone's partner
   useEffect(() => {
     const channel = supabase
       .channel('connections')
@@ -38,16 +54,30 @@ export const useConnection = (myConnectionId: string) => {
           event: '*',
           schema: 'public',
           table: 'connections',
-          filter: `connection_id=eq.${myConnectionId}`,
+          filter: `or(connection_id.eq.${myConnectionId},partner_id.eq.${myConnectionId})`,
         },
         (payload) => {
+          console.log('Connection update received:', payload)
           const connection = payload.new as any
-          if (connection?.partner_id && connection?.is_connected) {
+          
+          // If this is my connection record being updated
+          if (connection?.connection_id === myConnectionId) {
+            if (connection?.partner_id && connection?.is_connected) {
+              setIsConnected(true)
+              setPartnerId(connection.partner_id)
+              toast({
+                title: "Bağlantı kuruldu! 💕",
+                description: "Sevgilinle artık mesajlaşabilirsin",
+              })
+            }
+          }
+          // If I'm being set as someone's partner
+          else if (connection?.partner_id === myConnectionId && connection?.is_connected) {
             setIsConnected(true)
-            setPartnerId(connection.partner_id)
+            setPartnerId(connection.connection_id)
             toast({
-              title: "Bağlantı kuruldu! 💕",
-              description: "Sevgilinle artık mesajlaşabilirsin",
+              title: "Biri sana bağlandı! 💕", 
+              description: "Artık mesajlaşabilirsiniz",
             })
           }
         }
