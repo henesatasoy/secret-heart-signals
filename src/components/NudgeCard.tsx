@@ -46,31 +46,14 @@ export const LetterCard = ({
   };
 
   return (
-    <div className={cn("scroll-card group cursor-pointer hover:shadow-dove transition-all duration-500", className)} onClick={handleClick}>
-      <div className="flex items-start space-x-4">
-        <div className="wax-seal flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-          <IconComponent className="absolute inset-0 m-auto h-5 w-5 text-white" />
-        </div>
-        <div className="flex-1">
-          <p className="text-ink font-medium text-base leading-relaxed handwritten text-lg">
-            {message}
-          </p>
-        </div>
+    <button 
+      className={cn("pixel-card hover:scale-105 transition-all duration-200 min-h-[80px] flex items-center justify-center", className)} 
+      onClick={handleClick}
+    >
+      <div className="text-center">
+        <div className="text-2xl mb-1">{message}</div>
+        <IconComponent className="h-4 w-4 mx-auto text-primary" />
       </div>
-      <div className="mt-6 flex justify-end">
-        <MedievalButton 
-          variant="scroll" 
-          size="sm"
-          className="group-hover:scale-105 transition-transform duration-500"
-        >
-          <Mail className="h-4 w-4 mr-2" />
-          Mektup Gönder
-        </MedievalButton>
-      </div>
-      
-      {/* Decorative scroll ends */}
-      <div className="absolute -top-1 left-4 right-4 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full" />
-      <div className="absolute -bottom-1 left-4 right-4 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full" />
-    </div>
+    </button>
   );
 };

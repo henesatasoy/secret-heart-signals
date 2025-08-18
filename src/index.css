@@ -1,302 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Dürtü - Medieval Hand-drawn Love Letter App Design System
-Colors inspired by medieval manuscripts, parchment, and ink
-*/
-
 @layer base {
   :root {
-    /* Medieval Parchment Color Palette */
-    --background: 45 25% 96%;
-    --foreground: 30 15% 20%;
-
-    --card: 42 35% 94%;
-    --card-foreground: 30 15% 20%;
-
-    --popover: 45 25% 96%;
-    --popover-foreground: 30 15% 20%;
-
-    /* Primary: Antique Gold */
-    --primary: 45 65% 55%;
-    --primary-foreground: 42 35% 94%;
-    --primary-light: 45 55% 65%;
-    --primary-dark: 45 75% 45%;
-
-    /* Secondary: Medieval Brown */
-    --secondary: 25 35% 75%;
-    --secondary-foreground: 30 15% 20%;
-
-    /* Medieval Accent Colors */
-    --parchment: 42 40% 88%;
-    --parchment-foreground: 30 15% 20%;
+    --background: 45 20% 95%;
+    --foreground: 240 15% 20%;
+    --card: 45 25% 92%;
+    --card-foreground: 240 15% 25%;
+    --popover: 45 30% 90%;
+    --popover-foreground: 240 15% 20%;
+    --primary: 280 65% 75%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 285 70% 65%;
+    --secondary: 200 50% 80%;
+    --secondary-foreground: 240 15% 25%;
+    --muted: 45 15% 85%;
+    --muted-foreground: 240 10% 45%;
+    --accent: 320 60% 85%;
+    --accent-foreground: 240 15% 25%;
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 20% 80%;
+    --input: 240 25% 85%;
+    --ring: 280 65% 75%;
+    --radius: 0;
     
-    --ink: 220 15% 25%;
-    --ink-foreground: 42 35% 94%;
-
-    --scroll: 35 30% 82%;
-    --scroll-foreground: 30 15% 20%;
-
-    --muted: 40 20% 85%;
-    --muted-foreground: 30 15% 45%;
-
-    --accent: 25 35% 75%;
-    --accent-foreground: 30 15% 20%;
-
-    --destructive: 0 55% 55%;
-    --destructive-foreground: 42 35% 94%;
-
-    --border: 35 25% 78%;
-    --input: 42 30% 92%;
-    --ring: 45 65% 55%;
-
-    --radius: 0.75rem;
-
-    /* Medieval Gradients */
-    --gradient-parchment: linear-gradient(135deg, hsl(42 40% 88%), hsl(35 35% 85%));
-    --gradient-scroll: linear-gradient(45deg, hsl(35 30% 82%), hsl(42 35% 88%));
-    --gradient-gold: linear-gradient(180deg, hsl(45 75% 65%), hsl(45 85% 55%));
-    --gradient-ink: radial-gradient(circle, hsl(220 15% 25% / 0.1), transparent 70%);
-
-    /* Medieval Hand-drawn Shadows */
-    --shadow-parchment: 0 8px 20px -4px hsl(35 30% 70% / 0.3);
-    --shadow-scroll: 0 6px 15px -2px hsl(30 25% 65% / 0.4);
-    --shadow-quill: 0 4px 12px -3px hsl(220 15% 25% / 0.2);
-    --shadow-dove: 0 0 25px hsl(45 65% 55% / 0.4);
-
-    /* Medieval Animation Variables */
-    --transition-quill: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-flutter: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    /* Medieval Typography */
-    --font-size-manuscript: 2.25rem;
-    --font-size-scroll: 1.75rem;
-    --font-size-letter: 1.125rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Pixel art colors inspired by images */
+    --pixel-sky: 210 70% 75%;
+    --pixel-cloud: 45 25% 92%;
+    --pixel-sunset: 340 70% 80%;
+    --pixel-mountain: 260 40% 60%;
+    --pixel-grass: 120 45% 55%;
+    --pixel-water: 200 60% 70%;
+    
+    /* Medieval parchment */
+    --parchment: 40 25% 88%;
+    --ink: 240 25% 15%;
+    --scroll: 35 30% 85%;
+    --wax: 0 60% 70%;
+    --quill: 25 40% 45%;
   }
 
   .dark {
-    /* Dark Medieval Theme */
-    --background: 30 15% 12%;
-    --foreground: 42 35% 90%;
-
-    --card: 30 20% 15%;
-    --card-foreground: 42 35% 90%;
-
-    --popover: 30 15% 12%;
-    --popover-foreground: 42 35% 90%;
-
-    --primary: 45 55% 50%;
-    --primary-foreground: 30 15% 12%;
-    --primary-light: 45 45% 60%;
-    --primary-dark: 45 65% 40%;
-
-    --secondary: 25 25% 25%;
-    --secondary-foreground: 42 35% 90%;
-
-    --parchment: 35 25% 22%;
-    --parchment-foreground: 42 35% 90%;
+    --background: 240 15% 8%;
+    --foreground: 45 20% 85%;
+    --card: 240 15% 12%;
+    --card-foreground: 45 20% 85%;
+    --popover: 240 15% 10%;
+    --popover-foreground: 45 20% 85%;
+    --primary: 280 65% 65%;
+    --primary-foreground: 240 15% 8%;
+    --primary-dark: 285 70% 55%;
+    --secondary: 200 50% 20%;
+    --secondary-foreground: 45 20% 85%;
+    --muted: 240 15% 20%;
+    --muted-foreground: 45 10% 55%;
+    --accent: 320 60% 25%;
+    --accent-foreground: 45 20% 85%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 45 20% 85%;
+    --border: 240 20% 25%;
+    --input: 240 25% 18%;
+    --ring: 280 65% 65%;
     
-    --ink: 42 35% 85%;
-    --ink-foreground: 30 15% 12%;
-
-    --scroll: 30 20% 20%;
-    --scroll-foreground: 42 35% 90%;
-
-    --muted: 30 15% 18%;
-    --muted-foreground: 30 15% 60%;
-
-    --accent: 25 25% 25%;
-    --accent-foreground: 42 35% 90%;
-
-    --destructive: 0 45% 50%;
-    --destructive-foreground: 42 35% 90%;
-
-    --border: 30 20% 22%;
-    --input: 30 20% 16%;
-    --ring: 45 55% 50%;
-
-    /* Dark Medieval Gradients */
-    --gradient-parchment: linear-gradient(135deg, hsl(35 25% 22%), hsl(30 25% 20%));
-    --gradient-scroll: linear-gradient(45deg, hsl(30 20% 20%), hsl(35 25% 22%));
-    --gradient-gold: linear-gradient(180deg, hsl(45 65% 60%), hsl(45 75% 50%));
-    --gradient-ink: radial-gradient(circle, hsl(42 35% 85% / 0.1), transparent 70%);
-
-    /* Dark Medieval Shadows */
-    --shadow-parchment: 0 8px 20px -4px hsl(30 15% 8% / 0.6);
-    --shadow-scroll: 0 6px 15px -2px hsl(30 15% 8% / 0.8);
-    --shadow-quill: 0 4px 12px -3px hsl(30 15% 8% / 0.4);
-    --shadow-dove: 0 0 25px hsl(45 55% 50% / 0.6);
+    --parchment: 40 25% 12%;
+    --ink: 45 20% 85%;
+    --scroll: 35 30% 15%;
+    --wax: 0 60% 60%;
+    --quill: 25 40% 65%;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    background: var(--gradient-parchment);
-    font-family: 'Georgia', 'Times New Roman', serif;
-  }
-
-  /* Medieval Component Classes */
-  .parchment-gradient {
-    background: var(--gradient-parchment);
-  }
-
-  .scroll-gradient {
-    background: var(--gradient-scroll);
-  }
-
-  .quill-shadow {
-    box-shadow: var(--shadow-quill);
-  }
-
-  .parchment-shadow {
-    box-shadow: var(--shadow-parchment);
-  }
-
-  /* Medieval Hand-drawn Animations */
-  .flutter {
-    animation: flutter 2s ease-in-out infinite;
-  }
-
-  .quill-write {
-    animation: quill-write 3s ease-in-out infinite;
-  }
-
-  .scroll-unfurl {
-    animation: scroll-unfurl 0.8s ease-out;
-  }
-
-  .dove-fly {
-    animation: dove-fly 4s ease-in-out infinite;
-  }
-
-  /* Medieval handwriting effect */
-  .handwritten {
-    font-family: 'Brush Script MT', cursive;
-    letter-spacing: 0.5px;
-  }
+/* Pixel Art Fonts */
+.pixel-font {
+  font-family: 'Silkscreen', 'Courier New', monospace;
+  font-weight: 400;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
-@layer components {
-  /* Medieval Letter Button */
-  .letter-button {
-    @apply relative overflow-hidden rounded-lg px-6 py-4;
-    @apply bg-gradient-to-b from-parchment to-scroll;
-    @apply text-ink border-2 border-primary/30;
-    @apply font-medium shadow-md;
-    @apply transform transition-all duration-500;
-    @apply hover:scale-105 hover:shadow-lg;
-    @apply active:scale-95;
-    background-image: 
-      linear-gradient(45deg, transparent 24%, hsl(var(--primary) / 0.05) 25%, hsl(var(--primary) / 0.05) 26%, transparent 27%, transparent 74%, hsl(var(--primary) / 0.05) 75%, hsl(var(--primary) / 0.05) 76%, transparent 77%);
-    background-size: 20px 20px;
-    box-shadow: var(--shadow-parchment);
-  }
-
-  .letter-button:hover {
-    box-shadow: var(--shadow-dove);
-  }
-
-  .letter-button::before {
-    content: '';
-    @apply absolute inset-0 bg-primary opacity-0;
-    @apply transition-opacity duration-500;
-  }
-
-  .letter-button:hover::before {
-    @apply opacity-10;
-  }
-
-  /* Medieval Scroll Card */
-  .scroll-card {
-    @apply bg-card border-2 border-primary/20 rounded-xl p-6;
-    @apply backdrop-blur-sm relative;
-    background: linear-gradient(145deg, hsl(var(--card) / 0.9), hsl(var(--parchment) / 0.8));
-    box-shadow: var(--shadow-scroll);
-    background-image: 
-      radial-gradient(circle at 20% 50%, transparent 20%, hsl(var(--primary) / 0.03) 21%, hsl(var(--primary) / 0.03) 30%, transparent 31%),
-      linear-gradient(90deg, transparent 49%, hsl(var(--primary) / 0.03) 50%, transparent 51%);
-  }
-
-  .scroll-card::before {
-    content: '';
-    @apply absolute top-2 left-2 right-2 h-1 bg-primary/20 rounded-full;
-  }
-
-  .scroll-card::after {
-    content: '';
-    @apply absolute bottom-2 left-2 right-2 h-1 bg-primary/20 rounded-full;
-  }
-
-  /* Medieval Quill Input */
-  .quill-input {
-    @apply w-full px-4 py-3 rounded-lg border-2 border-primary/30;
-    @apply bg-parchment text-ink;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary;
-    @apply transition-all duration-500;
-    background-image: linear-gradient(to right, transparent 0px, hsl(var(--primary) / 0.1) 1px, transparent 2px);
-    background-size: 25px 100%;
-    font-family: 'Georgia', serif;
-  }
-
-  /* Wax Seal Effect */
-  .wax-seal {
-    @apply relative w-12 h-12 rounded-full;
-    background: radial-gradient(circle, hsl(var(--primary)), hsl(var(--primary-dark)));
-    box-shadow: inset 0 2px 4px hsl(var(--primary-dark) / 0.3);
-  }
-
-  .wax-seal::after {
-    content: '♥';
-    @apply absolute inset-0 flex items-center justify-center text-white text-lg font-bold;
-  }
+.pixel-font-bold {
+  font-family: 'Silkscreen', 'Courier New', monospace;
+  font-weight: 700;
+  image-rendering: pixelated;
 }
 
-/* Medieval Handwritten Keyframes */
-@keyframes flutter {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-3px) rotate(1deg); }
-  50% { transform: translateY(-5px) rotate(0deg); }
-  75% { transform: translateY(-2px) rotate(-1deg); }
+/* Pixel Card Styles */
+.pixel-card {
+  background: linear-gradient(135deg, hsl(var(--pixel-cloud)), hsl(var(--pixel-sky)));
+  border: 3px solid hsl(var(--primary));
+  border-radius: 0;
+  padding: 16px;
+  position: relative;
+  box-shadow: 
+    4px 4px 0 hsl(var(--primary-dark)),
+    8px 8px 0 hsl(var(--primary-dark) / 0.3);
+  image-rendering: pixelated;
 }
 
-@keyframes quill-write {
-  0%, 100% { transform: translateX(0) rotate(0deg); }
-  25% { transform: translateX(2px) rotate(1deg); }
-  50% { transform: translateX(0) rotate(0deg); }
-  75% { transform: translateX(-2px) rotate(-1deg); }
+.pixel-card::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, 
+    hsl(var(--pixel-sunset)) 0%, 
+    hsl(var(--pixel-sky)) 50%, 
+    hsl(var(--pixel-water)) 100%);
+  z-index: -1;
+  border-radius: 0;
 }
 
-@keyframes scroll-unfurl {
-  0% { transform: scaleY(0) rotateX(90deg); opacity: 0; }
-  50% { transform: scaleY(0.5) rotateX(45deg); opacity: 0.5; }
-  100% { transform: scaleY(1) rotateX(0deg); opacity: 1; }
+/* Pixel Button */
+.pixel-button {
+  background: hsl(var(--primary));
+  border: 2px solid hsl(var(--primary-dark));
+  border-radius: 0;
+  padding: 8px 16px;
+  font-family: 'Silkscreen', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 2px 2px 0 hsl(var(--primary-dark));
+  transition: all 0.1s ease;
+  image-rendering: pixelated;
 }
 
-@keyframes dove-fly {
-  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-  25% { transform: translateY(-8px) translateX(5px) rotate(2deg); }
-  50% { transform: translateY(-12px) translateX(0px) rotate(0deg); }
-  75% { transform: translateY(-8px) translateX(-5px) rotate(-2deg); }
+.pixel-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 hsl(var(--primary-dark));
+}
+
+.pixel-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Pixel Input */
+.pixel-input {
+  background: hsl(var(--pixel-cloud));
+  border: 2px solid hsl(var(--primary));
+  border-radius: 0;
+  padding: 8px 12px;
+  font-family: 'Silkscreen', monospace;
+  font-size: 14px;
+  image-rendering: pixelated;
+}
+
+.pixel-input:focus {
+  outline: none;
+  border-color: hsl(var(--accent));
+  box-shadow: 0 0 0 2px hsl(var(--accent) / 0.3);
+}
+
+/* Pixel Animations */
+@keyframes pixel-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pixel-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
+
+.pixel-float {
+  animation: pixel-float 2s ease-in-out infinite;
+}
+
+.pixel-glow {
+  animation: pixel-glow 1.5s ease-in-out infinite;
 }

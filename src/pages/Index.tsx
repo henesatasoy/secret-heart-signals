@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { Heart, Sparkles, Moon, Sun, Settings, Plus, Feather, Scroll, Mail } from "lucide-react";
-import { MedievalButton } from "@/components/ui/romantic-button";
+import { Heart, Sparkles, Moon, Sun, Info } from "lucide-react";
 import { LetterCard } from "@/components/NudgeCard";
 import { ScrollConnection } from "@/components/PairingCard";
 import { ManuscriptStats } from "@/components/StatsCard";
 import { useToast } from "@/hooks/use-toast";
 import { initializeMobileFeatures, hapticFeedback, showLocalNotification } from "@/services/mobile";
-import heroImage from "@/assets/medieval-love-letters.jpg";
 
 const Index = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -19,12 +17,12 @@ const Index = () => {
   }, []);
 
   const predefinedLetters = [
-    { message: "Seni özlüyorum ❤️", icon: "heart" as const, mood: "romantic" as const },
-    { message: "Seni düşünüyorum ✨", icon: "sparkles" as const, mood: "happy" as const },
-    { message: "Sarılmaya ihtiyacım var 🤗", icon: "heart" as const, mood: "romantic" as const },
-    { message: "İyi geceler aşkım 💫", icon: "moon" as const, mood: "sleepy" as const },
-    { message: "Günaydın güneşim ☀️", icon: "sun" as const, mood: "happy" as const },
-    { message: "Beni gülümsetiyorsun 😊", icon: "feather" as const, mood: "happy" as const },
+    { message: "❤️", icon: "heart" as const },
+    { message: "✨", icon: "sparkles" as const },
+    { message: "🤗", icon: "heart" as const },
+    { message: "💫", icon: "moon" as const },
+    { message: "☀️", icon: "sun" as const },
+    { message: "😊", icon: "sparkles" as const },
   ];
 
   const handleSendLetter = async (message: string) => {
@@ -49,61 +47,35 @@ const Index = () => {
   };
 
   const moods = [
-    { id: "romantic", icon: Heart, label: "Romantik", color: "from-primary to-primary-dark" },
-    { id: "happy", icon: Sun, label: "Mutlu", color: "from-primary to-scroll" },
-    { id: "silly", icon: Sparkles, label: "Şakacı", color: "from-accent to-primary" },
-    { id: "sleepy", icon: Moon, label: "Uykulu", color: "from-secondary to-ink" },
+    { id: "romantic", icon: Heart },
+    { id: "happy", icon: Sun },
+    { id: "silly", icon: Sparkles },
+    { id: "sleepy", icon: Moon },
   ];
 
   return (
-    <div className="min-h-screen p-4 md:p-6">
-      {/* Header */}
-      <header className="max-w-4xl mx-auto mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="wax-seal">
-              <Heart className="absolute inset-0 m-auto h-6 w-6 text-white animate-flutter" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-ink handwritten">Dürtü</h1>
-              <p className="text-sm text-muted-foreground handwritten">Samimi bağlantın</p>
-            </div>
-          </div>
-          <MedievalButton variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </MedievalButton>
-        </div>
+    <div className="min-h-screen p-4 bg-gradient-to-b from-pixel-cloud to-pixel-sky">
+      {/* Info Button */}
+      <button className="fixed top-4 right-4 z-50 pixel-button bg-pixel-sunset hover:bg-pixel-mountain">
+        <Info className="h-4 w-4" />
+      </button>
 
-        {!isConnected && (
-          <div className="relative rounded-xl overflow-hidden mb-8 parchment-shadow">
-            <img 
-              src={heroImage} 
-              alt="Medieval love letters delivered by carrier pigeons" 
-              className="w-full h-48 object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent flex items-end">
-              <div className="p-6 text-white">
-                <h2 className="text-xl font-bold mb-1 handwritten">Aşkın Güvercinleri</h2>
-                <p className="text-white/90 text-sm handwritten">Kalbi okşayan mektuplar anında ulaştırılır</p>
-              </div>
-            </div>
-          </div>
-        )}
+      {/* Header */}
+      <header className="max-w-lg mx-auto mb-6 text-center">
+        <div className="inline-flex items-center space-x-2 pixel-card mb-4">
+          <Heart className="h-6 w-6 text-primary pixel-glow" />
+          <h1 className="text-2xl pixel-font-bold text-ink">Dürtü</h1>
+        </div>
       </header>
 
-      <main className="max-w-4xl mx-auto">
+      <main className="max-w-lg mx-auto space-y-4">
         {!isConnected ? (
-          <div className="grid gap-6 md:grid-cols-2">
-            <ScrollConnection className="md:col-span-2" />
-          </div>
+          <ScrollConnection onConnect={handleConnect} />
         ) : (
-          <div className="space-y-8">
+          <>
             {/* Mood Selector */}
-            <div className="scroll-card">
-              <h3 className="text-lg font-bold text-ink mb-4 text-center handwritten text-xl">
-                Nasıl hissediyorsun? 💭
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="pixel-card">
+              <div className="grid grid-cols-4 gap-2">
                 {moods.map((mood) => (
                   <button
                     key={mood.id}
@@ -112,59 +84,35 @@ const Index = () => {
                       setSelectedMood(mood.id as any);
                     }}
                     className={`
-                      p-4 rounded-lg border-2 transition-all duration-500
+                      pixel-button text-xs p-2
                       ${selectedMood === mood.id 
-                        ? 'border-primary bg-primary/10 scale-105 shadow-quill' 
-                        : 'border-primary/30 hover:border-primary/70 hover:bg-parchment/20'}
+                        ? 'bg-primary scale-105' 
+                        : 'bg-pixel-cloud hover:bg-primary/70'}
                     `}
                   >
-                    <div className={`inline-flex p-2 rounded-lg mb-2 bg-gradient-to-br ${mood.color}`}>
-                      <mood.icon className="h-5 w-5 text-white" />
-                    </div>
-                    <div className="text-sm font-medium text-ink handwritten">
-                      {mood.label}
-                    </div>
+                    <mood.icon className="h-4 w-4 mx-auto" />
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Letter Grid */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-ink handwritten text-xl">
-                  Mektup Gönder ✨
-                </h3>
-                <MedievalButton variant="scroll" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Özel
-                </MedievalButton>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {predefinedLetters.map((letter, index) => (
-                  <LetterCard
-                    key={index}
-                    message={letter.message}
-                    icon={letter.icon}
-                    mood={selectedMood}
-                    onClick={() => handleSendLetter(letter.message)}
-                    className="hover:scale-102 transition-transform duration-500"
-                  />
-                ))}
-              </div>
+            <div className="grid grid-cols-3 gap-3">
+              {predefinedLetters.map((letter, index) => (
+                <LetterCard
+                  key={index}
+                  message={letter.message}
+                  icon={letter.icon}
+                  mood={selectedMood}
+                  onClick={() => handleSendLetter(letter.message)}
+                  className="pixel-float"
+                />
+              ))}
             </div>
 
             {/* Stats */}
             <ManuscriptStats />
-
-            {/* Quick Actions */}
-            <div className="flex justify-center space-x-4">
-              <MedievalButton variant="dove" size="xl" className="flex-1 max-w-xs">
-                <Heart className="h-6 w-6 mr-2" />
-                Aşk Gönder
-              </MedievalButton>
-            </div>
-          </div>
+          </>
         )}
       </main>
     </div>

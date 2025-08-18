@@ -18,33 +18,34 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				pixel: ['Silkscreen', 'Courier New', 'monospace'],
+			},
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
+				border: "hsl(var(--border))",
+				input: "hsl(var(--input))",
+				ring: "hsl(var(--ring))",
+				background: "hsl(var(--background))",
+				foreground: "hsl(var(--foreground))",
+				'pixel-sky': 'hsl(var(--pixel-sky))',
+				'pixel-cloud': 'hsl(var(--pixel-cloud))',
+				'pixel-sunset': 'hsl(var(--pixel-sunset))',
+				'pixel-mountain': 'hsl(var(--pixel-mountain))',
+				'pixel-grass': 'hsl(var(--pixel-grass))',
+				'pixel-water': 'hsl(var(--pixel-water))',
+				parchment: 'hsl(var(--parchment))',
+				ink: 'hsl(var(--ink))',
+				scroll: 'hsl(var(--scroll))',
+				wax: 'hsl(var(--wax))',
+				quill: 'hsl(var(--quill))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					light: 'hsl(var(--primary-light))',
 					dark: 'hsl(var(--primary-dark))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
-				},
-				parchment: {
-					DEFAULT: 'hsl(var(--parchment))',
-					foreground: 'hsl(var(--parchment-foreground))'
-				},
-				ink: {
-					DEFAULT: 'hsl(var(--ink))',
-					foreground: 'hsl(var(--ink-foreground))'
-				},
-				scroll: {
-					DEFAULT: 'hsl(var(--scroll))',
-					foreground: 'hsl(var(--scroll-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -67,23 +68,6 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				}
 			},
-			backgroundImage: {
-				'gradient-parchment': 'var(--gradient-parchment)',
-				'gradient-scroll': 'var(--gradient-scroll)',
-				'gradient-gold': 'var(--gradient-gold)',
-				'gradient-ink': 'var(--gradient-ink)'
-			},
-			boxShadow: {
-				'parchment': 'var(--shadow-parchment)',
-				'scroll': 'var(--shadow-scroll)',
-				'quill': 'var(--shadow-quill)',
-				'dove': 'var(--shadow-dove)'
-			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
-			},
 			keyframes: {
 				'accordion-down': {
 					from: { height: '0' },
@@ -92,47 +76,11 @@ export default {
 				'accordion-up': {
 					from: { height: 'var(--radix-accordion-content-height)' },
 					to: { height: '0' }
-				},
-				'flutter': {
-					'0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-					'25%': { transform: 'translateY(-3px) rotate(1deg)' },
-					'50%': { transform: 'translateY(-5px) rotate(0deg)' },
-					'75%': { transform: 'translateY(-2px) rotate(-1deg)' }
-				},
-				'quill-write': {
-					'0%, 100%': { transform: 'translateX(0) rotate(0deg)' },
-					'25%': { transform: 'translateX(2px) rotate(1deg)' },
-					'50%': { transform: 'translateX(0) rotate(0deg)' },
-					'75%': { transform: 'translateX(-2px) rotate(-1deg)' }
-				},
-				'scroll-unfurl': {
-					'0%': { transform: 'scaleY(0) rotateX(90deg)', opacity: '0' },
-					'50%': { transform: 'scaleY(0.5) rotateX(45deg)', opacity: '0.5' },
-					'100%': { transform: 'scaleY(1) rotateX(0deg)', opacity: '1' }
-				},
-				'dove-fly': {
-					'0%, 100%': { transform: 'translateY(0px) translateX(0px) rotate(0deg)' },
-					'25%': { transform: 'translateY(-8px) translateX(5px) rotate(2deg)' },
-					'50%': { transform: 'translateY(-12px) translateX(0px) rotate(0deg)' },
-					'75%': { transform: 'translateY(-8px) translateX(-5px) rotate(-2deg)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'flutter': 'flutter 2s ease-in-out infinite',
-				'quill-write': 'quill-write 3s ease-in-out infinite',
-				'scroll-unfurl': 'scroll-unfurl 0.8s ease-out',
-				'dove-fly': 'dove-fly 4s ease-in-out infinite'
-			},
-			fontSize: {
-				'manuscript': 'var(--font-size-manuscript)',
-				'scroll': 'var(--font-size-scroll)',
-				'letter': 'var(--font-size-letter)'
-			},
-			transitionTimingFunction: {
-				'quill': 'var(--transition-quill)',
-				'flutter': 'var(--transition-flutter)'
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},
