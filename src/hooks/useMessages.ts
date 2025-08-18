@@ -34,7 +34,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
     loadMessages()
   }, [myConnectionId, partnerId])
 
-  // Listen for new messages
+  // Listen for new messages in both directions
   useEffect(() => {
     if (!partnerId) return
 
@@ -46,13 +46,13 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `to_connection_id=eq.${myConnectionId}`,
+          filter: `or(and(from_connection_id.eq.${myConnectionId},to_connection_id.eq.${partnerId}),and(from_connection_id.eq.${partnerId},to_connection_id.eq.${myConnectionId}))`,
         },
         (payload) => {
           const newMessage = payload.new as Message
           setMessages(prev => [...prev, newMessage])
           
-          // Show notification for received messages
+          // Show notification only for received messages (not sent by me)
           if (newMessage.from_connection_id !== myConnectionId) {
             toast({
               title: "Yeni mesaj! 💕",
