@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Sparkles, Moon, Sun, Settings, Plus, Feather, Scroll, Mail } from "lucide-react";
 import { MedievalButton } from "@/components/ui/romantic-button";
 import { LetterCard } from "@/components/NudgeCard";
 import { ScrollConnection } from "@/components/PairingCard";
 import { ManuscriptStats } from "@/components/StatsCard";
 import { useToast } from "@/hooks/use-toast";
+import { initializeMobileFeatures, hapticFeedback, showLocalNotification } from "@/services/mobile";
 import heroImage from "@/assets/medieval-love-letters.jpg";
 
 const Index = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
   const { toast } = useToast();
+
+  // Initialize mobile features on app start
+  useEffect(() => {
+    initializeMobileFeatures();
+  }, []);
 
   const predefinedLetters = [
     { message: "Seni özlüyorum ❤️", icon: "heart" as const, mood: "romantic" as const },
@@ -21,14 +27,24 @@ const Index = () => {
     { message: "Beni gülümsetiyorsun 😊", icon: "feather" as const, mood: "happy" as const },
   ];
 
-  const handleSendLetter = (message: string) => {
+  const handleSendLetter = async (message: string) => {
+    // Haptic feedback for sending
+    await hapticFeedback.medium();
+    
+    // Show mobile notification
+    await showLocalNotification(
+      "Güvercin uçtu! 🕊️", 
+      `Mektubun sevgiline ulaştırıldı: "${message}"`
+    );
+    
     toast({
       title: "Mektup gönderildi! 💕",
       description: `"${message}" sevgiline ulaştırıldı`,
     });
   };
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
+    await hapticFeedback.heavy();
     setIsConnected(true);
   };
 
@@ -91,7 +107,10 @@ const Index = () => {
                 {moods.map((mood) => (
                   <button
                     key={mood.id}
-                    onClick={() => setSelectedMood(mood.id as any)}
+                    onClick={async () => {
+                      await hapticFeedback.light();
+                      setSelectedMood(mood.id as any);
+                    }}
                     className={`
                       p-4 rounded-lg border-2 transition-all duration-500
                       ${selectedMood === mood.id 

@@ -1,5 +1,6 @@
 import { Heart, Sparkles, Moon, Sun, Feather, Scroll, Mail } from "lucide-react";
 import { MedievalButton } from "@/components/ui/romantic-button";
+import { hapticFeedback, playDoveSound } from "@/services/mobile";
 import { cn } from "@/lib/utils";
 
 interface LetterCardProps {
@@ -36,8 +37,16 @@ export const LetterCard = ({
   const IconComponent = iconMap[icon];
   const gradientClass = moodColors[mood];
 
+  const handleClick = async () => {
+    // Play dove sound and haptic feedback
+    playDoveSound();
+    await hapticFeedback.doveTap();
+    
+    onClick?.();
+  };
+
   return (
-    <div className={cn("scroll-card group cursor-pointer hover:shadow-dove transition-all duration-500", className)} onClick={onClick}>
+    <div className={cn("scroll-card group cursor-pointer hover:shadow-dove transition-all duration-500", className)} onClick={handleClick}>
       <div className="flex items-start space-x-4">
         <div className="wax-seal flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
           <IconComponent className="absolute inset-0 m-auto h-5 w-5 text-white" />

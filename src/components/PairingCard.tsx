@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Heart, Users, Copy, Check, Scroll } from "lucide-react";
 import { MedievalButton } from "@/components/ui/romantic-button";
+import { hapticFeedback } from "@/services/mobile";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +16,7 @@ export const ScrollConnection = ({ className }: ScrollConnectionProps) => {
   const { toast } = useToast();
 
   const handleCopyCode = async () => {
+    await hapticFeedback.light();
     try {
       await navigator.clipboard.writeText(myCode);
       setCopied(true);
@@ -32,8 +34,9 @@ export const ScrollConnection = ({ className }: ScrollConnectionProps) => {
     }
   };
 
-  const handlePair = () => {
+  const handlePair = async () => {
     if (!pairCode.trim()) {
+      await hapticFeedback.light();
       toast({
         title: "Kod gir",
         description: "Lütfen sevgilinin kodunu gir",
@@ -42,6 +45,7 @@ export const ScrollConnection = ({ className }: ScrollConnectionProps) => {
       return;
     }
     
+    await hapticFeedback.heavy();
     toast({
       title: "Bağlantı başarılı! 💕",
       description: "Artık sevgilinle bağlısın",
