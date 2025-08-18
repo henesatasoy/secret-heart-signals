@@ -14,7 +14,7 @@ interface ScrollConnectionProps {
 export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollConnectionProps) => {
   const [myLink, setMyLink] = useState("");
   const [copied, setCopied] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight - 150 });
+  const [position, setPosition] = useState({ x: 200, y: 200 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const { toast } = useToast();
