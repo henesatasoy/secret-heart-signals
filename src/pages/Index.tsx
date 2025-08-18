@@ -4,12 +4,16 @@ import { LetterCard } from "@/components/NudgeCard";
 import { ScrollConnection } from "@/components/PairingCard";
 import { ManuscriptStats } from "@/components/StatsCard";
 import { useToast } from "@/hooks/use-toast";
+import { useMessages } from "@/hooks/useMessages";
 import { initializeMobileFeatures, hapticFeedback, showLocalNotification } from "@/services/mobile";
 
 const Index = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
+  const [connectionId] = useState(() => Math.random().toString(36).substring(2, 15));
+  const [partnerId, setPartnerId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { messages, sendMessage } = useMessages(connectionId, partnerId);
 
   // Initialize mobile features on app start
   useEffect(() => {
@@ -26,24 +30,32 @@ const Index = () => {
   ];
 
   const handleSendLetter = async (message: string) => {
+    if (!partnerId) {
+      toast({
+        title: "Bağlantı yok",
+        description: "Önce sevgilinle bağlan",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Haptic feedback for sending
     await hapticFeedback.medium();
+    
+    // Send message via Supabase
+    await sendMessage(message, selectedMood);
     
     // Show mobile notification
     await showLocalNotification(
       "Güvercin uçtu! 🕊️", 
       `Mektubun sevgiline ulaştırıldı: "${message}"`
     );
-    
-    toast({
-      title: "Mektup gönderildi! 💕",
-      description: `"${message}" sevgiline ulaştırıldı`,
-    });
   };
 
-  const handleConnect = async () => {
+  const handleConnect = async (partnerConnectionId: string) => {
     await hapticFeedback.heavy();
     setIsConnected(true);
+    setPartnerId(partnerConnectionId);
   };
 
   const moods = [
@@ -70,7 +82,10 @@ const Index = () => {
 
       <main className="max-w-lg mx-auto space-y-4">
         {!isConnected ? (
-          <ScrollConnection onConnect={handleConnect} />
+          <ScrollConnection 
+            connectionId={connectionId}
+            onConnect={handleConnect} 
+          />
         ) : (
           <>
             {/* Mood Selector */}

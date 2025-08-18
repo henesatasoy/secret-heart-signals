@@ -1,34 +1,42 @@
 import { useState, useEffect } from "react";
-import { Heart, Link, Copy } from "lucide-react";
-import { MedievalButton } from "@/components/ui/romantic-button";
+import { Heart, Link } from "lucide-react";
 import { hapticFeedback } from "@/services/mobile";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useConnection } from "@/hooks/useConnection";
 
 interface ScrollConnectionProps {
   className?: string;
-  onConnect?: () => void;
+  connectionId: string;
+  onConnect?: (partnerId: string) => void;
 }
 
-export const ScrollConnection = ({ className, onConnect }: ScrollConnectionProps) => {
-  const [myConnectionId] = useState(() => Math.random().toString(36).substring(2, 15));
+export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollConnectionProps) => {
   const [myLink, setMyLink] = useState("");
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { isConnected, partnerId, connectWith } = useConnection(connectionId);
 
   useEffect(() => {
     const currentUrl = window.location.origin;
-    setMyLink(`${currentUrl}?connect=${myConnectionId}`);
-  }, [myConnectionId]);
+    setMyLink(`${currentUrl}?connect=${connectionId}`);
+  }, [connectionId]);
 
   // Check if someone is trying to connect via URL parameter
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const connectId = urlParams.get('connect');
-    if (connectId && connectId !== myConnectionId) {
-      handleConnect();
+    if (connectId && connectId !== connectionId) {
+      connectWith(connectId);
     }
-  }, []);
+  }, [connectionId, connectWith]);
+
+  // Notify parent when connection is established
+  useEffect(() => {
+    if (isConnected && partnerId) {
+      onConnect?.(partnerId);
+    }
+  }, [isConnected, partnerId, onConnect]);
 
   const handleCopyLink = async () => {
     await hapticFeedback.light();
@@ -47,15 +55,6 @@ export const ScrollConnection = ({ className, onConnect }: ScrollConnectionProps
         variant: "destructive",
       });
     }
-  };
-
-  const handleConnect = async () => {
-    await hapticFeedback.heavy();
-    onConnect?.();
-    toast({
-      title: "Bağlantı başarılı! 💕",
-      description: "Artık sevgilinle bağlısın",
-    });
   };
 
   return (
