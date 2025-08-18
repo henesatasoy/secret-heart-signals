@@ -139,11 +139,11 @@ const Index = () => {
         className="absolute inset-0 w-full h-full object-contain"
       />
       
-      {/* Settings button - responsive positioning for mobile and desktop */}
+      {/* Settings button - fixed position for all devices */}
       <div className="absolute z-50" style={{ top: '66px', left: '15px' }}>
         <button
           onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-          className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500/30 hover:bg-blue-500/50 rounded-full transition-all duration-300 cursor-pointer border border-blue-400/50"
+          className="w-10 h-10 bg-blue-500/30 hover:bg-blue-500/50 rounded-full transition-all duration-300 cursor-pointer border border-blue-400/50"
           title="Ayarlar"
         />
         
