@@ -19,6 +19,7 @@ const Index = () => {
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showConnectionVideo, setShowConnectionVideo] = useState(false);
   const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -56,12 +57,18 @@ const Index = () => {
     return () => subscription.unsubscribe();
    }, [navigate]);
 
-  // Redirect to messages when connected
+  // Show connection video when connected, then redirect to messages
   useEffect(() => {
-    if (isConnected && partnerId) {
-      navigate('/messages');
+    if (isConnected && partnerId && !showConnectionVideo) {
+      setShowConnectionVideo(true);
+      // Auto redirect after 5 seconds
+      const timer = setTimeout(() => {
+        navigate('/messages');
+      }, 5000);
+      
+      return () => clearTimeout(timer);
     }
-  }, [isConnected, partnerId, navigate]);
+  }, [isConnected, partnerId, showConnectionVideo, navigate]);
 
   // Initialize mobile features on app start
   useEffect(() => {
@@ -256,14 +263,28 @@ const Index = () => {
           </>
         ) : (
           <>
-            {/* Connection established - show simple connected state before redirect */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-              <div className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-4 border-emerald-700 rounded-none shadow-[6px_6px_0px_0px_rgba(4,120,87,1)] p-8">
-                <Heart className="h-16 w-16 mx-auto mb-4 text-emerald-900" />
-                <h2 className="text-emerald-900 font-mono font-bold text-2xl mb-2">Bağlandı! 💕</h2>
-                <p className="text-emerald-800 font-mono">Mesaj sayfasına yönlendiriliyor...</p>
+            {/* Connection established - show video */}
+            {showConnectionVideo && (
+              <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+                <video
+                  src="/connection-success.mp4"
+                  autoPlay
+                  muted
+                  className="w-full h-full object-cover"
+                  onEnded={() => navigate('/messages')}
+                />
               </div>
-            </div>
+            )}
+            
+            {!showConnectionVideo && (
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                <div className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-4 border-emerald-700 rounded-none shadow-[6px_6px_0px_0px_rgba(4,120,87,1)] p-8">
+                  <Heart className="h-16 w-16 mx-auto mb-4 text-emerald-900" />
+                  <h2 className="text-emerald-900 font-mono font-bold text-2xl mb-2">Bağlandı! 💕</h2>
+                  <p className="text-emerald-800 font-mono">Video yükleniyor...</p>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
