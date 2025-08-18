@@ -94,6 +94,10 @@ export const useConnection = (myConnectionId: string) => {
               title: "Bağlantı kuruldu! 💕",
               description: "Sevgilinle artık mesajlaşabilirsin",
             })
+          } else if (payload.eventType === 'DELETE' || !connection?.is_connected) {
+            // Handle disconnection
+            setIsConnected(false)
+            setPartnerId(null)
           }
         }
       )
@@ -109,13 +113,17 @@ export const useConnection = (myConnectionId: string) => {
           console.log('Partner connection update received:', payload)
           const connection = payload.new as any
           
-          if (connection?.is_connected) {
+          if (connection?.is_connected && connection?.connection_id) {
             setIsConnected(true)
             setPartnerId(connection.connection_id)
             toast({
               title: "Biri sana bağlandı! 💕", 
               description: "Artık mesajlaşabilirsiniz",
             })
+          } else if (payload.eventType === 'DELETE' || !connection?.is_connected) {
+            // Handle disconnection from partner side
+            setIsConnected(false)
+            setPartnerId(null)
           }
         }
       )

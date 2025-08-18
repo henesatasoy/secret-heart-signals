@@ -37,7 +37,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     const connectId = urlParams.get('connect');
     
     // Only process if there's a connect parameter and it's different from my ID
-    if (connectId && connectId !== connectionId) {
+    if (connectId && connectId !== connectionId && connectWith) {
       console.log('URL connection request detected, attempting to connect:', connectId);
       connectWith(connectId);
     }
@@ -46,7 +46,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     if (connectId) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, [isValid, connectionId, connectWith]); // Add connectWith to dependencies
 
   // Notify parent when connection is established
   useEffect(() => {
