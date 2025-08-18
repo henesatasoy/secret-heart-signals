@@ -18,10 +18,10 @@ const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Use user ID as connection ID for consistent identification
+  // Use user ID as connection ID for consistent identification - only if user exists
   const connectionId = user?.id || '';
-  const { isConnected, partnerId, connectWith } = useConnection(connectionId);
-  const { messages, sendMessage } = useMessages(connectionId, partnerId);
+  const { isConnected, partnerId, connectWith } = useConnection(user?.id || '');
+  const { messages, sendMessage } = useMessages(user?.id || '', partnerId);
 
   // Authentication setup
   useEffect(() => {
