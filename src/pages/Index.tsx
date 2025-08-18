@@ -228,28 +228,6 @@ const Index = () => {
         )}
       </div>
 
-      {/* Top buttons - 16bit cozy style */}
-      <div className="absolute top-6 left-6 z-50 flex gap-3">
-        <button 
-          onClick={() => {
-            // Ayarlar menüsü açılacak
-            alert("Ayarlar menüsü yakında gelecek!");
-          }}
-          className="w-12 h-12 bg-gradient-to-b from-amber-300 to-amber-500 border-2 border-amber-600 rounded-none shadow-[4px_4px_0px_0px_rgba(146,64,14,1)] hover:shadow-[2px_2px_0px_0px_rgba(146,64,14,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1"
-          title="Ayarlar"
-        >
-          <Settings className="h-5 w-5 text-amber-900" />
-        </button>
-      </div>
-
-      {/* User info - 16bit cozy style */}
-      {user && (
-        <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
-          <div className="bg-gradient-to-b from-stone-200 to-stone-300 border-2 border-stone-500 rounded-none shadow-[3px_3px_0px_0px_rgba(68,64,60,1)] px-4 py-2">
-            <p className="text-stone-800 text-sm font-mono font-bold">{user.email}</p>
-          </div>
-        </div>
-      )}
 
       {/* Content overlay */}
       <div className="relative z-10 min-h-screen flex flex-col">
