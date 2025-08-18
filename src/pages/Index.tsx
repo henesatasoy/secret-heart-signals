@@ -18,6 +18,7 @@ const Index = () => {
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -192,10 +193,27 @@ const Index = () => {
               </div>
               
               {/* Account Settings */}
-              <div className="mb-4">
-                <button className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2">
+              <div className="mb-4 relative">
+                <button 
+                  onClick={() => setShowAccountMenu(!showAccountMenu)}
+                  className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2"
+                >
                   <span className="text-slate-800 font-mono font-bold">{t('accountInfo')}</span>
                 </button>
+                
+                {/* Account Submenu */}
+                {showAccountMenu && user && (
+                  <div className="mt-2 bg-gradient-to-b from-stone-100 to-stone-200 border-2 border-stone-500 rounded-none shadow-[4px_4px_0px_0px_rgba(68,64,60,1)] p-3">
+                    <div className="text-stone-800 font-mono">
+                      <div className="mb-2">
+                        <span className="font-bold text-sm">{t('currentEmail')}</span>
+                      </div>
+                      <div className="bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-400 rounded-none p-2">
+                        <span className="text-amber-900 font-bold text-sm">{user.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Logout Button */}

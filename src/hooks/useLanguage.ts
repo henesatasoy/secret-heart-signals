@@ -29,6 +29,9 @@ const translations = {
     // Connection
     enterPartnerCode: "Sevgilinin bağlantı kodunu gir:",
     connectionId: "Bağlantı Kodun:",
+    
+    // Account
+    currentEmail: "Mevcut E-posta:",
   },
   en: {
     // Main UI
@@ -56,6 +59,9 @@ const translations = {
     // Connection
     enterPartnerCode: "Enter your partner's connection code:",
     connectionId: "Your Connection Code:",
+    
+    // Account
+    currentEmail: "Current Email:",
   },
   es: {
     // Main UI
@@ -83,6 +89,9 @@ const translations = {
     // Connection
     enterPartnerCode: "Ingresa el código de conexión de tu pareja:",
     connectionId: "Tu Código de Conexión:",
+    
+    // Account
+    currentEmail: "Correo Actual:",
   }
 };
 
