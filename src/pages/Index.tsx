@@ -139,15 +139,13 @@ const Index = () => {
         className="absolute inset-0 w-full h-full object-contain"
       />
       
-      {/* Settings button - visible for positioning */}
-      <div className="fixed top-[60px] left-[15px] z-[100]">
+      {/* Invisible button over the blue orb in background animation - top left */}
+      <div className="absolute z-50" style={{ top: '60px', left: '15px' }}>
         <button
           onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-          className="w-12 h-12 bg-blue-500/50 hover:bg-blue-500/70 rounded-full transition-all duration-300 cursor-pointer border-2 border-white/30"
+          className="w-10 h-10 bg-transparent hover:bg-blue-500/20 rounded-full transition-all duration-300 cursor-pointer"
           title="Ayarlar"
-        >
-          <Settings className="w-5 h-5 text-white mx-auto" />
-        </button>
+        />
         
         {/* Settings Dropdown Menu */}
         {showSettingsMenu && (
