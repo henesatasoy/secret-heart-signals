@@ -198,6 +198,14 @@ const Index = () => {
                     clipPath: 'polygon(50% 10%, 70% 30%, 90% 50%, 70% 70%, 50% 90%, 30% 70%, 10% 50%, 30% 30%)'
                   }} 
                 />
+                {/* Hover effect separate - diamond style */}
+                <div 
+                  className="absolute inset-1 bg-amber-200/30 opacity-0 group-hover:opacity-100 transition-all duration-500" 
+                  style={{ 
+                    imageRendering: 'pixelated',
+                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+                  }} 
+                />
                 {/* Click ripple effect */}
                 <div 
                   className="absolute inset-0 bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity"
