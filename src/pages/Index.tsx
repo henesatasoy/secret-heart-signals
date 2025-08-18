@@ -6,6 +6,7 @@ import { ManuscriptStats } from "@/components/StatsCard";
 import { useToast } from "@/hooks/use-toast";
 import { useMessages } from "@/hooks/useMessages";
 import { useConnection } from "@/hooks/useConnection";
+import { useLanguage } from "@/hooks/useLanguage";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { initializeMobileFeatures, hapticFeedback, showLocalNotification } from "@/services/mobile";
@@ -16,6 +17,8 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -69,8 +72,8 @@ const Index = () => {
   const handleSendLetter = async (message: string) => {
     if (!partnerId) {
       toast({
-        title: "Bağlantı yok",
-        description: "Önce sevgilinle bağlan",
+        title: t('noConnection'),
+        description: t('connectFirst'),
         variant: "destructive"
       });
       return;
@@ -84,8 +87,8 @@ const Index = () => {
     
     // Show mobile notification
     await showLocalNotification(
-      "Güvercin uçtu! 🕊️", 
-      `Mektubun sevgiline ulaştırıldı: "${message}"`
+      t('letterSent'), 
+      `${t('letterDelivered')} "${message}"`
     );
   };
 
@@ -154,19 +157,44 @@ const Index = () => {
             
             {/* Settings Menu */}
             <div className="absolute top-10 left-0 z-50 bg-gradient-to-b from-stone-200 to-stone-300 border-3 border-stone-600 rounded-none shadow-[6px_6px_0px_0px_rgba(68,64,60,1)] p-4 w-64">
-              <h3 className="text-stone-800 font-mono font-bold mb-4 text-lg">Ayarlar</h3>
+              <h3 className="text-stone-800 font-mono font-bold mb-4 text-lg">{t('settings')}</h3>
               
               {/* Language Settings */}
-              <div className="mb-4">
-                <button className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2">
-                  <span className="text-slate-800 font-mono font-bold">🌍 Dil Ayarları</span>
+              <div className="mb-4 relative">
+                <button 
+                  onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                  className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2"
+                >
+                  <span className="text-slate-800 font-mono font-bold">{t('languageSettings')}</span>
                 </button>
+                
+                {/* Language Submenu */}
+                {showLanguageMenu && (
+                  <div className="mt-2 bg-gradient-to-b from-stone-100 to-stone-200 border-2 border-stone-500 rounded-none shadow-[4px_4px_0px_0px_rgba(68,64,60,1)] p-2">
+                    {getLanguages().map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code);
+                          setShowLanguageMenu(false);
+                        }}
+                        className={`w-full text-left p-2 mb-1 last:mb-0 rounded-none border transition-all ${
+                          language === lang.code 
+                            ? 'bg-gradient-to-b from-amber-200 to-amber-300 border-amber-500 text-amber-900 font-bold' 
+                            : 'bg-gradient-to-b from-gray-200 to-gray-300 border-gray-500 text-gray-800 hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-400'
+                        }`}
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               
               {/* Account Settings */}
               <div className="mb-4">
                 <button className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2">
-                  <span className="text-slate-800 font-mono font-bold">👤 Hesap Bilgileri</span>
+                  <span className="text-slate-800 font-mono font-bold">{t('accountInfo')}</span>
                 </button>
               </div>
               
@@ -175,7 +203,7 @@ const Index = () => {
                 onClick={handleSignOut}
                 className="w-full text-left p-3 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[3px_3px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
               >
-                <span className="text-red-900 font-mono font-bold">🚪 Çıkış Yap</span>
+                <span className="text-red-900 font-mono font-bold">{t('logout')}</span>
               </button>
             </div>
           </>
@@ -211,7 +239,7 @@ const Index = () => {
           <div className="flex-1 flex items-center justify-center px-4 py-8">
             <div className="text-center text-white max-w-sm">
               <Heart className="h-16 w-16 mx-auto mb-4 text-pink-300" />
-              <p className="text-lg">Yükleniyor...</p>
+              <p className="text-lg">{t('loading')}</p>
             </div>
           </div>
         ) : !isConnected ? (
@@ -221,14 +249,14 @@ const Index = () => {
               <button
                 onClick={() => {
                   // Use ScrollConnection component logic but as invisible button
-                  const partnerCode = prompt("Sevgilinin bağlantı kodunu gir:");
+                  const partnerCode = prompt(t('enterPartnerCode'));
                   if (partnerCode && partnerCode.trim()) {
                     connectWith(partnerCode.trim());
                     handleConnect(partnerCode.trim());
                   }
                 }}
                 className="w-32 h-32 bg-transparent rounded-full active:scale-95 cursor-pointer group"
-                title="Campfire'a tıkla ve sevgiline bağlan"
+                title={t('connectToPartner')}
               >
                 {/* Continuous magical flame glow */}
                 <div 
@@ -300,7 +328,7 @@ const Index = () => {
               <button
                 onClick={disconnectPartner}
                 className="w-14 h-14 bg-gradient-to-b from-red-400 to-red-600 border-3 border-red-800 rounded-none shadow-[5px_5px_0px_0px_rgba(127,29,29,1)] hover:shadow-[3px_3px_0px_0px_rgba(127,29,29,1)] hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center active:shadow-none active:translate-x-1.5 active:translate-y-1.5"
-                title="Bağlantıyı Kes"
+                title={t('disconnectPartner')}
               >
                 <Heart className="h-6 w-6 text-red-900 rotate-180" />
               </button>
