@@ -169,7 +169,7 @@ const Index = () => {
         ) : !isConnected ? (
           <>
             {/* Link sharing button positioned at bottom */}
-            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 translate-x-1">
+            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
               <ScrollConnection 
                 connectionId={connectionId}
                 onConnect={handleConnect} 
