@@ -57,14 +57,20 @@ const Index = () => {
     return () => subscription.unsubscribe();
    }, [navigate]);
 
-  // Show connection video when connected, then redirect to messages
+  // Show connection video when connected, redirect only when fully ready
   useEffect(() => {
     if (isConnected && partnerId && !showConnectionVideo) {
       setShowConnectionVideo(true);
-      // Auto redirect after 5 seconds
+    }
+  }, [isConnected, partnerId, showConnectionVideo]);
+
+  // Only redirect when connection is fully established and both users are ready
+  useEffect(() => {
+    if (isConnected && partnerId && showConnectionVideo) {
+      // Add a small delay to ensure connection is stable
       const timer = setTimeout(() => {
         navigate('/messages');
-      }, 5000);
+      }, 1000);
       
       return () => clearTimeout(timer);
     }
@@ -270,8 +276,8 @@ const Index = () => {
                   src="/connection-success.mp4"
                   autoPlay
                   muted
+                  loop
                   className="w-full h-full object-cover"
-                  onEnded={() => navigate('/messages')}
                 />
               </div>
             )}
