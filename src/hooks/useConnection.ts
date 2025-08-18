@@ -177,6 +177,25 @@ export const useConnection = (myConnectionId: string) => {
         throw myError;
       }
 
+      // First ensure partner connection exists, create if needed
+      let { data: partnerConnection } = await supabase
+        .from('connections')
+        .select('id')
+        .eq('connection_id', partnerConnectionId)
+        .maybeSingle()
+
+      if (!partnerConnection) {
+        console.log('Creating partner connection first');
+        const { error: createPartnerError } = await supabase
+          .from('connections')
+          .insert({ connection_id: partnerConnectionId })
+        
+        if (createPartnerError) {
+          console.error('Error creating partner connection:', createPartnerError);
+          throw createPartnerError;
+        }
+      }
+
       // Update partner's connection with me
       const { error: partnerError } = await supabase
         .from('connections')
