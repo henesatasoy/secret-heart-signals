@@ -1,19 +1,55 @@
 import { useState, useEffect } from "react";
-import { Heart, Sparkles, Moon, Sun, Info } from "lucide-react";
+import { Heart, Sparkles, Moon, Sun, Info, LogOut } from "lucide-react";
 import { LetterCard } from "@/components/NudgeCard";
 import { ScrollConnection } from "@/components/PairingCard";
 import { ManuscriptStats } from "@/components/StatsCard";
 import { useToast } from "@/hooks/use-toast";
 import { useMessages } from "@/hooks/useMessages";
+import { useConnection } from "@/hooks/useConnection";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { initializeMobileFeatures, hapticFeedback, showLocalNotification } from "@/services/mobile";
+import type { User, Session } from '@supabase/supabase-js';
 
 const Index = () => {
-  const [isConnected, setIsConnected] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
-  const [connectionId] = useState(() => Math.random().toString(36).substring(2, 15));
-  const [partnerId, setPartnerId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  
+  // Use user ID as connection ID for consistent identification
+  const connectionId = user?.id || '';
+  const { isConnected, partnerId, connectWith } = useConnection(connectionId);
   const { messages, sendMessage } = useMessages(connectionId, partnerId);
+
+  // Authentication setup
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        // Redirect to auth if not logged in
+        if (!session) {
+          navigate('/auth');
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session) {
+        navigate('/auth');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   // Initialize mobile features on app start
   useEffect(() => {
@@ -54,8 +90,16 @@ const Index = () => {
 
   const handleConnect = async (partnerConnectionId: string) => {
     await hapticFeedback.heavy();
-    setIsConnected(true);
-    setPartnerId(partnerConnectionId);
+    // Connection state is now managed by useConnection hook
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/auth');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const moods = [
@@ -74,14 +118,31 @@ const Index = () => {
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
       
-      {/* Info Button - positioned to match the circular element in top left */}
-      <button className="absolute top-6 left-6 z-50 w-10 h-10 rounded-full bg-blue-500/30 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/40 transition-all">
-        <Info className="h-4 w-4 text-white" />
-      </button>
+      {/* Top buttons */}
+      <div className="absolute top-6 left-6 z-50 flex gap-2">
+        <button className="w-10 h-10 rounded-full bg-blue-500/30 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/40 transition-all">
+          <Info className="h-4 w-4 text-white" />
+        </button>
+        {user && (
+          <button 
+            onClick={handleSignOut}
+            className="w-10 h-10 rounded-full bg-red-500/30 backdrop-blur-sm border border-red-300/30 flex items-center justify-center hover:bg-red-400/40 transition-all"
+          >
+            <LogOut className="h-4 w-4 text-white" />
+          </button>
+        )}
+      </div>
 
       {/* Content overlay */}
       <div className="relative z-10 min-h-screen flex flex-col">
-        {!isConnected ? (
+        {!user ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-white">
+              <Heart className="h-16 w-16 mx-auto mb-4 text-pink-300" />
+              <p className="text-lg">Yükleniyor...</p>
+            </div>
+          </div>
+        ) : !isConnected ? (
           <>
             {/* Link sharing button positioned at the campfire */}
             <div className="flex-1 flex items-center justify-center">
@@ -93,7 +154,7 @@ const Index = () => {
               </div>
             </div>
           </>
-        ) : (
+        ) : user ? ( // Only show connected state if user is authenticated
           <>
             {/* Connected state - floating UI elements */}
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-80">
@@ -139,7 +200,7 @@ const Index = () => {
               <ManuscriptStats />
             </div>
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );

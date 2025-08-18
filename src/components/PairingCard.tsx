@@ -17,19 +17,26 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   const { toast } = useToast();
   const { isConnected, partnerId, connectWith } = useConnection(connectionId);
 
+  // Only initialize if we have a valid connectionId (user is logged in)
+  const isValid = connectionId && connectionId.length > 0;
+
   useEffect(() => {
-    const currentUrl = window.location.origin;
-    setMyLink(`${currentUrl}?connect=${connectionId}`);
-  }, [connectionId]);
+    if (isValid) {
+      const currentUrl = window.location.origin;
+      setMyLink(`${currentUrl}?connect=${connectionId}`);
+    }
+  }, [connectionId, isValid]);
 
   // Check if someone is trying to connect via URL parameter
   useEffect(() => {
+    if (!isValid) return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     const connectId = urlParams.get('connect');
     if (connectId && connectId !== connectionId) {
       connectWith(connectId);
     }
-  }, [connectionId, connectWith]);
+  }, [connectionId, connectWith, isValid]);
 
   // Notify parent when connection is established
   useEffect(() => {
@@ -39,6 +46,15 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   }, [isConnected, partnerId, onConnect]);
 
   const handleCopyLink = async () => {
+    if (!isValid) {
+      toast({
+        title: "Hata",
+        description: "Lütfen önce giriş yapın",
+        variant: "destructive",
+      });
+      return;
+    }
+
     await hapticFeedback.light();
     try {
       await navigator.clipboard.writeText(myLink);
