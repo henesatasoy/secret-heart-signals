@@ -211,13 +211,27 @@ export const useConnection = (myConnectionId: string) => {
       }
 
       console.log('Connection established successfully');
-      setIsConnected(true)
-      setPartnerId(partnerConnectionId)
       
-      toast({
-        title: "Bağlantı kuruldu! 💕",
-        description: "Sevgilinle artık mesajlaşabilirsin",
-      })
+      // CRITICAL: Only update local state if database updates were successful
+      // Don't assume success - verify the actual database state
+      const { data: verifyConnection } = await supabase
+        .from('connections')
+        .select('is_connected, partner_id')
+        .eq('connection_id', myConnectionId)
+        .single()
+      
+      if (verifyConnection?.is_connected && verifyConnection?.partner_id) {
+        setIsConnected(true)
+        setPartnerId(partnerConnectionId)
+        
+        toast({
+          title: "Bağlantı kuruldu! 💕",
+          description: "Sevgilinle artık mesajlaşabilirsin",
+        })
+      } else {
+        console.error('Database verification failed - connection not actually established');
+        throw new Error('Connection verification failed');
+      }
       
     } catch (error) {
       console.error('Connection error:', error)
