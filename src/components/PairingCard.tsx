@@ -89,25 +89,26 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
 
   return (
     <div className={cn("text-center", className)}>
-      {/* Fire-like connection button */}
+      {/* 16bit cozy campfire connection button */}
       <button 
         onClick={handleCopyLink}
-        className="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-t from-orange-600 via-orange-400 to-yellow-300 shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center relative overflow-hidden animate-pulse"
+        className="w-20 h-20 mx-auto mb-3 bg-gradient-to-b from-orange-300 to-red-500 border-4 border-orange-800 rounded-none shadow-[6px_6px_0px_0px_rgba(154,52,18,1)] hover:shadow-[3px_3px_0px_0px_rgba(154,52,18,1)] hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center relative overflow-hidden active:shadow-none active:translate-x-1.5 active:translate-y-1.5"
       >
-        {/* Fire effect */}
-        <div className="absolute inset-0 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 opacity-80"></div>
+        {/* 16bit fire layers */}
+        <div className="absolute inset-2 bg-gradient-to-t from-red-700 via-orange-500 to-yellow-300 border border-orange-900"></div>
+        <div className="absolute inset-3 bg-gradient-to-t from-red-600 via-orange-400 to-yellow-200"></div>
         <div className="relative z-10">
           {copied ? (
-            <span className="text-white text-lg font-bold">✓</span>
+            <span className="text-white text-xl font-bold drop-shadow-lg">✓</span>
           ) : (
-            <Link className="h-5 w-5 text-white drop-shadow-lg" />
+            <Link className="h-6 w-6 text-white drop-shadow-lg" />
           )}
         </div>
       </button>
 
-      {/* Subtle text */}
+      {/* 16bit cozy text */}
       <div className="text-center">
-        <p className="text-xs text-white/90 bg-black/40 rounded-full px-3 py-1 backdrop-blur-sm">
+        <p className="text-sm font-bold text-amber-100 bg-gradient-to-b from-amber-900 to-amber-800 border-2 border-amber-700 rounded-none px-4 py-2 shadow-[3px_3px_0px_0px_rgba(120,53,15,1)]">
           {copied ? "🔥 Kopyalandı!" : "🔥 Ateşe dokun"}
         </p>
       </div>

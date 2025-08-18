@@ -134,33 +134,33 @@ const Index = () => {
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
       
-      {/* Top buttons */}
-      <div className="absolute top-6 left-6 z-50 flex gap-2">
-        <button className="w-10 h-10 rounded-full bg-blue-500/30 backdrop-blur-sm border border-blue-300/30 flex items-center justify-center hover:bg-blue-400/40 transition-all">
-          <Info className="h-4 w-4 text-white" />
+      {/* Top buttons - 16bit cozy style */}
+      <div className="absolute top-6 left-6 z-50 flex gap-3">
+        <button className="w-12 h-12 bg-gradient-to-b from-amber-300 to-amber-500 border-2 border-amber-600 rounded-none shadow-[4px_4px_0px_0px_rgba(146,64,14,1)] hover:shadow-[2px_2px_0px_0px_rgba(146,64,14,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1">
+          <Info className="h-5 w-5 text-amber-900" />
         </button>
         {user && (
           <button 
             onClick={handleSignOut}
-            className="w-10 h-10 rounded-full bg-red-500/30 backdrop-blur-sm border border-red-300/30 flex items-center justify-center hover:bg-red-400/40 transition-all"
+            className="w-12 h-12 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[4px_4px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1"
           >
-            <LogOut className="h-4 w-4 text-white" />
+            <LogOut className="h-5 w-5 text-red-900" />
           </button>
         )}
       </div>
 
-      {/* Temporary email display */}
+      {/* User info - 16bit cozy style */}
       {user && (
-        <div className="absolute top-6 right-6 z-50 flex items-center gap-2">
-          <div className="bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
-            <p className="text-white text-sm font-mono">{user.email}</p>
+        <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+          <div className="bg-gradient-to-b from-stone-200 to-stone-300 border-2 border-stone-500 rounded-none shadow-[3px_3px_0px_0px_rgba(68,64,60,1)] px-4 py-2">
+            <p className="text-stone-800 text-sm font-mono font-bold">{user.email}</p>
           </div>
           <button 
             onClick={handleSignOut}
-            className="w-10 h-10 rounded-full bg-red-500/30 backdrop-blur-sm border border-red-300/30 flex items-center justify-center hover:bg-red-400/40 transition-all"
+            className="w-12 h-12 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[4px_4px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center justify-center active:shadow-none active:translate-x-1 active:translate-y-1"
             title="Çıkış Yap"
           >
-            <LogOut className="h-4 w-4 text-white" />
+            <LogOut className="h-5 w-5 text-red-900" />
           </button>
         </div>
       )}
@@ -190,9 +190,9 @@ const Index = () => {
           <>
             {/* Connected state - floating UI elements */}
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-80">
-              {/* Mood Selector */}
-              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 mb-4">
-                <div className="grid grid-cols-4 gap-2">
+              {/* 16bit Mood Selector */}
+              <div className="bg-gradient-to-b from-stone-300 to-stone-400 border-3 border-stone-600 rounded-none shadow-[4px_4px_0px_0px_rgba(68,64,60,1)] p-4 mb-4">
+                <div className="grid grid-cols-4 gap-3">
                   {moods.map((mood) => (
                     <button
                       key={mood.id}
@@ -201,40 +201,40 @@ const Index = () => {
                         setSelectedMood(mood.id as any);
                       }}
                       className={`
-                        p-2 rounded-lg transition-all backdrop-blur-sm
+                        p-3 rounded-none transition-all border-2
                         ${selectedMood === mood.id 
-                          ? 'bg-white/30 scale-105' 
-                          : 'bg-white/10 hover:bg-white/20'}
+                          ? 'bg-gradient-to-b from-amber-300 to-amber-500 border-amber-700 shadow-[3px_3px_0px_0px_rgba(146,64,14,1)] translate-x-0.5 translate-y-0.5' 
+                          : 'bg-gradient-to-b from-slate-300 to-slate-400 border-slate-600 shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5'}
                       `}
                     >
-                      <mood.icon className="h-4 w-4 mx-auto text-white" />
+                      <mood.icon className={`h-5 w-5 mx-auto ${selectedMood === mood.id ? 'text-amber-900' : 'text-slate-700'}`} />
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Letter Grid */}
-              <div className="grid grid-cols-3 gap-3">
+              {/* 16bit Letter Grid */}
+              <div className="grid grid-cols-3 gap-4">
                 {predefinedLetters.map((letter, index) => (
                   <button
                     key={index}
                     onClick={() => handleSendLetter(letter.message)}
-                    className="bg-white/10 backdrop-blur-sm rounded-lg p-4 hover:bg-white/20 transition-all hover:scale-105 border border-white/20"
+                    className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-3 border-emerald-700 rounded-none shadow-[4px_4px_0px_0px_rgba(4,120,87,1)] hover:shadow-[2px_2px_0px_0px_rgba(4,120,87,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all active:shadow-none active:translate-x-1 active:translate-y-1 p-6 flex items-center justify-center"
                   >
-                    <span className="text-xl">{letter.message}</span>
+                    <span className="text-2xl drop-shadow-lg">{letter.message}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Disconnect button */}
+            {/* 16bit Disconnect button */}
             <div className="absolute bottom-20 right-6">
               <button
                 onClick={disconnectPartner}
-                className="w-12 h-12 rounded-full bg-red-500/30 backdrop-blur-sm border border-red-300/30 flex items-center justify-center hover:bg-red-400/40 transition-all"
+                className="w-14 h-14 bg-gradient-to-b from-red-400 to-red-600 border-3 border-red-800 rounded-none shadow-[5px_5px_0px_0px_rgba(127,29,29,1)] hover:shadow-[3px_3px_0px_0px_rgba(127,29,29,1)] hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center active:shadow-none active:translate-x-1.5 active:translate-y-1.5"
                 title="Bağlantıyı Kes"
               >
-                <Heart className="h-5 w-5 text-white rotate-180" />
+                <Heart className="h-6 w-6 text-red-900 rotate-180" />
               </button>
             </div>
 
