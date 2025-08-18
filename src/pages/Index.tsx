@@ -134,6 +134,17 @@ const Index = () => {
         className="absolute inset-0 w-full h-full object-contain"
       />
       
+      {/* Invisible button over the blue orb in background animation - top left */}
+      <div className="absolute top-16 left-8 z-50">
+        <button
+          onClick={() => {
+            alert("Ayarlar menüsü yakında gelecek!");
+          }}
+          className="w-8 h-8 bg-transparent hover:bg-blue-500/20 rounded-full transition-all duration-300 cursor-pointer"
+          title="Ayarlar"
+        />
+      </div>
+
       {/* Top buttons - 16bit cozy style */}
       <div className="absolute top-6 left-6 z-50 flex gap-3">
         <button 
