@@ -168,12 +168,25 @@ const Index = () => {
           </div>
         ) : !isConnected ? (
           <>
-            {/* Button positioned where you left it */}
-            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
-              <ScrollConnection 
-                connectionId={connectionId}
-                onConnect={handleConnect} 
-              />
+            {/* Invisible clickable area over campfire */}
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-30">
+              <button
+                onClick={() => {
+                  // Use ScrollConnection component logic but as invisible button
+                  const partnerCode = prompt("Sevgilinin bağlantı kodunu gir:");
+                  if (partnerCode && partnerCode.trim()) {
+                    connectWith(partnerCode.trim());
+                    handleConnect(partnerCode.trim());
+                  }
+                }}
+                className="w-32 h-32 bg-transparent hover:bg-orange-500/20 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
+                title="Campfire'a tıkla ve sevgiline bağlan"
+              >
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 rounded-full bg-orange-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
+                {/* Click ripple effect */}
+                <div className="absolute inset-0 rounded-full bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity" />
+              </button>
             </div>
           </>
         ) : user ? ( // Only show connected state if user is authenticated
