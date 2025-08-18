@@ -247,7 +247,7 @@ const Index = () => {
               onConnect={handleConnect}
             />
           </>
-        ) : user ? ( // Only show connected state if user is authenticated
+        ) : (
           <>
             {/* Connected state - floating UI elements */}
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-80">
@@ -304,7 +304,7 @@ const Index = () => {
               <ManuscriptStats />
             </div>
           </>
-        ) : null}
+        )}
       </div>
     </div>
   );
