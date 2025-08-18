@@ -135,8 +135,17 @@ const Index = () => {
 
       {/* Temporary email display */}
       {user && (
-        <div className="absolute top-6 right-6 z-50 bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
-          <p className="text-white text-sm font-mono">{user.email}</p>
+        <div className="absolute top-6 right-6 z-50 flex items-center gap-2">
+          <div className="bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
+            <p className="text-white text-sm font-mono">{user.email}</p>
+          </div>
+          <button 
+            onClick={handleSignOut}
+            className="w-10 h-10 rounded-full bg-red-500/30 backdrop-blur-sm border border-red-300/30 flex items-center justify-center hover:bg-red-400/40 transition-all"
+            title="Çıkış Yap"
+          >
+            <LogOut className="h-4 w-4 text-white" />
+          </button>
         </div>
       )}
 
