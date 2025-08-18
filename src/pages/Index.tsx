@@ -133,6 +133,13 @@ const Index = () => {
         )}
       </div>
 
+      {/* Temporary email display */}
+      {user && (
+        <div className="absolute top-6 right-6 z-50 bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
+          <p className="text-white text-sm font-mono">{user.email}</p>
+        </div>
+      )}
+
       {/* Content overlay */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {!user ? (
