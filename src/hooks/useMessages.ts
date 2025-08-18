@@ -46,7 +46,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
     loadMessages()
   }, [myConnectionId, partnerId])
 
-  // Listen for new messages - simplified filtering
+  // Listen for new messages - optimized filtering
   useEffect(() => {
     if (!partnerId || !myConnectionId) return
 
@@ -60,14 +60,14 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `from_connection_id=eq.${partnerId}`,
+          filter: `to_connection_id=eq.${myConnectionId}`,
         },
         (payload) => {
-          console.log('Received message from partner:', payload);
+          console.log('Received message for me:', payload);
           const newMessage = payload.new as Message
           
-          // Only add if it's for me
-          if (newMessage.to_connection_id === myConnectionId) {
+          // Only add if it's from my partner
+          if (newMessage.from_connection_id === partnerId) {
             setMessages(prev => [...prev, newMessage])
             toast({
               title: "Yeni mesaj! 💕",

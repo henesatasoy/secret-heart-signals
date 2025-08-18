@@ -240,70 +240,10 @@ const Index = () => {
           </div>
         ) : !isConnected ? (
           <>
-            {/* Invisible clickable area over campfire */}
-            <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-30">
-              <button
-                onClick={async () => {
-                  // Copy connection link instead of asking for code
-                  if (!user?.id) {
-                    toast({
-                      title: t('noConnection'),
-                      description: "Lütfen önce giriş yapın",
-                      variant: "destructive"
-                    });
-                    return;
-                  }
-                  
-                  await hapticFeedback.medium();
-                  
-                  const currentUrl = window.location.origin;
-                  const connectionLink = `${currentUrl}?connect=${user.id}`;
-                  
-                  try {
-                    await navigator.clipboard.writeText(connectionLink);
-                    toast({
-                      title: "Bağlantı linki kopyalandı! 💕",
-                      description: "Bu linki sevgilinle paylaş",
-                    });
-                  } catch (err) {
-                    toast({
-                      title: "Link kopyalanamadı",
-                      description: "Lütfen manuel olarak kopyala: " + connectionLink,
-                      variant: "destructive",
-                    });
-                  }
-                }}
-                className="w-32 h-32 bg-transparent rounded-full active:scale-95 cursor-pointer group"
-                title={t('connectToPartner')}
-              >
-                {/* Continuous magical flame glow */}
-                <div 
-                  className="absolute inset-2 bg-orange-300/15 animate-pulse rounded-full" 
-                  style={{ 
-                    imageRendering: 'pixelated'
-                  }} 
-                />
-                <div 
-                  className="absolute inset-4 bg-yellow-200/12 animate-pulse rounded-full" 
-                  style={{ 
-                    imageRendering: 'pixelated', 
-                    animationDelay: '1s'
-                  }} 
-                />
-                {/* Click ripple effect */}
-                <div 
-                  className="absolute inset-0 bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity"
-                  style={{
-                    clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)'
-                  }}
-                />
-              </button>
-            </div>
-            
-            {/* Connection handler - hidden component for URL processing */}
+            {/* Connection handler - handles both click and URL processing */}
             <ScrollConnection 
               connectionId={user?.id || ''} 
-              className="hidden"
+              className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-30"
               onConnect={handleConnect}
             />
           </>

@@ -85,23 +85,37 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
 
   return (
     <div className={cn("text-center", className)}>
-      {/* Fixed Invisible Button with Glow Effect */}
+      {/* Magical campfire button with glow effects */}
       <div 
         onClick={handleCopyLink}
-        className="w-16 h-16 cursor-pointer group transition-all duration-200"
+        className="w-32 h-32 cursor-pointer group transition-all duration-200 relative rounded-full active:scale-95"
+        title="Kateş'a tıkla ve bağlantı linkini kopyala"
       >
-        {/* Base invisible button area */}
-        <div className="absolute inset-0 bg-transparent"></div>
+        {/* Continuous magical flame glow - always visible */}
+        <div 
+          className="absolute inset-2 bg-orange-300/15 animate-pulse rounded-full" 
+          style={{ 
+            imageRendering: 'pixelated'
+          }} 
+        />
+        <div 
+          className="absolute inset-4 bg-yellow-200/12 animate-pulse rounded-full" 
+          style={{ 
+            imageRendering: 'pixelated', 
+            animationDelay: '1s'
+          }} 
+        />
         
-        {/* Glowing effects - only visible on hover */}
+        {/* Click ripple effect */}
+        <div 
+          className="absolute inset-0 bg-orange-300/50 opacity-0 group-active:opacity-100 group-active:animate-ping transition-opacity rounded-full"
+        />
+        
+        {/* Hover enhancement */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-          {/* Warm Glow Effect */}
           <div className="absolute inset-0 bg-orange-400 rounded-full opacity-20 blur-xl animate-pulse"></div>
           <div className="absolute inset-0 bg-yellow-300 rounded-full opacity-15 blur-lg animate-pulse delay-200"></div>
         </div>
-        
-        {/* Interactive Glow on Hover */}
-        <div className="absolute inset-0 bg-transparent group-hover:shadow-[0_0_50px_rgba(255,165,0,0.6)] transition-all duration-500 rounded-full"></div>
       </div>
     </div>
   );
