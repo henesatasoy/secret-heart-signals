@@ -2,41 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Dürtü - Romantic Nudge App Design System
+All colors are HSL values for consistent theming and romantic ambiance.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Romantic Color Palette */
+    --background: 350 25% 98%;
+    --foreground: 340 15% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 350 30% 97%;
+    --card-foreground: 340 15% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 350 25% 98%;
+    --popover-foreground: 340 15% 25%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Soft Rose */
+    --primary: 340 75% 75%;
+    --primary-foreground: 350 25% 98%;
+    --primary-light: 340 65% 85%;
+    --primary-dark: 340 85% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary: Lavender */
+    --secondary: 270 50% 85%;
+    --secondary-foreground: 340 15% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Romantic Accent Colors */
+    --romantic: 320 60% 80%;
+    --romantic-foreground: 350 25% 98%;
+    
+    --warm: 25 85% 88%;
+    --warm-foreground: 340 15% 25%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 340 20% 92%;
+    --muted-foreground: 340 15% 55%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --accent: 270 50% 85%;
+    --accent-foreground: 340 15% 25%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive: 0 75% 70%;
+    --destructive-foreground: 350 25% 98%;
 
-    --radius: 0.5rem;
+    --border: 340 25% 88%;
+    --input: 340 25% 95%;
+    --ring: 340 75% 75%;
+
+    --radius: 1rem;
+
+    /* Romantic Gradients */
+    --gradient-romantic: linear-gradient(135deg, hsl(340 75% 75%), hsl(270 50% 85%));
+    --gradient-warm: linear-gradient(45deg, hsl(25 85% 88%), hsl(340 75% 85%));
+    --gradient-soft: linear-gradient(180deg, hsl(350 25% 98%), hsl(340 25% 95%));
+    --gradient-glow: radial-gradient(circle, hsl(340 75% 75% / 0.3), transparent 70%);
+
+    /* Romantic Shadows */
+    --shadow-romantic: 0 10px 25px -5px hsl(340 75% 75% / 0.25);
+    --shadow-warm: 0 4px 20px -2px hsl(25 85% 88% / 0.4);
+    --shadow-soft: 0 2px 15px -3px hsl(340 25% 85% / 0.3);
+    --shadow-glow: 0 0 30px hsl(340 75% 75% / 0.6);
+
+    /* Animation Variables */
+    --transition-romantic: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Typography Scale */
+    --font-size-hero: 2.5rem;
+    --font-size-title: 1.875rem;
+    --font-size-subtitle: 1.125rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +89,54 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark Romantic Theme */
+    --background: 340 25% 8%;
+    --foreground: 350 25% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 340 25% 10%;
+    --card-foreground: 350 25% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 340 25% 8%;
+    --popover-foreground: 350 25% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 340 75% 70%;
+    --primary-foreground: 340 25% 8%;
+    --primary-light: 340 65% 80%;
+    --primary-dark: 340 85% 60%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 270 35% 25%;
+    --secondary-foreground: 350 25% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --romantic: 320 50% 65%;
+    --romantic-foreground: 340 25% 8%;
+    
+    --warm: 25 60% 45%;
+    --warm-foreground: 350 25% 95%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --muted: 340 15% 15%;
+    --muted-foreground: 340 15% 65%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --accent: 270 35% 25%;
+    --accent-foreground: 350 25% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --destructive: 0 65% 60%;
+    --destructive-foreground: 350 25% 95%;
+
+    --border: 340 20% 18%;
+    --input: 340 20% 12%;
+    --ring: 340 75% 70%;
+
+    /* Dark Gradients */
+    --gradient-romantic: linear-gradient(135deg, hsl(340 75% 70%), hsl(270 50% 60%));
+    --gradient-warm: linear-gradient(45deg, hsl(25 60% 45%), hsl(340 75% 65%));
+    --gradient-soft: linear-gradient(180deg, hsl(340 25% 8%), hsl(340 25% 12%));
+    --gradient-glow: radial-gradient(circle, hsl(340 75% 70% / 0.4), transparent 70%);
+
+    /* Dark Shadows */
+    --shadow-romantic: 0 10px 25px -5px hsl(340 75% 70% / 0.4);
+    --shadow-warm: 0 4px 20px -2px hsl(25 60% 45% / 0.6);
+    --shadow-soft: 0 2px 15px -3px hsl(340 25% 5% / 0.8);
+    --shadow-glow: 0 0 30px hsl(340 75% 70% / 0.8);
   }
 }
 
@@ -100,6 +146,109 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    background: var(--gradient-soft);
   }
+
+  /* Romantic Component Classes */
+  .romantic-gradient {
+    background: var(--gradient-romantic);
+  }
+
+  .warm-gradient {
+    background: var(--gradient-warm);
+  }
+
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .romantic-shadow {
+    box-shadow: var(--shadow-romantic);
+  }
+
+  /* Romantic Animations */
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .pulse-romantic {
+    animation: pulse-romantic 2s ease-in-out infinite;
+  }
+
+  .bounce-soft {
+    animation: bounce-soft 0.6s ease-out;
+  }
+
+  .heart-beat {
+    animation: heart-beat 1.5s ease-in-out infinite;
+  }
+}
+
+@layer components {
+  /* Nudge Button Styles */
+  .nudge-button {
+    @apply relative overflow-hidden rounded-2xl px-6 py-4;
+    @apply bg-gradient-to-r from-primary to-romantic;
+    @apply text-primary-foreground font-medium;
+    @apply transform transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-lg;
+    @apply active:scale-95;
+    box-shadow: var(--shadow-romantic);
+  }
+
+  .nudge-button:hover {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .nudge-button::before {
+    content: '';
+    @apply absolute inset-0 bg-white opacity-0;
+    @apply transition-opacity duration-300;
+  }
+
+  .nudge-button:hover::before {
+    @apply opacity-20;
+  }
+
+  /* Romantic Card */
+  .romantic-card {
+    @apply bg-card border border-border rounded-3xl p-6;
+    @apply backdrop-blur-sm;
+    background: linear-gradient(145deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.6));
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Romantic Input */
+  .romantic-input {
+    @apply w-full px-4 py-3 rounded-2xl border border-border;
+    @apply bg-input text-foreground;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply transition-all duration-300;
+  }
+}
+
+/* Romantic Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-romantic {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes bounce-soft {
+  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+  40%, 43% { transform: translateY(-8px); }
+  70% { transform: translateY(-4px); }
+  90% { transform: translateY(-2px); }
+}
+
+@keyframes heart-beat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.05); }
 }
