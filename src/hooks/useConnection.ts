@@ -133,7 +133,26 @@ export const useConnection = (myConnectionId: string) => {
     console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
     
     try {
-      // First ensure partner connection exists, if not create it
+      // First ensure I have my own connection
+      let { data: myConnection } = await supabase
+        .from('connections')
+        .select('id')
+        .eq('connection_id', myConnectionId)
+        .maybeSingle()
+
+      if (!myConnection) {
+        console.log('Creating my own connection first');
+        const { error: createError } = await supabase
+          .from('connections')
+          .insert({ connection_id: myConnectionId })
+        
+        if (createError) {
+          console.error('Error creating my connection:', createError);
+          throw createError;
+        }
+      }
+
+      // Check if partner connection exists
       let { data: partnerExists } = await supabase
         .from('connections')
         .select('id')
