@@ -177,31 +177,30 @@ export const useConnection = (myConnectionId: string) => {
         throw myError;
       }
 
-      // First ensure partner connection exists, create if needed using UPSERT
+      // Check if partner connection exists (read-only check)
       let { data: partnerConnection } = await supabase
         .from('connections')
-        .select('id')
+        .select('id, partner_id, is_connected')
         .eq('connection_id', partnerConnectionId)
         .maybeSingle()
 
       if (!partnerConnection) {
-        console.log('Creating partner connection first');
-        const { error: createPartnerError } = await supabase
-          .from('connections')
-          .upsert({ 
-            connection_id: partnerConnectionId,
-            is_connected: false 
-          }, {
-            onConflict: 'connection_id'
-          })
+        // Partner doesn't have a connection yet - that's ok, they'll connect when they're ready
+        console.log('Partner connection not found - they will need to connect back');
         
-        if (createPartnerError) {
-          console.error('Error creating partner connection:', createPartnerError);
-          throw createPartnerError;
-        }
+        // Update local state to show we're connected but waiting for partner
+        setIsConnected(true);
+        setPartnerId(partnerConnectionId);
+        
+        toast({
+          title: "Bağlantı isteği gönderildi! 📡",
+          description: "Partner bağlanmayı kabul ettiğinde video çalacak.",
+        });
+        
+        return;
       }
 
-      // Update partner's connection with me
+      // Partner connection exists - try to establish mutual connection
       const { error: partnerError } = await supabase
         .from('connections')
         .update({ 
