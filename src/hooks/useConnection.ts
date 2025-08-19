@@ -7,7 +7,7 @@ import { useConnectionRetry } from '@/hooks/useConnectionRetry'
 
 export const useConnection = (myConnectionId: string) => {
   const { toast } = useToast()
-  const { isValidConnection } = useConnectionValidation(myConnectionId)
+  const { isValidConnection, validatePartnerConnection, isSelfConnection } = useConnectionValidation(myConnectionId)
   const { connectionState, setLoading, setError, setConnected, updateConnectionState } = useConnectionState()
   const { executeWithRetry } = useConnectionRetry()
 
@@ -199,7 +199,7 @@ export const useConnection = (myConnectionId: string) => {
   }, [isValidConnection, myConnectionId, toast, updateConnectionState, setError])
 
   const connectWith = useCallback(async (partnerConnectionId: string) => {
-    const { validatePartnerConnection, isSelfConnection } = useConnectionValidation(myConnectionId)
+    // Enhanced validation using hooks called at top level
     
     // Enhanced validation
     if (!isValidConnection || !partnerConnectionId || isSelfConnection(partnerConnectionId)) {
@@ -354,7 +354,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive"
       })
     }
-  }, [isValidConnection, myConnectionId, toast, setLoading, setConnected, setError])
+  }, [isValidConnection, myConnectionId, toast, setLoading, setConnected, setError, validatePartnerConnection, isSelfConnection])
 
   const disconnectPartner = useCallback(async () => {
     try {

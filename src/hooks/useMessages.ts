@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { isValidUUID } from '@/hooks/useConnectionValidation'
 
 export interface Message {
   id: string
@@ -27,18 +28,9 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
   })
   const { toast } = useToast()
 
-  // Enhanced validation with memoization
-  const isValidConnection = useMemo(() => {
-    return myConnectionId && 
-           myConnectionId.length > 0 && 
-           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(myConnectionId)
-  }, [myConnectionId])
-
-  const isValidPartner = useMemo(() => {
-    return partnerId && 
-           partnerId.length > 0 && 
-           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(partnerId)
-  }, [partnerId])
+  // Enhanced validation using centralized utility
+  const isValidConnection = myConnectionId && myConnectionId.length > 0 && isValidUUID(myConnectionId)
+  const isValidPartner = partnerId && partnerId.length > 0 && isValidUUID(partnerId)
 
   // Load existing messages with enhanced error handling and caching
   useEffect(() => {

@@ -21,11 +21,18 @@ export const useConnectionState = (initialState?: Partial<ConnectionState>) => {
   })
 
   const updateConnectionState = useCallback((updates: Partial<ConnectionState>) => {
-    setConnectionState(prev => ({
-      ...prev,
-      ...updates,
-      lastUpdated: Date.now()
-    }))
+    setConnectionState(prev => {
+      // Only update lastUpdated if there are actual meaningful changes
+      const hasRealChanges = Object.keys(updates).some(key => 
+        key !== 'lastUpdated' && prev[key as keyof ConnectionState] !== updates[key as keyof ConnectionState]
+      );
+      
+      return {
+        ...prev,
+        ...updates,
+        ...(hasRealChanges ? { lastUpdated: Date.now() } : {})
+      };
+    });
   }, [])
 
   const resetConnectionState = useCallback(() => {
