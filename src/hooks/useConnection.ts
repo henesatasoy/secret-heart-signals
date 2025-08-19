@@ -32,8 +32,8 @@ export const useConnection = (myConnectionId: string) => {
 
         if (existing) {
           console.log('Existing connection found:', existing);
-          setIsConnected(existing.is_connected || false)
           setPartnerId(existing.partner_id || null)
+          setIsConnected(existing.is_connected || false)
         } else {
           // Create new connection
           console.log('Creating new connection for:', myConnectionId);
@@ -50,8 +50,8 @@ export const useConnection = (myConnectionId: string) => {
             });
           } else {
             console.log('New connection created successfully');
-            setIsConnected(false);
             setPartnerId(null);
+            setIsConnected(false);
           }
         }
       } catch (error) {

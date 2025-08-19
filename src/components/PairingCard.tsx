@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
 import { Heart, Link } from "lucide-react";
 import { hapticFeedback } from "@/services/mobile";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ interface ScrollConnectionProps {
   onConnect?: (partnerId: string) => void;
 }
 
-export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollConnectionProps) => {
+const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollConnectionProps) => {
   const [myLink, setMyLink] = useState("");
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
@@ -38,8 +38,11 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     const urlParams = new URLSearchParams(window.location.search);
     const connectId = urlParams.get('connect');
     
-    // Only process if there's a connect parameter and it's different from my ID
-    if (connectId && connectId !== connectionId) {
+    // Validate connection ID format (should be UUID v4)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    
+    // Only process if there's a connect parameter, it's different from my ID, and it's a valid UUID
+    if (connectId && connectId !== connectionId && uuidRegex.test(connectId)) {
       console.log('URL connection request detected, attempting to connect:', connectId);
       processedRef.current = true; // Mark as processed
       
@@ -76,7 +79,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     };
   }, []);
 
-  const handleCopyLink = async () => {
+  const handleCopyLink = useCallback(async () => {
     if (!isValid) {
       toast({
         title: "Hata",
@@ -106,7 +109,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
         variant: "destructive",
       });
     }
-  };
+  }, [isValid, myLink, toast]);  // Memoize copy handler
 
   return (
     <div className={cn("text-center", className)}>
@@ -144,4 +147,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       </div>
     </div>
   );
-};
+});
+
+export { ScrollConnection };
+export default ScrollConnection;

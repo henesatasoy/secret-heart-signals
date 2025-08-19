@@ -22,7 +22,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
   useEffect(() => {
     if (!hasValidConnection || !partnerId) return
 
-    const loadMessages = async () => {
+    const loadMessages = async (retryCount = 0) => {
       console.log('Loading messages between', myConnectionId, 'and', partnerId);
       
       try {
@@ -34,6 +34,19 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
 
         if (error) {
           console.error('Error loading messages:', error);
+          
+          // Retry logic for network issues
+          if (retryCount < 3 && (error.message.includes('network') || error.message.includes('timeout'))) {
+            console.log(`Retrying message load, attempt ${retryCount + 1}`);
+            setTimeout(() => loadMessages(retryCount + 1), 1000 * (retryCount + 1));
+            return;
+          }
+          
+          toast({
+            title: "Mesajlar yüklenemedi",
+            description: "Bağlantınızı kontrol edip tekrar deneyin",
+            variant: "destructive"
+          });
           return;
         }
 
@@ -43,6 +56,16 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
         }
       } catch (error) {
         console.error('Message loading error:', error);
+        if (retryCount < 3) {
+          console.log(`Retrying message load due to exception, attempt ${retryCount + 1}`);
+          setTimeout(() => loadMessages(retryCount + 1), 1000 * (retryCount + 1));
+        } else {
+          toast({
+            title: "Mesajlar yüklenemedi",
+            description: "Sistem hatası oluştu",
+            variant: "destructive"
+          });
+        }
       }
     }
 
