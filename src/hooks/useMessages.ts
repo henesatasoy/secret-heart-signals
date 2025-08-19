@@ -115,7 +115,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
 
     return () => {
       console.log('Cleaning up message listener');
-      supabase.removeChannel(channel)
+      channel.unsubscribe()
     }
   }, [myConnectionId, partnerId, hasValidConnection])  // Remove toast from dependencies
 

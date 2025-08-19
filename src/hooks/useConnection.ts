@@ -133,7 +133,7 @@ export const useConnection = (myConnectionId: string) => {
 
     return () => {
       console.log('Cleaning up connection listener');
-      supabase.removeChannel(channel)
+      channel.unsubscribe()
     }
   }, [myConnectionId])
 
@@ -191,8 +191,8 @@ export const useConnection = (myConnectionId: string) => {
         console.log('Partner connection not found - they will need to connect back');
         
         // Update local state to show we're connected but waiting for partner
-        setIsConnected(true);
         setPartnerId(partnerConnectionId);
+        setIsConnected(true);
         
         toast({
           title: "Bağlantı isteği gönderildi! 📡",
@@ -228,8 +228,8 @@ export const useConnection = (myConnectionId: string) => {
         .maybeSingle()
       
       if (verifyConnection?.is_connected && verifyConnection?.partner_id) {
-        setIsConnected(true)
         setPartnerId(partnerConnectionId)
+        setIsConnected(true)
         
         toast({
           title: "Bağlantı kuruldu! 💕",
@@ -288,8 +288,8 @@ export const useConnection = (myConnectionId: string) => {
       }
 
       // Update local state regardless
-      setIsConnected(false);
       setPartnerId(null);
+      setIsConnected(false);
       
       toast({
         title: "Bağlantı koptu 💔",
