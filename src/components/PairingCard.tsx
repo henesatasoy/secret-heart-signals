@@ -29,8 +29,6 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   }, [connectionId, isValid]);
 
   // Check if someone is trying to connect via URL parameter - only once
-  const memoizedConnectWith = useMemo(() => connectWith, [connectWith]);
-  
   useEffect(() => {
     if (!isValid || processedRef.current) {
       return;
@@ -44,10 +42,10 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       console.log('URL connection request detected, attempting to connect:', connectId);
       processedRef.current = true; // Mark as processed
       
-      // Use a separate function to avoid dependency issues
+      // Use connectWith directly in async function to avoid stale closure
       const processConnection = async () => {
         try {
-          await memoizedConnectWith(connectId);
+          await connectWith(connectId);
         } catch (error) {
           console.error('Connection failed:', error);
           processedRef.current = false; // Allow retry
@@ -59,7 +57,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       // Clean up URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [isValid, connectionId, memoizedConnectWith]); // Use memoized version
+  }, [isValid, connectionId, connectWith])
 
   // Notify parent when connection is established
   useEffect(() => {

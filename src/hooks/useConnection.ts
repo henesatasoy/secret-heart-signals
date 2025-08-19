@@ -67,7 +67,7 @@ export const useConnection = (myConnectionId: string) => {
     initConnection()
   }, [myConnectionId])
 
-  // Listen for connection updates - simplified filtering
+  // Listen for connection updates - optimized single listener
   useEffect(() => {
     if (!myConnectionId || myConnectionId.length === 0) return;
     
@@ -81,51 +81,51 @@ export const useConnection = (myConnectionId: string) => {
           event: '*',
           schema: 'public',
           table: 'connections',
-          filter: `connection_id=eq.${myConnectionId}`,
         },
         (payload) => {
-          console.log('My connection update received:', payload)
+          console.log('Connection update received:', payload)
           const connection = payload.new as any
+          const oldConnection = payload.old as any
           
-          // Unified connection state update logic
-          if (connection?.partner_id && connection?.is_connected) {
-            setIsConnected(true)
-            setPartnerId(connection.partner_id)
-            toast({
-              title: "Bağlantı kuruldu! 💕",
-              description: "Sevgilinle artık mesajlaşabilirsin",
-            })
-          } else if (payload.eventType === 'DELETE' || !connection?.is_connected) {
-            // Handle disconnection
-            setIsConnected(false)
-            setPartnerId(null)
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*', 
-          schema: 'public',
-          table: 'connections',
-          filter: `partner_id=eq.${myConnectionId}`,
-        },
-        (payload) => {
-          console.log('Partner connection update received:', payload)
-          const connection = payload.new as any
-          
-          // Only update if this creates a valid partnership
-          if (connection?.is_connected && connection?.connection_id) {
-            setIsConnected(true)
-            setPartnerId(connection.connection_id)
-            toast({
-              title: "Biri sana bağlandı! 💕", 
-              description: "Artık mesajlaşabilirsiniz",
-            })
-          } else if (payload.eventType === 'DELETE' || !connection?.is_connected) {
-            // Handle disconnection from partner side
-            setIsConnected(false)
-            setPartnerId(null)
+          // Handle updates that affect my connection
+          if (connection?.connection_id === myConnectionId || connection?.partner_id === myConnectionId ||
+              oldConnection?.connection_id === myConnectionId || oldConnection?.partner_id === myConnectionId) {
+            
+            // Deletion event
+            if (payload.eventType === 'DELETE') {
+              setIsConnected(false)
+              setPartnerId(null)
+              return
+            }
+            
+            // Update or Insert event
+            if (connection?.connection_id === myConnectionId) {
+              // My connection was updated
+              if (connection.is_connected && connection.partner_id) {
+                setIsConnected(true)
+                setPartnerId(connection.partner_id)
+                toast({
+                  title: "Bağlantı kuruldu! 💕",
+                  description: "Sevgilinle artık mesajlaşabilirsin",
+                })
+              } else {
+                setIsConnected(false)
+                setPartnerId(null)
+              }
+            } else if (connection?.partner_id === myConnectionId) {
+              // Partner's connection includes me
+              if (connection.is_connected && connection.connection_id) {
+                setIsConnected(true)
+                setPartnerId(connection.connection_id)
+                toast({
+                  title: "Biri sana bağlandı! 💕", 
+                  description: "Artık mesajlaşabilirsiniz",
+                })
+              } else {
+                setIsConnected(false)
+                setPartnerId(null)
+              }
+            }
           }
         }
       )

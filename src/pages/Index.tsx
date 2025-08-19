@@ -29,7 +29,7 @@ const Index = () => {
   const connectionId = user?.id || '';
   const { isConnected, partnerId, connectWith, disconnectPartner } = useConnection(connectionId);
   
-  // Call useMessages with current partnerId (no need for stable wrapper)
+  // Call useMessages with current partnerId 
   const { messages, sendMessage } = useMessages(connectionId, partnerId);
 
   // Authentication setup

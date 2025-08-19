@@ -24,16 +24,9 @@ const Messages = () => {
   const { isConnected, partnerId, disconnectPartner } = useConnection(user?.id || '');
   const { messages, sendMessage } = useMessages(user?.id || '', partnerId);
 
-  // Authentication setup
+  // Authentication setup - consistent with Index.tsx
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      
-      if (!session) {
-        navigate('/auth');
-      }
-    });
-
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user ?? null);
@@ -43,6 +36,15 @@ const Messages = () => {
         }
       }
     );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      
+      if (!session) {
+        navigate('/auth');
+      }
+    });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
