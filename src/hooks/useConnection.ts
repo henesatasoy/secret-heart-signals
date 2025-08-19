@@ -65,7 +65,7 @@ export const useConnection = (myConnectionId: string) => {
     }
 
     initConnection()
-  }, [myConnectionId, toast])
+  }, [myConnectionId])
 
   // Listen for connection updates - simplified filtering
   useEffect(() => {
@@ -133,7 +133,7 @@ export const useConnection = (myConnectionId: string) => {
       console.log('Cleaning up connection listener');
       supabase.removeChannel(channel)
     }
-  }, [myConnectionId, toast])
+  }, [myConnectionId])
 
   const connectWith = async (partnerConnectionId: string) => {
     if (!myConnectionId || myConnectionId === partnerConnectionId) return;
