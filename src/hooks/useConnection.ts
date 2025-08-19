@@ -214,19 +214,6 @@ export const useConnection = (myConnectionId: string) => {
         throw partnerError;
       }
 
-      // CRITICAL: Also update my own connection to reflect the mutual connection
-      const { error: myUpdateError } = await supabase
-        .from('connections')
-        .update({ 
-          partner_id: partnerConnectionId, 
-          is_connected: true 
-        })
-        .eq('connection_id', myConnectionId)
-
-      if (myUpdateError) {
-        console.error('Error updating my connection after partner update:', myUpdateError);
-        throw myUpdateError;
-      }
 
       console.log('Connection established successfully');
       

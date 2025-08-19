@@ -65,12 +65,16 @@ const Index = () => {
     }
   }, [isConnected, partnerId, showConnectionVideo]);
 
-  // Navigate to messages when connection is ready, then show completion video there
+  // Navigate to messages when connection is ready - don't wait for messages
   useEffect(() => {
-    if (isConnected && partnerId && showConnectionVideo && messages.length > 0) {
-      navigate('/messages?showVideo=true');
+    if (isConnected && partnerId && showConnectionVideo) {
+      // Small delay to let video play briefly, then navigate
+      const timer = setTimeout(() => {
+        navigate('/messages');
+      }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [isConnected, partnerId, showConnectionVideo, messages.length, navigate]);
+  }, [isConnected, partnerId, showConnectionVideo, navigate]);
 
   // Initialize mobile features on app start
   useEffect(() => {
