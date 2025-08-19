@@ -27,8 +27,11 @@ const Index = () => {
   
   // Use user ID as connection ID for consistent identification - only if user exists
   const connectionId = user?.id || '';
-  const { isConnected, partnerId, connectWith, disconnectPartner } = useConnection(user?.id || '');
-  const { messages, sendMessage } = useMessages(user?.id || '', partnerId);
+  const { isConnected, partnerId, connectWith, disconnectPartner } = useConnection(connectionId);
+  
+  // Always call useMessages with stable parameters to avoid hook ordering issues
+  const stablePartnerId = partnerId || null;
+  const { messages, sendMessage } = useMessages(connectionId, stablePartnerId);
 
   // Authentication setup
   useEffect(() => {

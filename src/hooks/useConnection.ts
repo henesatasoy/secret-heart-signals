@@ -246,7 +246,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive"
       })
     }
-  }, [myConnectionId, toast])
+  }, [myConnectionId]) // Remove toast from dependencies to prevent re-creation
 
   const disconnectPartner = useCallback(async () => {
     try {
@@ -302,7 +302,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive",
       });
     }
-  }, [myConnectionId, partnerId, toast]);
+  }, [myConnectionId, partnerId]); // Remove toast from dependencies
 
   return { isConnected, partnerId, connectWith, disconnectPartner }
 }

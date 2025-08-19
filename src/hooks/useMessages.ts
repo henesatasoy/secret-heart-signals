@@ -15,9 +15,12 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
   const [messages, setMessages] = useState<Message[]>([])
   const { toast } = useToast()
 
+  // Early return if no connection ID to prevent hook order issues
+  const hasValidConnection = myConnectionId && myConnectionId.length > 0;
+
   // Load existing messages  
   useEffect(() => {
-    if (!partnerId || !myConnectionId) return
+    if (!hasValidConnection || !partnerId) return
 
     const loadMessages = async () => {
       console.log('Loading messages between', myConnectionId, 'and', partnerId);
@@ -44,11 +47,11 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
     }
 
     loadMessages()
-  }, [myConnectionId, partnerId])
+  }, [myConnectionId, partnerId, hasValidConnection])
 
   // Listen for new messages - optimized filtering
   useEffect(() => {
-    if (!partnerId || !myConnectionId) return
+    if (!hasValidConnection || !partnerId) return
 
     console.log('Setting up message listener between', myConnectionId, 'and', partnerId);
 
@@ -114,11 +117,11 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
       console.log('Cleaning up message listener');
       supabase.removeChannel(channel)
     }
-  }, [myConnectionId, partnerId])  // Remove toast from dependencies
+  }, [myConnectionId, partnerId, hasValidConnection])  // Remove toast from dependencies
 
   const sendMessage = async (message: string, mood: string) => {
-    if (!partnerId || !myConnectionId) {
-      console.error('Cannot send message: missing partnerId or myConnectionId');
+    if (!hasValidConnection || !partnerId) {
+      console.error('Cannot send message: missing valid connection or partnerId');
       return;
     }
 
