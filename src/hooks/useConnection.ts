@@ -504,7 +504,7 @@ export const useConnection = (myConnectionId: string) => {
     }
   }, [myConnectionId, connectionState.partnerId, toast])
 
-  // Return destructured state for backward compatibility
+  // Return enhanced state with backward compatibility
   return { 
     isConnected: connectionState.isConnected, 
     partnerId: connectionState.partnerId,

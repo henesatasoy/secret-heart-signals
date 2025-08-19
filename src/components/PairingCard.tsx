@@ -310,11 +310,17 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
       {/* Connection status text */}
       {isValidConnection && (
         <div className="mt-4 text-sm text-white/80">
-          {isConnected 
-            ? "✅ Bağlantı kuruldu!" 
-            : isLoading || isProcessing 
-              ? "🔄 Bağlantı kuruluyor..." 
-              : "🔥 Kampateş'e tıkla"}
+           {isConnected 
+             ? "✅ Bağlantı kuruldu!" 
+             : isLoading || isProcessing 
+               ? "🔄 Bağlantı kuruluyor..." 
+               : "🔥 Kampateş'e tıkla ve paylaş"}
+        </div>
+      )}
+      {/* Debug information for development */}
+      {process.env.NODE_ENV === 'development' && connectionId && (
+        <div className="mt-2 text-xs text-white/50 font-mono break-all">
+          ID: {connectionId.substring(0, 8)}...
         </div>
       )}
     </div>

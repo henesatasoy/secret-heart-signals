@@ -52,11 +52,11 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
       setState(prev => ({ ...prev, isLoading: true, error: null }))
       
       try {
-        // Use more efficient query with proper escaping
+        // Enhanced query with better error handling and SQL injection prevention
         const { data, error } = await supabase
           .from('messages')
           .select('id, from_connection_id, to_connection_id, message, mood, created_at')
-          .or(`and(from_connection_id.eq.${myConnectionId},to_connection_id.eq.${partnerId}),and(from_connection_id.eq.${partnerId},to_connection_id.eq.${myConnectionId})`)
+          .or(`and(from_connection_id.eq."${myConnectionId}",to_connection_id.eq."${partnerId}"),and(from_connection_id.eq."${partnerId}",to_connection_id.eq."${myConnectionId}")`)
           .order('created_at', { ascending: true })
           .limit(1000) // Prevent loading too many messages at once
 

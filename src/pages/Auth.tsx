@@ -4,7 +4,9 @@ import { supabase, cleanupCorruptedAuthState } from '@/integrations/supabase/cli
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
+import { EmailConfirmationHelper } from '@/components/EmailConfirmationHelper'
 import { Heart, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
 // Enhanced auth state cleanup utility
@@ -28,22 +30,32 @@ const cleanupAuthState = () => {
   }
 }
 
-// Global error handler for auth errors
+// Enhanced global error handler with automatic recovery
 const handleAuthError = (error: any) => {
   console.error('🚨 Auth error detected:', error)
   
-  // Check for specific refresh token errors
+  // Check for specific auth errors
   if (error && typeof error === 'object') {
     const errorMessage = error.message || error.error_description || ''
+    const errorCode = error.code || ''
     
+    // Email confirmation issues
+    if (errorCode === 'email_not_confirmed' || errorMessage.includes('Email not confirmed')) {
+      console.log('📧 Email confirmation required')
+      // Don't clean up for email confirmation - user needs to confirm
+      return;
+    }
+    
+    // Token-related issues
     if (errorMessage.includes('refresh_token_not_found') || 
         errorMessage.includes('Invalid Refresh Token') ||
         errorMessage.includes('JWT') ||
-        errorMessage.includes('session_not_found')) {
+        errorMessage.includes('session_not_found') ||
+        errorMessage.includes('token_expired')) {
       console.log('🔄 Auth token corruption detected, cleaning up...')
       cleanupAuthState()
       
-      // Force page reload after cleanup
+      // Force page reload after cleanup for token issues
       setTimeout(() => {
         if (typeof window !== 'undefined') {
           window.location.reload()
@@ -61,6 +73,8 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false)
+  const [registeredEmail, setRegisteredEmail] = useState('')
   const navigate = useNavigate()
   const { toast } = useToast()
 
@@ -262,20 +276,32 @@ const Auth = () => {
         
         // Check if email confirmation is required
         if (!data.session) {
+          console.log('✅ Signup successful, email confirmation required')
+          setRegisteredEmail(trimmedEmail)
+          setShowEmailConfirmation(true)
+          
           toast({
             title: "Kayıt başarılı! 📧",
-            description: "Email adresini kontrol et ve doğrulama linkine tıkla",
+            description: "Email adresini doğrula ve giriş yap",
           })
         } else {
+          console.log('✅ Signup successful, auto-login completed')
           toast({
             title: "Kayıt başarılı! 💕",
-            description: "Hesabın oluşturuldu, giriş yapabilirsin",
+            description: "Hesabın oluşturuldu, hoş geldin!",
           })
+          
+          // Auto-login successful, redirect
+          setTimeout(() => {
+            window.location.replace('/')
+          }, 100)
         }
         
-        // Switch to login mode and clear password
-        setIsLogin(true)
-        setPassword('')
+        // Don't switch to login mode if showing email confirmation
+        if (data.session) {
+          setIsLogin(true)
+          setPassword('')
+        }
       }
       
     } catch (error: any) {
@@ -300,48 +326,133 @@ const Auth = () => {
     }
   }
 
-  // Enhanced error message mapping with token-specific errors
+  // Enhanced error message mapping with comprehensive coverage
   const getAuthErrorMessage = (error: any): string => {
-    const errorCode = error.message || error.error_description || ''
+    const errorCode = error.code || ''
+    const errorMessage = error.message || error.error_description || ''
     
-    // Token-specific errors (critical for our issue)
-    if (errorCode.includes('refresh_token_not_found') || errorCode.includes('Invalid Refresh Token')) {
-      return 'Oturum süresi dolmuş, sayfa yenilenecek...'
+    // Email confirmation errors (most critical for user flow)
+    if (errorCode === 'email_not_confirmed' || errorMessage.includes('Email not confirmed')) {
+      return 'Email adresini doğrulamalısın - email kutunu kontrol et'
     }
-    if (errorCode.includes('session_not_found') || errorCode.includes('JWT expired')) {
-      return 'Oturum geçersiz, tekrar giriş yapın'
-    }
-    if (errorCode.includes('Token has expired') || errorCode.includes('token_expired')) {
-      return 'Token süresi dolmuş, tekrar giriş yapın'
+    if (errorCode === 'email_confirm_required') {
+      return 'Email doğrulama gerekli - spam klasörünü de kontrol et'
     }
     
-    // Standard auth errors
-    if (errorCode.includes('Invalid login credentials')) {
+    // Authentication credential errors
+    if (errorCode === 'invalid_credentials' || errorMessage.includes('Invalid login credentials')) {
       return 'Email veya şifre hatalı'
     }
-    if (errorCode.includes('Email not confirmed')) {
-      return 'Email adresini doğrulamalısın'
-    }
-    if (errorCode.includes('User already registered')) {
-      return 'Bu email zaten kayıtlı, giriş yapmayı dene'
-    }
-    if (errorCode.includes('Password should be at least')) {
-      return 'Şifre en az 6 karakter olmalı'
-    }
-    if (errorCode.includes('Unable to validate email address')) {
-      return 'Geçersiz email adresi'
-    }
-    if (errorCode.includes('Signup requires a valid password')) {
-      return 'Geçerli bir şifre gerekli'
-    }
-    if (errorCode.includes('network') || errorCode.includes('fetch')) {
-      return 'İnternet bağlantınızı kontrol edin'
-    }
-    if (errorCode.includes('Too many requests')) {
-      return 'Çok fazla deneme, biraz bekleyin'
+    if (errorCode === 'user_not_found' || errorMessage.includes('User not found')) {
+      return 'Bu email adresiyle kayıtlı kullanıcı bulunamadı'
     }
     
-    return errorCode || 'Bilinmeyen hata'
+    // Password related errors
+    if (errorCode === 'weak_password' || errorMessage.includes('Password should be at least')) {
+      return 'Şifre en az 6 karakter olmalı'
+    }
+    if (errorMessage.includes('Password too short')) {
+      return 'Şifre çok kısa - en az 6 karakter gerekli'
+    }
+    
+    // Email validation errors
+    if (errorCode === 'invalid_email' || errorMessage.includes('Unable to validate email address')) {
+      return 'Geçersiz email adresi formatı'
+    }
+    if (errorMessage.includes('Email address is invalid')) {
+      return 'Email adresi geçersiz'
+    }
+    
+    // Registration errors
+    if (errorCode === 'user_already_exists' || errorMessage.includes('User already registered')) {
+      return 'Bu email zaten kayıtlı - giriş yapmayı dene'
+    }
+    if (errorCode === 'signup_disabled' || errorMessage.includes('Signup is disabled')) {
+      return 'Yeni kayıt şu anda kapalı'
+    }
+    
+    // Token-specific errors (critical for our refresh token issue)
+    if (errorMessage.includes('refresh_token_not_found') || errorMessage.includes('Invalid Refresh Token')) {
+      return 'Oturum süresi dolmuş - sayfa yenilenecek...'
+    }
+    if (errorMessage.includes('session_not_found') || errorMessage.includes('JWT expired')) {
+      return 'Oturum geçersiz - tekrar giriş yapın'
+    }
+    if (errorMessage.includes('Token has expired') || errorMessage.includes('token_expired')) {
+      return 'Token süresi dolmuş - tekrar giriş yapın'
+    }
+    
+    // Network and connectivity errors
+    if (errorMessage.includes('network') || errorMessage.includes('fetch') || errorMessage.includes('offline')) {
+      return 'İnternet bağlantınızı kontrol edin'
+    }
+    if (errorMessage.includes('timeout') || errorMessage.includes('connect')) {
+      return 'Bağlantı zaman aşımı - tekrar deneyin'
+    }
+    
+    // Rate limiting errors
+    if (errorCode === 'too_many_requests' || errorMessage.includes('Too many requests')) {
+      return 'Çok fazla deneme - 5 dakika bekleyin'
+    }
+    if (errorMessage.includes('rate limit')) {
+      return 'Çok hızlı deneme - biraz bekleyin'
+    }
+    
+    // Server errors
+    if (errorCode === 'internal_server_error' || errorMessage.includes('500')) {
+      return 'Sunucu hatası - biraz sonra tekrar deneyin'
+    }
+    if (errorMessage.includes('service_unavailable') || errorMessage.includes('503')) {
+      return 'Servis geçici olarak kullanılamıyor'
+    }
+    
+    // Generic validation errors
+    if (errorMessage.includes('Signup requires a valid password')) {
+      return 'Geçerli bir şifre gerekli'
+    }
+    if (errorMessage.includes('Invalid request')) {
+      return 'Geçersiz istek - bilgileri kontrol edin'
+    }
+    
+    // Fallback for unknown errors
+    return errorMessage || 'Bilinmeyen hata oluştu'
+  }
+
+  // Show email confirmation helper
+  if (showEmailConfirmation && registeredEmail) {
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        <img 
+          src="/lovable-uploads/de0d5b01-9671-41c9-964c-4e061a1785d1.png"
+          alt="Magical Forest Background"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          loading="eager"
+        />
+        
+        <div className="absolute top-6 left-6 z-50">
+          <button 
+            onClick={() => {
+              setShowEmailConfirmation(false)
+              setRegisteredEmail('')
+              setIsLogin(true)
+            }}
+            className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-200 group"
+            title="Giriş sayfasına dön"
+          >
+            <ArrowLeft className="h-5 w-5 text-white group-hover:text-blue-200 transition-colors" />
+          </button>
+        </div>
+        
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <EmailConfirmationHelper 
+            email={registeredEmail}
+            onResendSuccess={() => {
+              // Email resent successfully
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 
   // Show loading screen during initialization
@@ -412,10 +523,35 @@ const Auth = () => {
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Error display */}
+            {/* Enhanced error display with actionable instructions */}
             {authError && (
-              <div className="bg-red-500/20 border border-red-400/30 rounded-lg p-3 text-red-200 text-sm font-mono">
-                ⚠️ {authError}
+              <div className={cn(
+                "border rounded-lg p-3 text-sm font-mono",
+                authError.includes('Email adresini doğrulamalısın') || authError.includes('email') 
+                  ? "bg-blue-500/20 border-blue-400/30 text-blue-200" 
+                  : "bg-red-500/20 border-red-400/30 text-red-200"
+              )}>
+                <div className="flex items-start gap-2">
+                  <span className="text-lg">
+                    {authError.includes('Email adresini doğrulamalısın') || authError.includes('email') ? '📧' : '⚠️'}
+                  </span>
+                  <div className="flex-1">
+                    <p className="font-bold mb-1">
+                      {authError.includes('Email adresini doğrulamalısın') || authError.includes('email') 
+                        ? 'Email Doğrulama Gerekli' 
+                        : 'Hata'}
+                    </p>
+                    <p>{authError}</p>
+                    {authError.includes('Email adresini doğrulamalısın') && (
+                      <div className="mt-2 text-xs text-blue-300">
+                        <p>• Email kutunu kontrol et</p>
+                        <p>• Spam klasörünü de kontrol et</p>
+                        <p>• Doğrulama linkine tıkla</p>
+                        <p>• Sonra buradan giriş yap</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
             
