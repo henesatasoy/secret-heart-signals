@@ -273,6 +273,10 @@ const Index = () => {
                   autoPlay
                   muted
                   className="w-full h-full object-cover"
+                  onEnded={() => {
+                    setShowConnectionVideo(false);
+                    navigate('/messages');
+                  }}
                 />
               </div>
             )}
