@@ -95,16 +95,15 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           // Only add if it's from my partner and not already in the array
           if (newMessage.from_connection_id === partnerId) {
             setMessages(prev => {
-              // Check if message already exists to prevent duplicates
-              const messageExists = prev.some(msg => msg.id === newMessage.id);
-              if (!messageExists) {
-                return [...prev, newMessage];
+              // Prevent duplicates more efficiently
+              if (prev.some(msg => msg.id === newMessage.id)) {
+                return prev;
               }
-              return prev;
+              return [...prev, newMessage];
             })
             
             // Only show toast if user is not on messages page
-            if (!window.location.pathname.includes('/messages')) {
+            if (typeof window !== 'undefined' && !window.location.pathname.includes('/messages')) {
               toast({
                 title: "Yeni mesaj! 💕",
                 description: newMessage.message,
@@ -128,12 +127,11 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
           // Only add if it's to my partner and not already in the array
           if (newMessage.to_connection_id === partnerId) {
             setMessages(prev => {
-              // Check if message already exists to prevent duplicates
-              const messageExists = prev.some(msg => msg.id === newMessage.id);
-              if (!messageExists) {
-                return [...prev, newMessage];
+              // Prevent duplicates more efficiently  
+              if (prev.some(msg => msg.id === newMessage.id)) {
+                return prev;
               }
-              return prev;
+              return [...prev, newMessage];
             })
           }
         }
@@ -168,7 +166,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
         console.error('Send message error:', error);
         toast({
           title: "Mesaj gönderilemedi",
-          description: "Error: " + error.message,
+          description: "Bağlantı problemi yaşanıyor",
           variant: "destructive"
         });
         return;

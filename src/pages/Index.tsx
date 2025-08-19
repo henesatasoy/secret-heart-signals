@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Heart, Sparkles, Moon, Sun, Settings, LogOut } from "lucide-react";
 import { LetterCard } from "@/components/NudgeCard";
 import { ScrollConnection } from "@/components/PairingCard";
@@ -20,7 +20,6 @@ const Index = () => {
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [showConnectionVideo, setShowConnectionVideo] = useState(false);
-  const [showCompleteVideo, setShowCompleteVideo] = useState(false);
   const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -85,7 +84,7 @@ const Index = () => {
     { message: "😊", icon: "sparkles" as const },
   ];
 
-  const handleSendLetter = async (message: string) => {
+  const handleSendLetter = useCallback(async (message: string) => {
     if (!partnerId) {
       toast({
         title: t('noConnection'),
@@ -106,21 +105,23 @@ const Index = () => {
       t('letterSent'), 
       `${t('letterDelivered')} "${message}"`
     );
-  };
+  }, [partnerId, sendMessage, selectedMood, t, toast]);
 
-  const handleConnect = async (partnerConnectionId: string) => {
+  const handleConnect = useCallback(async () => {
     await hapticFeedback.heavy();
     // Connection state is now managed by useConnection hook
-  };
+  }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       // Clean up auth state first
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-          localStorage.removeItem(key);
-        }
-      });
+      if (typeof window !== 'undefined') {
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+          }
+        });
+      }
       
       // Attempt global sign out (ignore errors)
       try {
@@ -130,20 +131,24 @@ const Index = () => {
       }
       
       // Force page reload for clean state
-      window.location.href = '/auth';
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth';
+      }
     } catch (error) {
       console.error('Logout error:', error);
       // Force redirect even if logout fails
-      window.location.href = '/auth';
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth';
+      }
     }
-  };
+  }, [navigate]);
 
-  const moods = [
+  const moods = useMemo(() => [
     { id: "romantic", icon: Heart },
     { id: "happy", icon: Sun },
     { id: "silly", icon: Sparkles },
     { id: "sleepy", icon: Moon },
-  ];
+  ], []);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
@@ -265,7 +270,7 @@ const Index = () => {
         ) : (
           <>
             {/* Connection established - show video */}
-            {showConnectionVideo && !showCompleteVideo && (
+            {showConnectionVideo && (
               <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
                 <video
                   src="/connection-success.mp4"

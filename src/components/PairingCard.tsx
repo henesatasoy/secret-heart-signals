@@ -23,7 +23,7 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
   const isValid = connectionId && connectionId.length > 0;
 
   useEffect(() => {
-    if (isValid) {
+    if (isValid && typeof window !== 'undefined') {
       const currentUrl = window.location.origin;
       setMyLink(`${currentUrl}?connect=${connectionId}`);
     }
@@ -31,7 +31,7 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
 
   // Check if someone is trying to connect via URL parameter - only once
   useEffect(() => {
-    if (!isValid || processedRef.current) {
+    if (!isValid || processedRef.current || typeof window === 'undefined') {
       return;
     }
     
@@ -59,7 +59,9 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
       processConnection();
       
       // Clean up URL parameter
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     }
   }, [isValid, connectionId, connectWith, toast])
 
@@ -123,15 +125,15 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
         <div 
           className="absolute inset-2 bg-orange-300/15 animate-pulse rounded-full" 
           style={{ 
-            imageRendering: 'pixelated'
-          }} 
+            imageRendering: 'pixelated' as const
+          }}
         />
         <div 
           className="absolute inset-4 bg-yellow-200/12 animate-pulse rounded-full" 
           style={{ 
-            imageRendering: 'pixelated', 
+            imageRendering: 'pixelated' as const, 
             animationDelay: '1s'
-          }} 
+          }}
         />
         
         {/* Click ripple effect */}

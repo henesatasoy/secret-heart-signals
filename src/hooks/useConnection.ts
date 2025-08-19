@@ -84,8 +84,8 @@ export const useConnection = (myConnectionId: string) => {
         },
         (payload) => {
           console.log('Connection update received:', payload)
-          const connection = payload.new as { connection_id?: string; partner_id?: string; is_connected?: boolean }
-          const oldConnection = payload.old as { connection_id?: string; partner_id?: string }
+          const connection = payload.new as { connection_id?: string; partner_id?: string; is_connected?: boolean; id?: string }
+          const oldConnection = payload.old as { connection_id?: string; partner_id?: string; is_connected?: boolean; id?: string }
           
           // Handle updates that affect my connection
           if (connection?.connection_id === myConnectionId || connection?.partner_id === myConnectionId ||
@@ -154,7 +154,7 @@ export const useConnection = (myConnectionId: string) => {
     
     try {
       // First ensure I have my own connection
-      let { data: myConnection } = await supabase
+      const { data: myConnection } = await supabase
         .from('connections')
         .select('id')
         .eq('connection_id', myConnectionId)
@@ -190,7 +190,7 @@ export const useConnection = (myConnectionId: string) => {
       }
 
       // Check if partner connection exists (read-only check)
-      let { data: partnerConnection } = await supabase
+      const { data: partnerConnection } = await supabase
         .from('connections')
         .select('id, partner_id, is_connected')
         .eq('connection_id', partnerConnectionId)
@@ -225,7 +225,6 @@ export const useConnection = (myConnectionId: string) => {
         console.error('Error updating partner connection:', partnerError);
         throw partnerError;
       }
-
 
       console.log('Connection established successfully');
       

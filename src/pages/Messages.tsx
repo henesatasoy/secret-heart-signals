@@ -54,6 +54,8 @@ const Messages = () => {
 
   // Show completion video when messages page loads after connection
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('showVideo') === 'true') {
       setShowCompleteVideo(true);
