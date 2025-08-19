@@ -8,27 +8,132 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Enhanced auth state cleanup utility
+const cleanupCorruptedAuthState = () => {
+  if (typeof window === 'undefined') return;
+  
+  console.log('🧹 Cleaning up potentially corrupted auth state...');
+  
+  try {
+    // Clear all auth-related storage
+    const keysToRemove: string[] = [];
+    
+    // Collect localStorage keys
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.startsWith('supabase') ||
+        key.includes('auth') ||
+        key.includes('session') ||
+        key.includes('token') ||
+        key.includes('sb-')
+      )) {
+        keysToRemove.push(key);
+      }
+    }
+    
+    // Remove collected keys
+    keysToRemove.forEach(key => {
+      console.log('🗑️ Removing localStorage key:', key);
+      localStorage.removeItem(key);
+    });
+    
+    // Clear sessionStorage
+    if (window.sessionStorage) {
+      const sessionKeysToRemove: string[] = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (
+          key.startsWith('supabase') ||
+          key.includes('auth') ||
+          key.includes('session') ||
+          key.includes('token') ||
+          key.includes('sb-')
+        )) {
+          sessionKeysToRemove.push(key);
+        }
+      }
+      
+      sessionKeysToRemove.forEach(key => {
+        console.log('🗑️ Removing sessionStorage key:', key);
+        sessionStorage.removeItem(key);
+      });
+    }
+    
+    console.log('✅ Auth state cleanup completed');
+  } catch (error) {
+    console.warn('⚠️ Auth cleanup error:', error);
+  }
+};
+
+// Custom storage wrapper with corruption detection
+const createSecureStorage = () => {
+  if (typeof window === 'undefined') return null;
+  
+  return {
+    getItem: (key: string) => {
+      try {
+        const item = localStorage.getItem(key);
+        if (!item) return null;
+        
+        // Try to parse to detect corruption
+        const parsed = JSON.parse(item);
+        
+        // Check for refresh token corruption specifically
+        if (parsed && typeof parsed === 'object' && 'refresh_token' in parsed) {
+          if (!parsed.refresh_token || parsed.refresh_token.length < 10) {
+            console.warn('🚨 Corrupted refresh token detected, cleaning up');
+            cleanupCorruptedAuthState();
+            return null;
+          }
+        }
+        
+        return item;
+      } catch (error) {
+        console.warn('🚨 Storage corruption detected for key:', key, error);
+        cleanupCorruptedAuthState();
+        return null;
+      }
+    },
+    setItem: (key: string, value: string) => {
+      try {
+        localStorage.setItem(key, value);
+      } catch (error) {
+        console.error('❌ Storage write error:', error);
+        cleanupCorruptedAuthState();
+      }
+    },
+    removeItem: (key: string) => {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.warn('⚠️ Storage remove error:', error);
+      }
+    }
+  };
+};
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: typeof window !== 'undefined' ? localStorage : undefined,
+    storage: createSecureStorage(),
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
     flowType: 'pkce',
-    // Enhanced session management
-    storageKey: 'supabase.auth.token',
-    // Prevent storage conflicts
+    storageKey: 'sb-auth-token',
     debug: false
   },
   global: {
     headers: {
-      'X-Client-Info': 'supabase-js-web'
+      'X-Client-Info': 'supabase-js-web/2.55.0'
     }
   },
-  // Add realtime configuration
   realtime: {
     params: {
       eventsPerSecond: 10
     }
   }
 });
+
+// Export cleanup function for external use
+export { cleanupCorruptedAuthState };

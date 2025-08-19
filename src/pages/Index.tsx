@@ -31,32 +31,98 @@ const Index = () => {
   // Call useMessages with current partnerId 
   const { messages, sendMessage } = useMessages(connectionId, partnerId);
 
-  // Authentication setup
+  // Enhanced authentication setup with corruption detection
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    console.log('🔍 Setting up auth state management...')
+    
+    let authSubscription: any = null
+    
+    const setupAuth = async () => {
+      try {
+        // Set up auth state listener FIRST with enhanced error handling
+        authSubscription = supabase.auth.onAuthStateChange(
+          (event, session) => {
+            console.log('🔄 Auth state change:', event, session?.user?.id)
+            
+            // Handle token refresh errors specifically
+            if (event === 'TOKEN_REFRESHED') {
+              console.log('✅ Token refreshed successfully')
+              setSession(session);
+              setUser(session?.user ?? null);
+            } else if (event === 'SIGNED_OUT') {
+              console.log('👋 User signed out')
+              setSession(null);
+              setUser(null);
+              navigate('/auth', { replace: true });
+            } else if (event === 'SIGNED_IN') {
+              console.log('👤 User signed in:', session?.user?.id)
+              setSession(session);
+              setUser(session?.user ?? null);
+            } else {
+              // Handle other events
+              setSession(session);
+              setUser(session?.user ?? null);
+              
+              if (!session) {
+                navigate('/auth', { replace: true });
+              }
+            }
+          }
+        );
         
-        // Redirect to auth if not logged in
-        if (!session) {
-          navigate('/auth');
+        // THEN check for existing session with error handling
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession()
+          
+          if (error) {
+            console.error('🚨 Session check error:', error)
+            
+            // Handle refresh token errors
+            if (error.message?.includes('refresh_token_not_found') || 
+                error.message?.includes('Invalid Refresh Token')) {
+              console.log('🔄 Refresh token error detected, cleaning up...')
+              
+              // Import cleanup function
+              const { cleanupCorruptedAuthState } = await import('@/integrations/supabase/client')
+              cleanupCorruptedAuthState()
+              
+              // Force sign out and redirect
+              try {
+                await supabase.auth.signOut({ scope: 'global' })
+              } catch (signOutError) {
+                console.log('Signout after token error failed:', signOutError)
+              }
+              
+              navigate('/auth', { replace: true });
+              return
+            }
+          }
+          
+          console.log('🔍 Session check result:', session?.user?.id || 'No session')
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (!session) {
+            navigate('/auth', { replace: true });
+          }
+        } catch (sessionError) {
+          console.error('💥 Session check failed:', sessionError)
+          navigate('/auth', { replace: true });
         }
+        
+      } catch (setupError) {
+        console.error('💥 Auth setup failed:', setupError)
+        navigate('/auth', { replace: true });
       }
-    );
+    }
+    
+    setupAuth()
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (!session) {
-        navigate('/auth');
+    return () => {
+      if (authSubscription?.data?.subscription) {
+        authSubscription.data.subscription.unsubscribe();
       }
-    });
-
-    return () => subscription.unsubscribe();
+    };
    }, [navigate]);
 
   // Show connection video only once when first connected

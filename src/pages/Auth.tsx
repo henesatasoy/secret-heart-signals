@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'
+import { supabase, cleanupCorruptedAuthState } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,32 +9,47 @@ import { Heart, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
 // Enhanced auth state cleanup utility
 const cleanupAuthState = () => {
-  console.log('Cleaning up authentication state...')
+  console.log('🧹 Cleaning up authentication state...')
   
-  // Clear localStorage authentication data
-  if (typeof window !== 'undefined' && window.localStorage) {
-    // Remove standard supabase auth tokens
-    localStorage.removeItem('supabase.auth.token')
-    
-    // Remove all Supabase auth keys
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-') || 
-          key.startsWith('supabase-') || key.includes('.auth.')) {
-        console.log('Removing localStorage key:', key)
-        localStorage.removeItem(key)
+  // Use the imported cleanup function
+  cleanupCorruptedAuthState()
+  
+  // Additional cleanup for this component
+  if (typeof window !== 'undefined') {
+    // Clear any cached auth state
+    try {
+      // Force clear any remaining supabase instances
+      if ((window as any).supabase) {
+        delete (window as any).supabase
       }
-    })
+    } catch (error) {
+      console.warn('⚠️ Window cleanup error:', error)
+    }
   }
+}
+
+// Global error handler for auth errors
+const handleAuthError = (error: any) => {
+  console.error('🚨 Auth error detected:', error)
   
-  // Clear sessionStorage if exists
-  if (typeof window !== 'undefined' && window.sessionStorage) {
-    Object.keys(sessionStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-') || 
-          key.startsWith('supabase-') || key.includes('.auth.')) {
-        console.log('Removing sessionStorage key:', key)
-        sessionStorage.removeItem(key)
-      }
-    })
+  // Check for specific refresh token errors
+  if (error && typeof error === 'object') {
+    const errorMessage = error.message || error.error_description || ''
+    
+    if (errorMessage.includes('refresh_token_not_found') || 
+        errorMessage.includes('Invalid Refresh Token') ||
+        errorMessage.includes('JWT') ||
+        errorMessage.includes('session_not_found')) {
+      console.log('🔄 Auth token corruption detected, cleaning up...')
+      cleanupAuthState()
+      
+      // Force page reload after cleanup
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.location.reload()
+        }
+      }, 500)
+    }
   }
 }
 
@@ -45,43 +60,83 @@ const Auth = () => {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
+  const [isInitializing, setIsInitializing] = useState(true)
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  // Enhanced authentication check with cleanup
+  // Enhanced authentication check with aggressive cleanup
   useEffect(() => {
-    const checkAuthAndCleanup = async () => {
+    const initializeAuth = async () => {
+      console.log('🔍 Initializing auth state check...')
+      setIsInitializing(true)
+      
       try {
-        // Clean up any existing corrupted auth state first
+        // Step 1: Aggressive cleanup first
+        console.log('🧹 Starting aggressive auth cleanup...')
         cleanupAuthState()
         
-        // Wait a bit for cleanup to complete
-        await new Promise(resolve => setTimeout(resolve, 100))
+        // Step 2: Wait for cleanup to complete
+        await new Promise(resolve => setTimeout(resolve, 300))
         
-        // Check current session
-        const { data: { session }, error } = await supabase.auth.getSession()
+        // Step 3: Set up auth error handler
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          console.log('🔄 Auth state change:', event, session?.user?.id)
+          
+          if (event === 'TOKEN_REFRESHED') {
+            console.log('✅ Token refreshed successfully')
+          } else if (event === 'SIGNED_OUT') {
+            console.log('👋 User signed out')
+            cleanupAuthState()
+          } else if (event === 'SIGNED_IN') {
+            console.log('👤 User signed in:', session?.user?.id)
+            navigate('/', { replace: true })
+          }
+        })
         
-        if (error) {
-          console.error('Session check error:', error)
-          // Force cleanup on error
-          cleanupAuthState()
-          return
+        // Step 4: Check current session with error handling
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession()
+          
+          if (error) {
+            console.error('🚨 Session check error:', error)
+            handleAuthError(error)
+            return
+          }
+          
+          if (session && session.user) {
+            console.log('✅ Valid session found, user:', session.user.id)
+            
+            // Verify session is not corrupted
+            if (session.access_token && session.refresh_token) {
+              console.log('🔑 Session tokens valid, redirecting...')
+              navigate('/', { replace: true })
+            } else {
+              console.warn('⚠️ Session tokens missing, cleaning up...')
+              cleanupAuthState()
+              await supabase.auth.signOut()
+            }
+          } else {
+            console.log('ℹ️ No valid session found')
+          }
+        } catch (sessionError) {
+          console.error('💥 Session check failed:', sessionError)
+          handleAuthError(sessionError)
         }
         
-        if (session && session.user) {
-          console.log('Valid session found, redirecting to home')
-          // Use replace to prevent back navigation issues
-          navigate('/', { replace: true })
-        } else {
-          console.log('No valid session found')
+        // Cleanup subscription on unmount
+        return () => {
+          subscription.unsubscribe()
         }
+        
       } catch (error) {
-        console.error('Auth check error:', error)
-        cleanupAuthState()
+        console.error('💥 Auth initialization failed:', error)
+        handleAuthError(error)
+      } finally {
+        setIsInitializing(false)
       }
     }
     
-    checkAuthAndCleanup()
+    initializeAuth()
   }, [navigate])
 
   // Enhanced input validation
@@ -122,26 +177,28 @@ const Auth = () => {
     }
 
     setLoading(true)
+    console.log(`🚀 Starting ${isLogin ? 'login' : 'signup'} process...`)
 
     try {
       const trimmedEmail = email.trim().toLowerCase()
       
+      // PRE-AUTH CLEANUP - Always clean before auth operations
+      console.log('🧹 Pre-auth cleanup...')
+      cleanupAuthState()
+      
+      // Force sign out any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' })
+        console.log('🔄 Global signout completed')
+      } catch (signOutError) {
+        console.log('ℹ️ Global signout failed (expected):', signOutError)
+      }
+      
+      // Wait for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
       if (isLogin) {
-        // Enhanced login with proper cleanup
-        console.log('Attempting login for:', trimmedEmail)
-        
-        // Clean up any existing auth state before login
-        cleanupAuthState()
-        
-        // Attempt to sign out any existing sessions globally
-        try {
-          await supabase.auth.signOut({ scope: 'global' })
-        } catch (signOutError) {
-          console.log('Global signout failed (expected):', signOutError)
-        }
-        
-        // Wait for cleanup to complete
-        await new Promise(resolve => setTimeout(resolve, 200))
+        console.log('🔐 Attempting login for:', trimmedEmail)
         
         const { data, error } = await supabase.auth.signInWithPassword({
           email: trimmedEmail,
@@ -149,29 +206,35 @@ const Auth = () => {
         })
         
         if (error) {
-          console.error('Login error:', error)
+          console.error('❌ Login error:', error)
+          handleAuthError(error)
           throw new Error(getAuthErrorMessage(error))
         }
         
-        if (data.user) {
-          console.log('Login successful for user:', data.user.id)
-          toast({
-            title: "Giriş başarılı! 💕",
-            description: "Sevgilinle bağlanmaya hazırsın",
-          })
-          
-          // Force full page reload for clean state
-          window.location.href = '/'
-        } else {
-          throw new Error('Giriş başarısız - kullanıcı bilgisi alınamadı')
+        if (!data.user || !data.session) {
+          throw new Error('Login başarısız - kullanıcı bilgisi alınamadı')
         }
         
-      } else {
-        // Enhanced signup with proper validation
-        console.log('Attempting signup for:', trimmedEmail)
+        // Verify session integrity
+        if (!data.session.access_token || !data.session.refresh_token) {
+          console.error('🚨 Session tokens missing after login')
+          cleanupAuthState()
+          throw new Error('Oturum bilgileri eksik - tekrar deneyin')
+        }
         
-        // Clean up before signup
-        cleanupAuthState()
+        console.log('✅ Login successful for user:', data.user.id)
+        toast({
+          title: "Giriş başarılı! 💕",
+          description: "Sevgilinle bağlanmaya hazırsın",
+        })
+        
+        // Force full page reload for absolutely clean state
+        setTimeout(() => {
+          window.location.replace('/')
+        }, 100)
+        
+      } else {
+        console.log('📝 Attempting signup for:', trimmedEmail)
         
         const { data, error } = await supabase.auth.signUp({
           email: trimmedEmail,
@@ -179,42 +242,44 @@ const Auth = () => {
           options: {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
+              email: trimmedEmail
             }
           }
         })
         
         if (error) {
-          console.error('Signup error:', error)
+          console.error('❌ Signup error:', error)
+          handleAuthError(error)
           throw new Error(getAuthErrorMessage(error))
         }
         
-        if (data.user) {
-          console.log('Signup successful for user:', data.user.id)
-          
-          // Check if email confirmation is required
-          if (!data.session) {
-            toast({
-              title: "Kayıt başarılı! 📧",
-              description: "Email adresini kontrol et ve doğrulama linkine tıkla",
-            })
-          } else {
-            toast({
-              title: "Kayıt başarılı! 💕",
-              description: "Hesabın oluşturuldu, giriş yapabilirsin",
-            })
-          }
-          
-          // Switch to login mode
-          setIsLogin(true)
-          setPassword('') // Clear password for security
-        } else {
+        if (!data.user) {
           throw new Error('Kayıt başarısız - kullanıcı oluşturulamadı')
         }
+        
+        console.log('✅ Signup successful for user:', data.user.id)
+        
+        // Check if email confirmation is required
+        if (!data.session) {
+          toast({
+            title: "Kayıt başarılı! 📧",
+            description: "Email adresini kontrol et ve doğrulama linkine tıkla",
+          })
+        } else {
+          toast({
+            title: "Kayıt başarılı! 💕",
+            description: "Hesabın oluşturuldu, giriş yapabilirsin",
+          })
+        }
+        
+        // Switch to login mode and clear password
+        setIsLogin(true)
+        setPassword('')
       }
       
     } catch (error: any) {
-      console.error('Auth error:', error)
+      console.error('💥 Auth error:', error)
       const errorMessage = error.message || 'Bilinmeyen bir hata oluştu'
       setAuthError(errorMessage)
       
@@ -223,15 +288,34 @@ const Auth = () => {
         description: errorMessage,
         variant: "destructive"
       })
+      
+      // Additional cleanup on error
+      if (errorMessage.includes('refresh_token') || errorMessage.includes('session')) {
+        console.log('🔄 Auth token error detected, cleaning up...')
+        cleanupAuthState()
+      }
+      
     } finally {
       setLoading(false)
     }
   }
 
-  // Enhanced error message mapping
+  // Enhanced error message mapping with token-specific errors
   const getAuthErrorMessage = (error: any): string => {
     const errorCode = error.message || error.error_description || ''
     
+    // Token-specific errors (critical for our issue)
+    if (errorCode.includes('refresh_token_not_found') || errorCode.includes('Invalid Refresh Token')) {
+      return 'Oturum süresi dolmuş, sayfa yenilenecek...'
+    }
+    if (errorCode.includes('session_not_found') || errorCode.includes('JWT expired')) {
+      return 'Oturum geçersiz, tekrar giriş yapın'
+    }
+    if (errorCode.includes('Token has expired') || errorCode.includes('token_expired')) {
+      return 'Token süresi dolmuş, tekrar giriş yapın'
+    }
+    
+    // Standard auth errors
     if (errorCode.includes('Invalid login credentials')) {
       return 'Email veya şifre hatalı'
     }
@@ -247,17 +331,29 @@ const Auth = () => {
     if (errorCode.includes('Unable to validate email address')) {
       return 'Geçersiz email adresi'
     }
-    if (errorCode.includes('refresh_token_not_found')) {
-      return 'Oturum süresi dolmuş, tekrar giriş yap'
-    }
     if (errorCode.includes('Signup requires a valid password')) {
       return 'Geçerli bir şifre gerekli'
     }
-    if (errorCode.includes('network')) {
+    if (errorCode.includes('network') || errorCode.includes('fetch')) {
       return 'İnternet bağlantınızı kontrol edin'
+    }
+    if (errorCode.includes('Too many requests')) {
+      return 'Çok fazla deneme, biraz bekleyin'
     }
     
     return errorCode || 'Bilinmeyen hata'
+  }
+
+  // Show loading screen during initialization
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-pink-300 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white font-mono">🔍 Oturum kontrol ediliyor...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
