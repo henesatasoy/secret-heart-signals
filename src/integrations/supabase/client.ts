@@ -141,11 +141,52 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     detectSessionInUrl: true,
     flowType: 'pkce',
     storageKey: 'sb-auth-token',
-    debug: false
+    debug: process.env.NODE_ENV === 'development'
   },
   global: {
     headers: {
-      'X-Client-Info': 'supabase-js-web/2.55.0'
+      'X-Client-Info': 'supabase-js-web/2.55.0',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    },
+    fetch: (url: RequestInfo | URL, options: RequestInit = {}) => {
+      // Enhanced fetch with better error handling and timeouts
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
+      const enhancedOptions: RequestInit = {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          ...(options.headers || {}),
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      };
+      
+      return fetch(url, enhancedOptions)
+        .then(response => {
+          clearTimeout(timeoutId);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response;
+        })
+        .catch(error => {
+          clearTimeout(timeoutId);
+          console.error('🚨 Enhanced fetch error:', error);
+          
+          // Provide more specific error messages
+          if (error.name === 'AbortError') {
+            throw new Error('Request timeout - check your internet connection');
+          }
+          
+          if (error.message.includes('fetch')) {
+            throw new Error('Network connection failed - please check your internet');
+          }
+          
+          throw error;
+        });
     }
   },
   realtime: {

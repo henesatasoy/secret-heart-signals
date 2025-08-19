@@ -31,17 +31,20 @@ const Index = () => {
   // Call useMessages with current partnerId 
   const { messages, sendMessage } = useMessages(connectionId, partnerId);
 
-  // Enhanced authentication setup with corruption detection
+  // Enhanced authentication setup with corruption detection and better error handling
   useEffect(() => {
     console.log('🔍 Setting up auth state management...')
     
     let authSubscription: any = null
+    let isActive = true // Prevent state updates on unmounted component
     
     const setupAuth = async () => {
       try {
         // Set up auth state listener FIRST with enhanced error handling
         authSubscription = supabase.auth.onAuthStateChange(
           (event, session) => {
+            if (!isActive) return // Prevent updates if component unmounted
+            
             console.log('🔄 Auth state change:', event, session?.user?.id)
             
             // Handle token refresh errors specifically
@@ -59,11 +62,11 @@ const Index = () => {
               setSession(session);
               setUser(session?.user ?? null);
             } else {
-              // Handle other events
+              // Handle other events including initial load
               setSession(session);
               setUser(session?.user ?? null);
               
-              if (!session) {
+              if (!session && event !== 'INITIAL_SESSION') {
                 navigate('/auth', { replace: true });
               }
             }
@@ -119,8 +122,12 @@ const Index = () => {
     setupAuth()
 
     return () => {
+      isActive = false // Prevent further state updates
+      
       if (authSubscription?.data?.subscription) {
         authSubscription.data.subscription.unsubscribe();
+      } else if (authSubscription && typeof authSubscription.unsubscribe === 'function') {
+        authSubscription.unsubscribe();
       }
     };
    }, [navigate]);

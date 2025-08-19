@@ -26,15 +26,22 @@ export const useConnection = (myConnectionId: string) => {
       setLoading(true)
       
       try {
-        // Use enhanced network retry mechanism
+        // Use enhanced network retry mechanism with better error handling
         const existing = await executeWithNetworkRetry(async () => {
+          console.log('🔍 Fetching connection data for:', myConnectionId)
+          
           const { data, error } = await supabase
             .from('connections')
             .select('partner_id, is_connected')
             .eq('connection_id', myConnectionId)
             .maybeSingle()
 
-          if (error) throw error
+          if (error) {
+            console.error('💥 Supabase query error:', error)
+            throw error
+          }
+          
+          console.log('✅ Connection data fetched:', data)
           return data
         }, 'connection fetch')
 
@@ -46,6 +53,7 @@ export const useConnection = (myConnectionId: string) => {
           console.log('Creating new connection with UPSERT for:', myConnectionId);
           
           await executeWithRetry(async () => {
+            console.log('🔨 Creating new connection via UPSERT...')
             const { error } = await supabase
               .from('connections')
               .upsert({ 
@@ -57,26 +65,45 @@ export const useConnection = (myConnectionId: string) => {
                 ignoreDuplicates: false
               })
             
-            if (error) throw error
+            if (error) {
+              console.error('💥 UPSERT error:', error)
+              throw error
+            }
+            console.log('✅ UPSERT successful')
           }, 'connection creation')
           
           console.log('New connection upserted successfully');
           setConnected(null, false)
         }
       } catch (error) {
-        console.error('Connection initialization error:', error);
+        console.error('💥 Connection initialization error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata'
-        setError(errorMessage)
-        toast({
-          title: "Bağlantı hatası", 
-          description: `Sistem hatası: ${errorMessage}`,
-          variant: "destructive"
-        });
+        
+        // More specific error handling
+        let userMessage = errorMessage
+        if (errorMessage.includes('timeout') || errorMessage.includes('Failed to fetch')) {
+          userMessage = 'Bağlantı zaman aşımı - internet bağlantınızı kontrol edin'
+        } else if (errorMessage.includes('connection')) {
+          userMessage = 'Sunucu bağlantısı kurulamadı'
+        }
+        
+        setError(userMessage)
+        
+        // Only show toast for non-network errors (network errors already show toast)
+        if (!errorMessage.includes('Failed to fetch') && !errorMessage.includes('timeout')) {
+          toast({
+            title: "Bağlantı hatası", 
+            description: userMessage,
+            variant: "destructive"
+          });
+        }
+      } finally {
+        setLoading(false)
       }
     }
 
     initConnection()
-  }, [isValidConnection, myConnectionId, toast, setLoading, setError, setConnected, executeWithNetworkRetry])
+  }, [isValidConnection, myConnectionId, setLoading, setError, setConnected, executeWithNetworkRetry, executeWithRetry, toast])
 
   // Listen for connection updates with improved error handling and debouncing  
   useEffect(() => {
@@ -230,12 +257,18 @@ export const useConnection = (myConnectionId: string) => {
     setLoading(true)
     
     try {
-      // Transaction-like approach for connection establishment
-      const { data: myConnection } = await supabase
+      // Enhanced transaction-like approach for connection establishment
+      console.log('🔍 Checking my connection before proceeding...')
+      const { data: myConnection, error: fetchError } = await supabase
         .from('connections')
         .select('id, partner_id, is_connected')
         .eq('connection_id', myConnectionId)
         .maybeSingle()
+      
+      if (fetchError) {
+        console.error('💥 Error fetching my connection:', fetchError)
+        throw new Error(`Bağlantı kontrolü başarısız: ${fetchError.message}`)
+      }
 
       if (!myConnection) {
         console.log('Creating my own connection first with UPSERT');
@@ -280,12 +313,18 @@ export const useConnection = (myConnectionId: string) => {
         throw new Error(`Bağlantı güncellenemedi: ${myError.message}`);
       }
 
-      // Check partner connection status
-      const { data: partnerConnection } = await supabase
+      // Enhanced partner connection status check
+      console.log('🔍 Checking partner connection status...')
+      const { data: partnerConnection, error: partnerFetchError } = await supabase
         .from('connections')
         .select('id, partner_id, is_connected')
         .eq('connection_id', partnerConnectionId)
         .maybeSingle()
+      
+      if (partnerFetchError) {
+        console.error('💥 Error fetching partner connection:', partnerFetchError)
+        throw new Error(`Partner bağlantı kontrolü başarısız: ${partnerFetchError.message}`)
+      }
 
       if (!partnerConnection) {
         // Partner doesn't exist yet - one-way connection established
@@ -320,22 +359,34 @@ export const useConnection = (myConnectionId: string) => {
       const maxVerificationAttempts = 3
       
       const verifyConnection = async (): Promise<boolean> => {
-        const { data: verification } = await supabase
+        console.log(`🔍 Verification attempt ${verificationAttempts + 1}/${maxVerificationAttempts}`)
+        
+        const { data: verification, error: verificationError } = await supabase
           .from('connections')
           .select('is_connected, partner_id')
           .eq('connection_id', myConnectionId)
           .maybeSingle()
         
+        if (verificationError) {
+          console.error('💥 Verification error:', verificationError)
+          return false
+        }
+        
+        console.log('🔍 Verification data:', verification)
+        
         if (verification?.is_connected && verification?.partner_id === partnerConnectionId) {
+          console.log('✅ Connection verified successfully!')
           return true
         }
         
         if (verificationAttempts < maxVerificationAttempts) {
           verificationAttempts++
+          console.log(`⏱️ Waiting 500ms before next verification attempt...`)
           await new Promise(resolve => setTimeout(resolve, 500))
           return verifyConnection()
         }
         
+        console.warn('❌ Verification failed after all attempts')
         return false
       }
       
