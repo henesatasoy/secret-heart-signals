@@ -65,7 +65,7 @@ const Index = () => {
     } else if (!isConnected || !partnerId) {
       setShowConnectionVideo(false);
     }
-  }, [isConnected, partnerId]);
+  }, [isConnected, partnerId, showConnectionVideo]);
 
   // Video handles navigation via onEnded event - no timer needed
 
@@ -284,7 +284,13 @@ const Index = () => {
                 <div className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-4 border-emerald-700 rounded-none shadow-[6px_6px_0px_0px_rgba(4,120,87,1)] p-8">
                   <Heart className="h-16 w-16 mx-auto mb-4 text-emerald-900" />
                   <h2 className="text-emerald-900 font-mono font-bold text-2xl mb-2">Bağlandı! 💕</h2>
-                  <p className="text-emerald-800 font-mono">Video yükleniyor...</p>
+                  <p className="text-emerald-800 font-mono">Mesajlaşmak için tıkla</p>
+                  <button 
+                    onClick={() => navigate('/messages')}
+                    className="mt-4 px-6 py-2 bg-emerald-600 text-white font-mono font-bold rounded-none hover:bg-emerald-700 transition-colors"
+                  >
+                    Mesajlaşmaya Git
+                  </button>
                 </div>
               </div>
             )}

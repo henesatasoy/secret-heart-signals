@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 
@@ -135,7 +135,7 @@ export const useConnection = (myConnectionId: string) => {
     }
   }, [myConnectionId])
 
-  const connectWith = async (partnerConnectionId: string) => {
+  const connectWith = useCallback(async (partnerConnectionId: string) => {
     if (!myConnectionId || myConnectionId === partnerConnectionId) return;
     
     console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
@@ -223,7 +223,7 @@ export const useConnection = (myConnectionId: string) => {
         .from('connections')
         .select('is_connected, partner_id')
         .eq('connection_id', myConnectionId)
-        .single()
+        .maybeSingle()
       
       if (verifyConnection?.is_connected && verifyConnection?.partner_id) {
         setIsConnected(true)
@@ -246,9 +246,9 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive"
       })
     }
-  }
+  }, [myConnectionId, toast])
 
-  const disconnectPartner = async () => {
+  const disconnectPartner = useCallback(async () => {
     try {
       console.log('Disconnecting from partner...');
       
@@ -302,7 +302,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive",
       });
     }
-  };
+  }, [myConnectionId, partnerId, toast]);
 
   return { isConnected, partnerId, connectWith, disconnectPartner }
 }

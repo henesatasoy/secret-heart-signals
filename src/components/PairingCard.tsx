@@ -57,7 +57,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       // Clean up URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [isValid, connectionId]); // Remove connectWith from dependencies
+  }, [isValid, connectionId, connectWith]); // Include connectWith for proper closure
 
   // Notify parent when connection is established
   useEffect(() => {
