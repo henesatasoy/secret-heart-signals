@@ -24,9 +24,9 @@ const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Use user ID as connection ID for consistent identification - only if user exists
-  const connectionId = user?.id || '';
-  const { isConnected, partnerId, connectWith, disconnectPartner } = useConnection(connectionId);
+  // Enhanced connection management with proper validation
+  const connectionId = useMemo(() => user?.id || '', [user?.id]);
+  const { isConnected, partnerId, isLoading, error, connectWith, disconnectPartner } = useConnection(connectionId);
   
   // Call useMessages with current partnerId 
   const { messages, sendMessage } = useMessages(connectionId, partnerId);
