@@ -65,7 +65,7 @@ export const useConnection = (myConnectionId: string) => {
     }
 
     initConnection()
-  }, [myConnectionId])
+  }, [myConnectionId, toast])
 
   // Listen for connection updates - optimized single listener
   useEffect(() => {
@@ -84,8 +84,8 @@ export const useConnection = (myConnectionId: string) => {
         },
         (payload) => {
           console.log('Connection update received:', payload)
-          const connection = payload.new as any
-          const oldConnection = payload.old as any
+          const connection = payload.new as { connection_id?: string; partner_id?: string; is_connected?: boolean }
+          const oldConnection = payload.old as { connection_id?: string; partner_id?: string }
           
           // Handle updates that affect my connection
           if (connection?.connection_id === myConnectionId || connection?.partner_id === myConnectionId ||
@@ -254,7 +254,7 @@ export const useConnection = (myConnectionId: string) => {
       console.error('Connection error:', error)
       toast({
         title: "Bağlantı hatası",
-        description: "Lütfen tekrar dene: " + (error as any).message,
+        description: "Lütfen tekrar dene: " + (error instanceof Error ? error.message : 'Bilinmeyen hata'),
         variant: "destructive"
       })
     }
@@ -310,7 +310,7 @@ export const useConnection = (myConnectionId: string) => {
       console.error('Error in disconnectPartner:', error);
       toast({
         title: "Bağlantı koparılamadı",
-        description: "Bir hata oluştu: " + (error as any).message,
+        description: "Bir hata oluştu: " + (error instanceof Error ? error.message : 'Bilinmeyen hata'),
         variant: "destructive",
       });
     }

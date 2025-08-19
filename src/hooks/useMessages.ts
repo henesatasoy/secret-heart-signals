@@ -47,7 +47,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
     }
 
     loadMessages()
-  }, [myConnectionId, partnerId, hasValidConnection])
+  }, [myConnectionId, partnerId, hasValidConnection, toast])
 
   // Listen for new messages - optimized filtering
   useEffect(() => {
@@ -121,7 +121,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
       console.log('Cleaning up message listener');
       channel.unsubscribe()
     }
-  }, [myConnectionId, partnerId, hasValidConnection])  // Remove toast from dependencies
+  }, [myConnectionId, partnerId, hasValidConnection, toast])
 
   const sendMessage = async (message: string, mood: string) => {
     if (!hasValidConnection || !partnerId) {

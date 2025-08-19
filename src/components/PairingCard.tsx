@@ -17,6 +17,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   const { toast } = useToast();
   const { isConnected, partnerId, connectWith } = useConnection(connectionId);
   const processedRef = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Only initialize if we have a valid connectionId (user is logged in)
   const isValid = connectionId && connectionId.length > 0;
@@ -57,7 +58,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       // Clean up URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [isValid, connectionId, connectWith])
+  }, [isValid, connectionId, connectWith, toast])
 
   // Notify parent when connection is established
   useEffect(() => {
@@ -65,6 +66,15 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       onConnect?.(partnerId);
     }
   }, [isConnected, partnerId, onConnect]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const handleCopyLink = async () => {
     if (!isValid) {
@@ -80,7 +90,11 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     try {
       await navigator.clipboard.writeText(myLink);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Clear existing timer if any
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
       toast({
         title: "Link kopyalandı! 💕",
         description: "Bu linki sevgilinle paylaş",
