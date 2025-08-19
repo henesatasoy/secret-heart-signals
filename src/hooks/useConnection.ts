@@ -1,126 +1,70 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
-
-// Connection interface for better type safety
-interface ConnectionState {
-  isConnected: boolean
-  partnerId: string | null
-  isLoading: boolean
-  error: string | null
-}
+import { useConnectionValidation } from '@/hooks/useConnectionValidation'
+import { useConnectionState, type ConnectionState } from '@/hooks/useConnectionState'
+import { useConnectionRetry } from '@/hooks/useConnectionRetry'
 
 export const useConnection = (myConnectionId: string) => {
-  const [connectionState, setConnectionState] = useState<ConnectionState>({
-    isConnected: false,
-    partnerId: null,
-    isLoading: false,
-    error: null
-  })
   const { toast } = useToast()
-  
-  // Memoized connection ID validation
-  const isValidConnectionId = useMemo(() => {
-    return myConnectionId && myConnectionId.length > 0 && 
-           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(myConnectionId)
-  }, [myConnectionId])
+  const { isValidConnection } = useConnectionValidation(myConnectionId)
+  const { connectionState, setLoading, setError, setConnected, updateConnectionState } = useConnectionState()
+  const { executeWithRetry } = useConnectionRetry()
 
   // Initialize and load connection state with proper error handling
   useEffect(() => {
-    if (!isValidConnectionId) {
+    if (!isValidConnection) {
       console.log('Skipping connection init - invalid connection ID:', myConnectionId);
-      setConnectionState(prev => ({ ...prev, error: 'Invalid connection ID' }))
+      setError('Invalid connection ID')
       return;
     }
 
     const initConnection = async () => {
       console.log('Initializing connection for:', myConnectionId);
-      setConnectionState(prev => ({ ...prev, isLoading: true, error: null }))
+      setLoading(true)
       
       try {
-        // First check if connection exists with retry logic
-        let retryCount = 0
-        const maxRetries = 3
-        
-        const fetchWithRetry = async (): Promise<any> => {
-          try {
-            const { data: existing, error: fetchError } = await supabase
-              .from('connections')
-              .select('partner_id, is_connected')
-              .eq('connection_id', myConnectionId)
-              .maybeSingle()
+        // Use retry mechanism to fetch existing connection
+        const existing = await executeWithRetry(async () => {
+          const { data, error } = await supabase
+            .from('connections')
+            .select('partner_id, is_connected')
+            .eq('connection_id', myConnectionId)
+            .maybeSingle()
 
-            if (fetchError) {
-              if (retryCount < maxRetries && fetchError.message.includes('network')) {
-                retryCount++
-                console.log(`Retrying connection fetch, attempt ${retryCount}`)
-                await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
-                return fetchWithRetry()
-              }
-              throw fetchError
-            }
-
-            return existing
-          } catch (error) {
-            if (retryCount < maxRetries) {
-              retryCount++
-              console.log(`Retrying connection fetch due to error, attempt ${retryCount}`)
-              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
-              return fetchWithRetry()
-            }
-            throw error
-          }
-        }
-
-        const existing = await fetchWithRetry()
+          if (error) throw error
+          return data
+        }, 'connection fetch')
 
         if (existing) {
           console.log('Existing connection found:', existing);
-          setConnectionState({
-            isConnected: Boolean(existing.is_connected),
-            partnerId: existing.partner_id || null,
-            isLoading: false,
-            error: null
-          })
+          setConnected(existing.partner_id || null, Boolean(existing.is_connected))
         } else {
-          // Create new connection with proper error handling
-          console.log('Creating new connection for:', myConnectionId);
-          const { error: insertError } = await supabase
-            .from('connections')
-            .insert({ connection_id: myConnectionId })
+          // UPSERT pattern to prevent duplicate key violation
+          console.log('Creating new connection with UPSERT for:', myConnectionId);
           
-          if (insertError) {
-            console.error('Error creating connection:', insertError);
-            setConnectionState({
-              isConnected: false,
-              partnerId: null,
-              isLoading: false,
-              error: insertError.message
-            })
-            toast({
-              title: "Bağlantı hatası",
-              description: `Bağlantı oluşturulamadı: ${insertError.message}`,
-              variant: "destructive"
-            });
-          } else {
-            console.log('New connection created successfully');
-            setConnectionState({
-              isConnected: false,
-              partnerId: null,
-              isLoading: false,
-              error: null
-            })
-          }
+          await executeWithRetry(async () => {
+            const { error } = await supabase
+              .from('connections')
+              .upsert({ 
+                connection_id: myConnectionId,
+                partner_id: null,
+                is_connected: false
+              }, {
+                onConflict: 'connection_id',
+                ignoreDuplicates: false
+              })
+            
+            if (error) throw error
+          }, 'connection creation')
+          
+          console.log('New connection upserted successfully');
+          setConnected(null, false)
         }
       } catch (error) {
         console.error('Connection initialization error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata'
-        setConnectionState({
-          isConnected: false,
-          partnerId: null,
-          isLoading: false,
-          error: errorMessage
-        })
+        setError(errorMessage)
         toast({
           title: "Bağlantı hatası", 
           description: `Sistem hatası: ${errorMessage}`,
@@ -130,11 +74,11 @@ export const useConnection = (myConnectionId: string) => {
     }
 
     initConnection()
-  }, [isValidConnectionId, myConnectionId, toast])
+  }, [isValidConnection, myConnectionId, toast, setLoading, setError, setConnected, executeWithRetry])
 
   // Listen for connection updates with improved error handling and debouncing
   useEffect(() => {
-    if (!isValidConnectionId) return;
+    if (!isValidConnection) return;
     
     console.log('Setting up realtime listener for:', myConnectionId);
     
@@ -144,7 +88,7 @@ export const useConnection = (myConnectionId: string) => {
     const debouncedStateUpdate = (newState: Partial<ConnectionState>) => {
       if (updateTimeout) clearTimeout(updateTimeout)
       updateTimeout = setTimeout(() => {
-        setConnectionState(prev => ({ ...prev, ...newState }))
+        updateConnectionState(newState)
       }, 100)
     }
     
@@ -243,10 +187,7 @@ export const useConnection = (myConnectionId: string) => {
       .subscribe((status) => {
         console.log('Realtime subscription status:', status)
         if (status === 'CHANNEL_ERROR') {
-          setConnectionState(prev => ({ 
-            ...prev, 
-            error: 'Gerçek zamanlı bağlantı hatası' 
-          }))
+          setError('Gerçek zamanlı bağlantı hatası')
         }
       })
 
@@ -255,18 +196,18 @@ export const useConnection = (myConnectionId: string) => {
       if (updateTimeout) clearTimeout(updateTimeout)
       channel.unsubscribe()
     }
-  }, [isValidConnectionId, myConnectionId, toast])
+  }, [isValidConnection, myConnectionId, toast, updateConnectionState, setError])
 
   const connectWith = useCallback(async (partnerConnectionId: string) => {
+    const { validatePartnerConnection, isSelfConnection } = useConnectionValidation(myConnectionId)
+    
     // Enhanced validation
-    if (!isValidConnectionId || !partnerConnectionId || myConnectionId === partnerConnectionId) {
+    if (!isValidConnection || !partnerConnectionId || isSelfConnection(partnerConnectionId)) {
       console.warn('Invalid connection attempt:', { myConnectionId, partnerConnectionId })
       return;
     }
     
-    // Validate partner connection ID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    if (!uuidRegex.test(partnerConnectionId)) {
+    if (!validatePartnerConnection(partnerConnectionId)) {
       toast({
         title: "Geçersiz bağlantı kodu",
         description: "Bağlantı kodu formatı yanlış",
@@ -276,7 +217,7 @@ export const useConnection = (myConnectionId: string) => {
     }
     
     console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
-    setConnectionState(prev => ({ ...prev, isLoading: true, error: null }))
+    setLoading(true)
     
     try {
       // Transaction-like approach for connection establishment
@@ -287,25 +228,27 @@ export const useConnection = (myConnectionId: string) => {
         .maybeSingle()
 
       if (!myConnection) {
-        console.log('Creating my own connection first');
+        console.log('Creating my own connection first with UPSERT');
         const { error: createError } = await supabase
           .from('connections')
-          .insert({ connection_id: myConnectionId })
+          .upsert({ 
+            connection_id: myConnectionId,
+            partner_id: null,
+            is_connected: false
+          }, {
+            onConflict: 'connection_id',
+            ignoreDuplicates: false
+          })
         
         if (createError) {
-          console.error('Error creating my connection:', createError);
+          console.error('Error upserting my connection:', createError);
           throw new Error(`Bağlantı oluşturulamadı: ${createError.message}`);
         }
       }
 
       // Check if already connected to this partner
       if (myConnection?.partner_id === partnerConnectionId && myConnection?.is_connected) {
-        setConnectionState(prev => ({ 
-          ...prev, 
-          partnerId: partnerConnectionId,
-          isConnected: true,
-          isLoading: false
-        }))
+        setConnected(partnerConnectionId, true)
         toast({
           title: "Zaten bağlısınız! 💕",
           description: "Bu partner ile bağlantınız mevcut",
@@ -338,12 +281,7 @@ export const useConnection = (myConnectionId: string) => {
         // Partner doesn't exist yet - one-way connection established
         console.log('Partner connection not found - one-way connection established');
         
-        setConnectionState({
-          partnerId: partnerConnectionId,
-          isConnected: true,
-          isLoading: false,
-          error: null
-        })
+        setConnected(partnerConnectionId, true)
         
         toast({
           title: "Bağlantı isteği gönderildi! 📡",
@@ -394,12 +332,7 @@ export const useConnection = (myConnectionId: string) => {
       const isVerified = await verifyConnection()
       
       if (isVerified) {
-        setConnectionState({
-          partnerId: partnerConnectionId,
-          isConnected: true,
-          isLoading: false,
-          error: null
-        })
+        setConnected(partnerConnectionId, true)
         
         toast({
           title: "Bağlantı kuruldu! 💕",
@@ -413,11 +346,7 @@ export const useConnection = (myConnectionId: string) => {
       console.error('Connection error:', error)
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bağlantı hatası'
       
-      setConnectionState(prev => ({ 
-        ...prev, 
-        isLoading: false,
-        error: errorMessage
-      }))
+      setError(errorMessage)
       
       toast({
         title: "Bağlantı hatası",
@@ -425,7 +354,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive"
       })
     }
-  }, [isValidConnectionId, myConnectionId, toast])
+  }, [isValidConnection, myConnectionId, toast, setLoading, setConnected, setError])
 
   const disconnectPartner = useCallback(async () => {
     try {
@@ -436,7 +365,7 @@ export const useConnection = (myConnectionId: string) => {
         return;
       }
 
-      setConnectionState(prev => ({ ...prev, isLoading: true }))
+      setLoading(true)
 
       // Atomic operation to disconnect both sides
       const disconnectOperations = [
@@ -474,12 +403,7 @@ export const useConnection = (myConnectionId: string) => {
       }
 
       // Update local state
-      setConnectionState({
-        partnerId: null,
-        isConnected: false,
-        isLoading: false,
-        error: null
-      })
+      setConnected(null, false)
       
       toast({
         title: "Bağlantı koptu 💔",
@@ -490,11 +414,7 @@ export const useConnection = (myConnectionId: string) => {
       console.error('Error in disconnectPartner:', error);
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bağlantı hatası'
       
-      setConnectionState(prev => ({ 
-        ...prev, 
-        isLoading: false,
-        error: errorMessage
-      }))
+      setError(errorMessage)
       
       toast({
         title: "Bağlantı koparılamadı",
@@ -502,7 +422,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive",
       });
     }
-  }, [myConnectionId, connectionState.partnerId, toast])
+  }, [myConnectionId, connectionState.partnerId, toast, setLoading, setConnected, setError])
 
   // Return enhanced state with backward compatibility
   return { 

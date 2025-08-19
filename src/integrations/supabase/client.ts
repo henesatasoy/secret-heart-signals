@@ -97,6 +97,26 @@ const createSecureStorage = () => {
     },
     setItem: (key: string, value: string) => {
       try {
+        // Validate data before storage
+        if (!value || typeof value !== 'string') {
+          console.warn('⚠️ Invalid storage value for key:', key);
+          return;
+        }
+        
+        // Try to parse to validate JSON structure
+        try {
+          const parsed = JSON.parse(value);
+          if (parsed && typeof parsed === 'object' && 'refresh_token' in parsed) {
+            if (!parsed.refresh_token || parsed.refresh_token.length < 10) {
+              console.warn('🚨 Attempting to store corrupted refresh token');
+              cleanupCorruptedAuthState();
+              return;
+            }
+          }
+        } catch (parseError) {
+          console.warn('⚠️ Non-JSON value being stored:', key);
+        }
+        
         localStorage.setItem(key, value);
       } catch (error) {
         console.error('❌ Storage write error:', error);

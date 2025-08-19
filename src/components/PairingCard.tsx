@@ -1,9 +1,12 @@
-import { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
-import { Heart, Link, Copy, CheckCircle } from "lucide-react";
-import { hapticFeedback } from "@/services/mobile";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useConnection } from "@/hooks/useConnection";
+import { useConnectionLink } from "@/hooks/useConnectionLink";
+import { useClipboard } from "@/hooks/useClipboard";
+import { CampfireButton } from "@/components/connection/CampfireButton";
+import { ConnectionStatusDisplay } from "@/components/connection/ConnectionStatusDisplay";
+import { isValidUUID } from "@/hooks/useConnectionValidation";
 
 interface ScrollConnectionProps {
   className?: string;
@@ -11,41 +14,14 @@ interface ScrollConnectionProps {
   onConnect?: (partnerId: string) => void;
 }
 
-// Enhanced connection validation
-const isValidUUID = (uuid: string): boolean => {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)
-}
-
 const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollConnectionProps) => {
-  const [myLink, setMyLink] = useState("");
-  const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
   const { isConnected, partnerId, connectWith, isLoading } = useConnection(connectionId);
+  const { connectionLink, isValidConnection } = useConnectionLink(connectionId);
+  const { copied, copyToClipboard, cleanup } = useClipboard();
   const processedRef = useRef(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
-
-  // Enhanced validation with memoization
-  const isValidConnection = useMemo(() => {
-    return connectionId && connectionId.length > 0 && isValidUUID(connectionId)
-  }, [connectionId])
-
-  // Generate connection link with enhanced safety checks
-  useEffect(() => {
-    if (isValidConnection && typeof window !== 'undefined') {
-      try {
-        const currentUrl = window.location.origin;
-        const encodedConnectionId = encodeURIComponent(connectionId);
-        setMyLink(`${currentUrl}?connect=${encodedConnectionId}`);
-      } catch (error) {
-        console.error('Error generating connection link:', error);
-        setMyLink('');
-      }
-    } else {
-      setMyLink('');
-    }
-  }, [connectionId, isValidConnection]);
 
   // Enhanced URL parameter processing with better error handling
   useEffect(() => {
@@ -134,13 +110,9 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
   // Enhanced cleanup on unmount
   useEffect(() => {
     return () => {
-      // Clear all timers and refs
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
+      // Execute cleanup functions
+      cleanup();
       
-      // Execute any cleanup functions
       if (cleanupRef.current) {
         try {
           cleanupRef.current();
@@ -152,7 +124,7 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
       // Reset processing state
       setIsProcessing(false);
     };
-  }, []);
+  }, [cleanup]);
 
   const handleCopyLink = useCallback(async () => {
     if (!isValidConnection) {
@@ -164,7 +136,7 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
       return;
     }
 
-    if (!myLink) {
+    if (!connectionLink) {
       toast({
         title: "Link oluşturulamadı",
         description: "Bağlantı linki henüz hazır değil",
@@ -173,156 +145,32 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
       return;
     }
 
-    try {
-      await hapticFeedback.light();
-      
-      // Enhanced clipboard handling with fallback
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(myLink);
-      } else {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = myLink;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-      }
-      
-      setCopied(true);
-      
-      // Clear existing timer if any
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-      
-      // Auto-reset copied state
-      timerRef.current = setTimeout(() => {
-        setCopied(false);
-        timerRef.current = null;
-      }, 3000);
-      
-      toast({
-        title: "Link kopyalandı! 💕",
-        description: "Bu linki sevgilinle paylaş",
-      });
-      
-    } catch (err) {
-      console.error('Clipboard error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata'
-      
-      toast({
-        title: "Link kopyalanamadı",
-        description: `Hata: ${errorMessage}. Lütfen manuel olarak kopyala`,
-        variant: "destructive",
-      });
-    }
-  }, [isValidConnection, myLink, toast]);
+    await copyToClipboard(connectionLink, {
+      successTitle: "Link kopyalandı! 💕",
+      successDescription: "Bu linki sevgilinle paylaş",
+      errorTitle: "Link kopyalanamadı",
+      errorDescription: "Lütfen manuel olarak kopyala"
+    });
+  }, [isValidConnection, connectionLink, copyToClipboard, toast]);
 
   return (
     <div className={cn("text-center", className)}>
-      {/* Enhanced campfire button with improved accessibility and visual feedback */}
-      <div 
+      <CampfireButton 
         onClick={handleCopyLink}
-        className={cn(
-          "w-32 h-32 cursor-pointer group transition-all duration-200 relative rounded-full",
-          "focus:outline-none focus:ring-4 focus:ring-orange-300/50",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          isLoading || isProcessing ? "cursor-wait" : "active:scale-95"
-        )}
-        title={isValidConnection ? "Kampateş'a tıkla ve bağlantı linkini kopyala" : "Geçersiz bağlantı"}
-        role="button"
-        tabIndex={0}
-        aria-label="Bağlantı linkini kopyala"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleCopyLink();
-          }
-        }}
-      >
-        {/* Enhanced magical flame glow with better performance */}
-        <div 
-          className={cn(
-            "absolute inset-2 rounded-full transition-all duration-500",
-            isValidConnection 
-              ? "bg-orange-300/15 animate-pulse" 
-              : "bg-gray-400/10"
-          )}
-          style={{ 
-            imageRendering: 'pixelated' as const
-          }}
-        />
-        <div 
-          className={cn(
-            "absolute inset-4 rounded-full transition-all duration-500",
-            isValidConnection 
-              ? "bg-yellow-200/12 animate-pulse" 
-              : "bg-gray-300/8"
-          )}
-          style={{ 
-            imageRendering: 'pixelated' as const, 
-            animationDelay: '1s'
-          }}
-        />
-        
-        {/* Enhanced click ripple effect */}
-        <div 
-          className={cn(
-            "absolute inset-0 rounded-full transition-opacity",
-            "opacity-0 group-active:opacity-100 group-active:animate-ping",
-            isValidConnection ? "bg-orange-300/50" : "bg-gray-400/30"
-          )}
-        />
-        
-        {/* Enhanced hover effects */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-          <div className={cn(
-            "absolute inset-0 rounded-full opacity-20 blur-xl animate-pulse",
-            isValidConnection ? "bg-orange-400" : "bg-gray-400"
-          )}></div>
-          <div className={cn(
-            "absolute inset-0 rounded-full opacity-15 blur-lg animate-pulse delay-200",
-            isValidConnection ? "bg-yellow-300" : "bg-gray-300"
-          )}></div>
-        </div>
-        
-        {/* Visual status indicators */}
-        {(isLoading || isProcessing) && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-orange-300 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        )}
-        
-        {copied && (
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-            <div className="bg-green-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
-              <CheckCircle className="w-3 h-3" />
-              Kopyalandı!
-            </div>
-          </div>
-        )}
-      </div>
+        isValidConnection={isValidConnection}
+        isLoading={isLoading}
+        isProcessing={isProcessing}
+        copied={copied}
+        disabled={!isValidConnection || !connectionLink}
+      />
       
-      {/* Connection status text */}
-      {isValidConnection && (
-        <div className="mt-4 text-sm text-white/80">
-           {isConnected 
-             ? "✅ Bağlantı kuruldu!" 
-             : isLoading || isProcessing 
-               ? "🔄 Bağlantı kuruluyor..." 
-               : "🔥 Kampateş'e tıkla ve paylaş"}
-        </div>
-      )}
-      {/* Debug information for development */}
-      {process.env.NODE_ENV === 'development' && connectionId && (
-        <div className="mt-2 text-xs text-white/50 font-mono break-all">
-          ID: {connectionId.substring(0, 8)}...
-        </div>
-      )}
+      <ConnectionStatusDisplay 
+        isValidConnection={isValidConnection}
+        isConnected={isConnected}
+        isLoading={isLoading}
+        isProcessing={isProcessing}
+        connectionId={connectionId}
+      />
     </div>
   );
 });

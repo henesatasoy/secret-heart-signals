@@ -92,18 +92,31 @@ const Auth = () => {
         // Step 2: Wait for cleanup to complete
         await new Promise(resolve => setTimeout(resolve, 300))
         
-        // Step 3: Set up auth error handler
+        // Step 3: Set up auth error handler with enhanced state management
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           console.log('🔄 Auth state change:', event, session?.user?.id)
           
           if (event === 'TOKEN_REFRESHED') {
             console.log('✅ Token refreshed successfully')
+            // Validate the refreshed session
+            if (session && (!session.access_token || !session.refresh_token)) {
+              console.warn('🚨 Token refresh produced invalid session')
+              cleanupAuthState()
+              handleAuthError({ message: 'Invalid session after refresh' })
+            }
           } else if (event === 'SIGNED_OUT') {
             console.log('👋 User signed out')
             cleanupAuthState()
           } else if (event === 'SIGNED_IN') {
             console.log('👤 User signed in:', session?.user?.id)
-            navigate('/', { replace: true })
+            // Validate session integrity before navigating
+            if (session && session.access_token && session.refresh_token) {
+              navigate('/', { replace: true })
+            } else {
+              console.warn('🚨 Sign in produced invalid session')
+              cleanupAuthState()
+              handleAuthError({ message: 'Invalid session after sign in' })
+            }
           }
         })
         
