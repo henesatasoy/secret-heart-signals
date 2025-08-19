@@ -87,6 +87,7 @@ export const useConnection = (myConnectionId: string) => {
           console.log('My connection update received:', payload)
           const connection = payload.new as any
           
+          // Unified connection state update logic
           if (connection?.partner_id && connection?.is_connected) {
             setIsConnected(true)
             setPartnerId(connection.partner_id)
@@ -113,6 +114,7 @@ export const useConnection = (myConnectionId: string) => {
           console.log('Partner connection update received:', payload)
           const connection = payload.new as any
           
+          // Only update if this creates a valid partnership
           if (connection?.is_connected && connection?.connection_id) {
             setIsConnected(true)
             setPartnerId(connection.connection_id)

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Heart, Link } from "lucide-react";
 import { hapticFeedback } from "@/services/mobile";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,8 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   }, [connectionId, isValid]);
 
   // Check if someone is trying to connect via URL parameter - only once
+  const memoizedConnectWith = useMemo(() => connectWith, [connectWith]);
+  
   useEffect(() => {
     if (!isValid || processedRef.current) {
       return;
@@ -45,7 +47,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       // Use a separate function to avoid dependency issues
       const processConnection = async () => {
         try {
-          await connectWith(connectId);
+          await memoizedConnectWith(connectId);
         } catch (error) {
           console.error('Connection failed:', error);
           processedRef.current = false; // Allow retry
@@ -57,7 +59,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
       // Clean up URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [isValid, connectionId, connectWith]); // Include connectWith for proper closure
+  }, [isValid, connectionId, memoizedConnectWith]); // Use memoized version
 
   // Notify parent when connection is established
   useEffect(() => {

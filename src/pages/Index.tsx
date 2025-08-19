@@ -29,9 +29,8 @@ const Index = () => {
   const connectionId = user?.id || '';
   const { isConnected, partnerId, connectWith, disconnectPartner } = useConnection(connectionId);
   
-  // Always call useMessages with stable parameters to avoid hook ordering issues
-  const stablePartnerId = partnerId || null;
-  const { messages, sendMessage } = useMessages(connectionId, stablePartnerId);
+  // Call useMessages with current partnerId (no need for stable wrapper)
+  const { messages, sendMessage } = useMessages(connectionId, partnerId);
 
   // Authentication setup
   useEffect(() => {
