@@ -26,9 +26,21 @@ export const useConnection = (myConnectionId: string) => {
       setLoading(true)
       
       try {
-        // Use enhanced network retry mechanism with better error handling
+        // Use enhanced network retry mechanism with API key validation
         const existing = await executeWithNetworkRetry(async () => {
           console.log('🔍 Fetching connection data for:', myConnectionId)
+          
+          // Check if we have a valid session before making request
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+          if (sessionError) {
+            console.error('💥 Session check failed:', sessionError)
+            throw new Error('Session validation failed - please sign in again')
+          }
+          
+          if (!session) {
+            console.error('💥 No valid session found')
+            throw new Error('No valid session - please sign in')
+          }
           
           const { data, error } = await supabase
             .from('connections')
@@ -79,9 +91,17 @@ export const useConnection = (myConnectionId: string) => {
         console.error('💥 Connection initialization error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata'
         
-        // More specific error handling
+        // Enhanced error handling for auth issues
         let userMessage = errorMessage
-        if (errorMessage.includes('timeout') || errorMessage.includes('Failed to fetch')) {
+        if (errorMessage.includes('Session validation failed') || errorMessage.includes('No valid session')) {
+          userMessage = 'Oturum geçersiz - lütfen tekrar giriş yapın'
+          // Force redirect to auth page for session issues
+          setTimeout(() => {
+            window.location.href = '/auth'
+          }, 2000)
+        } else if (errorMessage.includes('No API key found')) {
+          userMessage = 'Sistem yapılandırma hatası - lütfen sayfayı yenileyin'
+        } else if (errorMessage.includes('timeout') || errorMessage.includes('Failed to fetch')) {
           userMessage = 'Bağlantı zaman aşımı - internet bağlantınızı kontrol edin'
         } else if (errorMessage.includes('connection')) {
           userMessage = 'Sunucu bağlantısı kurulamadı'

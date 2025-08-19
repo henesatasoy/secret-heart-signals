@@ -73,17 +73,20 @@ const Index = () => {
           }
         );
         
-        // THEN check for existing session with error handling
+        // THEN check for existing session with enhanced error handling
         try {
+          console.log('🔍 Checking for existing session...')
           const { data: { session }, error } = await supabase.auth.getSession()
           
           if (error) {
             console.error('🚨 Session check error:', error)
             
-            // Handle refresh token errors
+            // Handle refresh token errors and auth corruption
             if (error.message?.includes('refresh_token_not_found') || 
-                error.message?.includes('Invalid Refresh Token')) {
-              console.log('🔄 Refresh token error detected, cleaning up...')
+                error.message?.includes('Invalid Refresh Token') ||
+                error.message?.includes('JWT') ||
+                error.message?.includes('decode')) {
+              console.log('🔄 Auth corruption detected, cleaning up...')
               
               // Import cleanup function
               const { cleanupCorruptedAuthState } = await import('@/integrations/supabase/client')
@@ -99,23 +102,37 @@ const Index = () => {
               navigate('/auth', { replace: true });
               return
             }
+            
+            // Other session errors - still try to continue
+            console.warn('Session error, but continuing:', error.message)
           }
           
           console.log('🔍 Session check result:', session?.user?.id || 'No session')
-          setSession(session);
-          setUser(session?.user ?? null);
           
-          if (!session) {
-            navigate('/auth', { replace: true });
+          // Only set state if component is still active
+          if (isActive) {
+            setSession(session);
+            setUser(session?.user ?? null);
+            
+            if (!session) {
+              console.log('❌ No valid session found, redirecting to auth')
+              navigate('/auth', { replace: true });
+            } else {
+              console.log('✅ Valid session found for user:', session.user.id)
+            }
           }
         } catch (sessionError) {
           console.error('💥 Session check failed:', sessionError)
-          navigate('/auth', { replace: true });
+          if (isActive) {
+            navigate('/auth', { replace: true });
+          }
         }
         
       } catch (setupError) {
         console.error('💥 Auth setup failed:', setupError)
-        navigate('/auth', { replace: true });
+        if (isActive) {
+          navigate('/auth', { replace: true });
+        }
       }
     }
     

@@ -10,7 +10,7 @@ export const useNetworkRetry = () => {
     
     const errorMessage = error?.message || error?.toString() || ''
     
-    // Enhanced network error detection
+    // Enhanced network error detection including 401 auth errors
     const isNetworkError = (
       errorMessage.includes('Failed to fetch') || 
       errorMessage.includes('Network request failed') ||
@@ -23,6 +23,24 @@ export const useNetworkRetry = () => {
       error?.code === 'NETWORK_ERROR'
     )
     
+    // Check for auth errors that should NOT be retried
+    const isAuthError = (
+      errorMessage.includes('No API key found') ||
+      errorMessage.includes('Invalid API key') ||
+      error?.status === 401 ||
+      error?.statusCode === 401
+    )
+    
+    if (isAuthError) {
+      console.error('🚨 Authentication error detected - not retrying')
+      toast({
+        title: "Kimlik doğrulama hatası",
+        description: "Lütfen oturumunuzu yenileyin",
+        variant: "destructive"
+      })
+      return false // Don't retry auth errors
+    }
+    
     if (isNetworkError) {
       // Only show toast on first attempt to avoid spam
       if (!context.includes('retry')) {
@@ -33,7 +51,7 @@ export const useNetworkRetry = () => {
         })
       }
       
-      return true // Indicates network failure
+      return true // Indicates network failure that can be retried
     }
     
     return false // Not a network failure

@@ -8,17 +8,17 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// Enhanced auth state cleanup utility
+// Enhanced auth state cleanup utility with comprehensive error handling
 const cleanupCorruptedAuthState = () => {
   if (typeof window === 'undefined') return;
   
   console.log('🧹 Cleaning up potentially corrupted auth state...');
   
   try {
-    // Clear all auth-related storage
+    // Enhanced cleanup for all auth-related storage
     const keysToRemove: string[] = [];
     
-    // Collect localStorage keys
+    // Collect localStorage keys - more comprehensive patterns
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && (
@@ -26,19 +26,26 @@ const cleanupCorruptedAuthState = () => {
         key.includes('auth') ||
         key.includes('session') ||
         key.includes('token') ||
-        key.includes('sb-')
+        key.includes('sb-') ||
+        key.includes('refresh') ||
+        key.includes('access') ||
+        key.includes('jwt')
       )) {
         keysToRemove.push(key);
       }
     }
     
-    // Remove collected keys
+    // Remove collected keys with error handling
     keysToRemove.forEach(key => {
-      console.log('🗑️ Removing localStorage key:', key);
-      localStorage.removeItem(key);
+      try {
+        console.log('🗑️ Removing localStorage key:', key);
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.warn('⚠️ Failed to remove key:', key, error);
+      }
     });
     
-    // Clear sessionStorage
+    // Clear sessionStorage with comprehensive patterns
     if (window.sessionStorage) {
       const sessionKeysToRemove: string[] = [];
       for (let i = 0; i < sessionStorage.length; i++) {
@@ -48,19 +55,42 @@ const cleanupCorruptedAuthState = () => {
           key.includes('auth') ||
           key.includes('session') ||
           key.includes('token') ||
-          key.includes('sb-')
+          key.includes('sb-') ||
+          key.includes('refresh') ||
+          key.includes('access') ||
+          key.includes('jwt')
         )) {
           sessionKeysToRemove.push(key);
         }
       }
       
       sessionKeysToRemove.forEach(key => {
-        console.log('🗑️ Removing sessionStorage key:', key);
-        sessionStorage.removeItem(key);
+        try {
+          console.log('🗑️ Removing sessionStorage key:', key);
+          sessionStorage.removeItem(key);
+        } catch (error) {
+          console.warn('⚠️ Failed to remove session key:', key, error);
+        }
       });
     }
     
-    console.log('✅ Auth state cleanup completed');
+    // Also clear any cookies related to auth
+    if (document.cookie) {
+      document.cookie.split(";").forEach((cookie) => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        if (name.includes('supabase') || name.includes('auth') || name.includes('sb-')) {
+          try {
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            console.log('🗑️ Removing cookie:', name);
+          } catch (error) {
+            console.warn('⚠️ Failed to remove cookie:', name, error);
+          }
+        }
+      });
+    }
+    
+    console.log('✅ Auth state cleanup completed successfully');
   } catch (error) {
     console.warn('⚠️ Auth cleanup error:', error);
   }
@@ -154,19 +184,29 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
       
+      // CRITICAL FIX: Preserve original headers and add our own
+      const existingHeaders = options.headers || {};
+      const headersObj = existingHeaders instanceof Headers 
+        ? Object.fromEntries(existingHeaders.entries())
+        : existingHeaders;
+      
       const enhancedOptions: RequestInit = {
         ...options,
         signal: controller.signal,
         headers: {
-          ...(options.headers || {}),
+          ...headersObj, // Preserve existing headers INCLUDING apikey
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         }
       };
       
+      console.log('🔍 Supabase fetch request:', url, enhancedOptions.headers);
+      
       return fetch(url, enhancedOptions)
         .then(response => {
           clearTimeout(timeoutId);
+          console.log('✅ Supabase fetch response:', response.status, response.statusText);
+          
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }

@@ -7,6 +7,7 @@ import { useClipboard } from "@/hooks/useClipboard";
 import { CampfireButton } from "@/components/connection/CampfireButton";
 import { ConnectionStatusDisplay } from "@/components/connection/ConnectionStatusDisplay";
 import { isValidUUID } from "@/hooks/useConnectionValidation";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ScrollConnectionProps {
   className?: string;
@@ -29,8 +30,20 @@ const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollCon
       return;
     }
     
-    const processUrlConnection = async () => {
+  const processUrlConnection = async () => {
       try {
+        // Validate session before processing URL connection
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError || !session) {
+          console.error('💥 Session validation failed for URL processing:', sessionError)
+          toast({
+            title: "Oturum geçersiz",
+            description: "Lütfen tekrar giriş yapın",
+            variant: "destructive"
+          });
+          return;
+        }
+        
         const urlParams = new URLSearchParams(window.location.search);
         const connectId = urlParams.get('connect');
         

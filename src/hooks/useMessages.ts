@@ -44,6 +44,18 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
       setState(prev => ({ ...prev, isLoading: true, error: null }))
       
       try {
+        // Validate session before making request
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError || !session) {
+          console.error('💥 Session validation failed for messages:', sessionError)
+          setState(prev => ({ 
+            ...prev, 
+            isLoading: false,
+            error: 'Session geçersiz - lütfen tekrar giriş yapın'
+          }))
+          return
+        }
+        
         // Enhanced query with better error handling and SQL injection prevention
         const { data, error } = await supabase
           .from('messages')
@@ -285,6 +297,17 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
     console.log('Sending message from', myConnectionId, 'to', partnerId, ':', sanitizedMessage);
 
     try {
+      // Validate session before sending message
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError || !session) {
+        console.error('💥 Session validation failed for message send:', sessionError)
+        setState(prev => ({ 
+          ...prev, 
+          error: 'Session geçersiz - lütfen tekrar giriş yapın'
+        }))
+        return false
+      }
+      
       setState(prev => ({ ...prev, error: null }))
       
       const { data, error } = await supabase
