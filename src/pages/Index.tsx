@@ -58,23 +58,16 @@ const Index = () => {
     return () => subscription.unsubscribe();
    }, [navigate]);
 
-  // Show connection video when connected, redirect only when fully ready
+  // Show connection video only once when first connected
   useEffect(() => {
     if (isConnected && partnerId && !showConnectionVideo) {
       setShowConnectionVideo(true);
+    } else if (!isConnected || !partnerId) {
+      setShowConnectionVideo(false);
     }
-  }, [isConnected, partnerId, showConnectionVideo]);
+  }, [isConnected, partnerId]);
 
-  // Navigate to messages when connection is ready - don't wait for messages
-  useEffect(() => {
-    if (isConnected && partnerId && showConnectionVideo) {
-      // Small delay to let video play briefly, then navigate
-      const timer = setTimeout(() => {
-        navigate('/messages');
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isConnected, partnerId, showConnectionVideo, navigate]);
+  // Video handles navigation via onEnded event - no timer needed
 
   // Initialize mobile features on app start
   useEffect(() => {

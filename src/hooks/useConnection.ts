@@ -271,14 +271,14 @@ export const useConnection = (myConnectionId: string) => {
         throw myError;
       }
 
-      // Also update partner's connection to remove me - use partner_id filter
+      // Also update partner's connection to remove me
       const { error: partnerError } = await supabase
         .from('connections')
         .update({ 
           partner_id: null, 
           is_connected: false 
         })
-        .eq('partner_id', myConnectionId)  // Use partner_id filter instead of connection_id
+        .eq('connection_id', partnerId)  // Use partner's connection_id, not partner_id filter
 
       // Don't throw error if partner update fails (expected behavior)
       if (partnerError) {

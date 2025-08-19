@@ -41,12 +41,23 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     if (connectId && connectId !== connectionId) {
       console.log('URL connection request detected, attempting to connect:', connectId);
       processedRef.current = true; // Mark as processed
-      connectWith(connectId);
+      
+      // Use a separate function to avoid dependency issues
+      const processConnection = async () => {
+        try {
+          await connectWith(connectId);
+        } catch (error) {
+          console.error('Connection failed:', error);
+          processedRef.current = false; // Allow retry
+        }
+      };
+      
+      processConnection();
       
       // Clean up URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [isValid, connectionId, connectWith]);
+  }, [isValid, connectionId]); // Remove connectWith from dependencies
 
   // Notify parent when connection is established
   useEffect(() => {
