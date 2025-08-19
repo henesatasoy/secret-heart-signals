@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Heart, Link } from "lucide-react";
 import { hapticFeedback } from "@/services/mobile";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const { isConnected, partnerId, connectWith } = useConnection(connectionId);
+  const processedRef = useRef(false);
 
   // Only initialize if we have a valid connectionId (user is logged in)
   const isValid = connectionId && connectionId.length > 0;
@@ -29,7 +30,7 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
 
   // Check if someone is trying to connect via URL parameter - only once
   useEffect(() => {
-    if (!isValid) {
+    if (!isValid || processedRef.current) {
       return;
     }
     
@@ -39,17 +40,13 @@ export const ScrollConnection = ({ className, connectionId, onConnect }: ScrollC
     // Only process if there's a connect parameter and it's different from my ID
     if (connectId && connectId !== connectionId) {
       console.log('URL connection request detected, attempting to connect:', connectId);
-      // Don't include connectWith in dependencies to prevent infinite loops
-      if (connectWith) {
-        connectWith(connectId);
-      }
-    }
-    
-    // Always clean up URL parameter after processing
-    if (connectId) {
+      processedRef.current = true; // Mark as processed
+      connectWith(connectId);
+      
+      // Clean up URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [isValid, connectionId]); // Remove connectWith from dependencies
+  }, [isValid, connectionId, connectWith]);
 
   // Notify parent when connection is established
   useEffect(() => {
