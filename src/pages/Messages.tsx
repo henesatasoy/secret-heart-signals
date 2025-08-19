@@ -112,9 +112,18 @@ const Messages = () => {
   };
 
   const handleDisconnect = async () => {
-    await hapticFeedback.heavy();
-    await disconnectPartner();
-    navigate('/');
+    try {
+      await hapticFeedback.heavy();
+      await disconnectPartner();
+      
+      // Enhanced cleanup and redirect
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 100);
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      navigate('/', { replace: true });
+    }
   };
 
   const formatTime = (timestamp: string) => {
