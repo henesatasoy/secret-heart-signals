@@ -79,10 +79,14 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
               }
               return prev;
             })
-            toast({
-              title: "Yeni mesaj! 💕",
-              description: newMessage.message,
-            })
+            
+            // Only show toast if user is not on messages page
+            if (!window.location.pathname.includes('/messages')) {
+              toast({
+                title: "Yeni mesaj! 💕",
+                description: newMessage.message,
+              })
+            }
           }
         }
       )
@@ -148,10 +152,7 @@ export const useMessages = (myConnectionId: string, partnerId: string | null) =>
       }
 
       console.log('Message sent successfully');
-      toast({
-        title: "Mesaj gönderildi! 💕",
-        description: message,
-      })
+      // Remove success toast as it's redundant with immediate UI feedback
     } catch (error) {
       console.error('Send message error:', error)
       toast({

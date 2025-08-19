@@ -93,8 +93,12 @@ export const useConnection = (myConnectionId: string) => {
             
             // Deletion event
             if (payload.eventType === 'DELETE') {
-              setIsConnected(false)
               setPartnerId(null)
+              setIsConnected(false)
+              toast({
+                title: "Bağlantı koptu 💔",
+                description: "Partner bağlantıyı sonlandırdı",
+              })
               return
             }
             
@@ -102,28 +106,34 @@ export const useConnection = (myConnectionId: string) => {
             if (connection?.connection_id === myConnectionId) {
               // My connection was updated
               if (connection.is_connected && connection.partner_id) {
-                setIsConnected(true)
                 setPartnerId(connection.partner_id)
-                toast({
-                  title: "Bağlantı kuruldu! 💕",
-                  description: "Sevgilinle artık mesajlaşabilirsin",
-                })
+                setIsConnected(true)
+                // Only show toast if this is a new connection (not initial load)
+                if (payload.eventType === 'UPDATE') {
+                  toast({
+                    title: "Bağlantı kuruldu! 💕",
+                    description: "Sevgilinle artık mesajlaşabilirsin",
+                  })
+                }
               } else {
-                setIsConnected(false)
                 setPartnerId(null)
+                setIsConnected(false)
               }
             } else if (connection?.partner_id === myConnectionId) {
               // Partner's connection includes me
               if (connection.is_connected && connection.connection_id) {
-                setIsConnected(true)
                 setPartnerId(connection.connection_id)
-                toast({
-                  title: "Biri sana bağlandı! 💕", 
-                  description: "Artık mesajlaşabilirsiniz",
-                })
+                setIsConnected(true)
+                // Only show toast if this is a new connection (not initial load)
+                if (payload.eventType === 'UPDATE') {
+                  toast({
+                    title: "Biri sana bağlandı! 💕", 
+                    description: "Artık mesajlaşabilirsiniz",
+                  })
+                }
               } else {
-                setIsConnected(false)
                 setPartnerId(null)
+                setIsConnected(false)
               }
             }
           }
@@ -135,7 +145,7 @@ export const useConnection = (myConnectionId: string) => {
       console.log('Cleaning up connection listener');
       channel.unsubscribe()
     }
-  }, [myConnectionId])
+  }, [myConnectionId, toast])
 
   const connectWith = useCallback(async (partnerConnectionId: string) => {
     if (!myConnectionId || myConnectionId === partnerConnectionId) return;
@@ -248,7 +258,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive"
       })
     }
-  }, [myConnectionId]) // Remove toast from dependencies to prevent re-creation
+  }, [myConnectionId, toast]) // Include toast to prevent re-creation
 
   const disconnectPartner = useCallback(async () => {
     try {
@@ -304,7 +314,7 @@ export const useConnection = (myConnectionId: string) => {
         variant: "destructive",
       });
     }
-  }, [myConnectionId, partnerId]); // Remove toast from dependencies
+  }, [myConnectionId, partnerId, toast]); // Include toast for stability
 
   return { isConnected, partnerId, connectWith, disconnectPartner }
 }
