@@ -4,12 +4,14 @@ import { useToast } from '@/hooks/use-toast'
 import { useConnectionValidation } from '@/hooks/useConnectionValidation'
 import { useConnectionState, type ConnectionState } from '@/hooks/useConnectionState'
 import { useConnectionRetry } from '@/hooks/useConnectionRetry'
+import { useNetworkRetry } from '@/hooks/useNetworkRetry'
 
 export const useConnection = (myConnectionId: string) => {
   const { toast } = useToast()
   const { isValidConnection, validatePartnerConnection, isSelfConnection } = useConnectionValidation(myConnectionId)
   const { connectionState, setLoading, setError, setConnected, updateConnectionState } = useConnectionState()
   const { executeWithRetry } = useConnectionRetry()
+  const { executeWithNetworkRetry } = useNetworkRetry()
 
   // Initialize and load connection state with proper error handling
   useEffect(() => {
@@ -24,8 +26,8 @@ export const useConnection = (myConnectionId: string) => {
       setLoading(true)
       
       try {
-        // Use retry mechanism to fetch existing connection
-        const existing = await executeWithRetry(async () => {
+        // Use enhanced network retry mechanism
+        const existing = await executeWithNetworkRetry(async () => {
           const { data, error } = await supabase
             .from('connections')
             .select('partner_id, is_connected')
@@ -74,11 +76,14 @@ export const useConnection = (myConnectionId: string) => {
     }
 
     initConnection()
-  }, [isValidConnection, myConnectionId, toast, setLoading, setError, setConnected, executeWithRetry])
+  }, [isValidConnection, myConnectionId, toast, setLoading, setError, setConnected, executeWithNetworkRetry])
 
-  // Listen for connection updates with improved error handling and debouncing
+  // Listen for connection updates with improved error handling and debouncing  
   useEffect(() => {
-    if (!isValidConnection) return;
+    if (!isValidConnection) {
+      console.log('Skipping realtime listener - invalid connection ID:', myConnectionId);
+      return;
+    }
     
     console.log('Setting up realtime listener for:', myConnectionId);
     
@@ -199,15 +204,20 @@ export const useConnection = (myConnectionId: string) => {
   }, [isValidConnection, myConnectionId, toast, updateConnectionState, setError])
 
   const connectWith = useCallback(async (partnerConnectionId: string) => {
-    // Enhanced validation using hooks called at top level
+    // ✅ HOOK VIOLATION FIX: No early returns before all hooks are called
+    console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
     
-    // Enhanced validation
+    // Validation errors are handled through setError instead of early returns
     if (!isValidConnection || !partnerConnectionId || isSelfConnection(partnerConnectionId)) {
       console.warn('Invalid connection attempt:', { myConnectionId, partnerConnectionId })
+      const errorMsg = 'Geçersiz bağlantı parametreleri'
+      setError(errorMsg)
       return;
     }
     
     if (!validatePartnerConnection(partnerConnectionId)) {
+      const errorMsg = "Geçersiz bağlantı kodu formatı"
+      setError(errorMsg)
       toast({
         title: "Geçersiz bağlantı kodu",
         description: "Bağlantı kodu formatı yanlış",
@@ -216,7 +226,7 @@ export const useConnection = (myConnectionId: string) => {
       return;
     }
     
-    console.log('Attempting to connect', myConnectionId, 'with', partnerConnectionId);
+    console.log('Starting connection process...');
     setLoading(true)
     
     try {
