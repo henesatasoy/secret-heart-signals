@@ -123,7 +123,7 @@ export const useConnection = (myConnectionId: string) => {
     }
 
     initConnection()
-  }, [isValidConnection, myConnectionId, setLoading, setError, setConnected, executeWithNetworkRetry, executeWithRetry, toast])
+  }, [isValidConnection, myConnectionId]) // SADECE bu ikisi - diğer hooklar kaldırıldı
 
   // Listen for connection updates with improved error handling and debouncing  
   useEffect(() => {
