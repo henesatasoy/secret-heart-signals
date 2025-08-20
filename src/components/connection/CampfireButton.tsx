@@ -31,9 +31,9 @@ export const CampfireButton = memo(({
       onClick={onClick}
       className={cn(
         "w-32 h-32 cursor-pointer group transition-all duration-200 relative rounded-full opacity-0 hover:opacity-100",
-        "focus:outline-none focus:ring-4 focus:ring-orange-300/50",
+        "focus:outline-none",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        (isLoading || isProcessing || disabled) ? "cursor-wait" : "active:scale-95"
+        (isLoading || isProcessing || disabled) ? "cursor-wait" : ""
       )}
       title={isValidConnection ? "Kampateş'a tıkla ve bağlantı linkini kopyala" : "Geçersiz bağlantı"}
       role="button"
