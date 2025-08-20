@@ -59,7 +59,38 @@ export const useConnection = (myConnectionId: string) => {
 
         if (existing) {
           console.log('Existing connection found:', existing);
-          setConnected(existing.partner_id || null, Boolean(existing.is_connected))
+          
+          // If we have a partner and claim to be connected, verify mutual connection
+          if (existing.is_connected && existing.partner_id) {
+            console.log('🔍 Verifying mutual connection with partner:', existing.partner_id);
+            
+            const partnerCheck = await executeWithRetry(async () => {
+              const { data: partnerData, error } = await supabase
+                .from('connections')
+                .select('partner_id, is_connected')
+                .eq('connection_id', existing.partner_id)
+                .eq('partner_id', myConnectionId)
+                .eq('is_connected', true)
+                .maybeSingle()
+              
+              if (error) {
+                console.error('💥 Partner verification error:', error)
+                throw error
+              }
+              
+              return partnerData
+            }, 'partner verification')
+            
+            if (partnerCheck) {
+              console.log('✅ Mutual connection verified - both sides connected');
+              setConnected(existing.partner_id, true)
+            } else {
+              console.log('⚠️ Partner connection not mutual - setting as disconnected');
+              setConnected(existing.partner_id, false)
+            }
+          } else {
+            setConnected(existing.partner_id || null, Boolean(existing.is_connected))
+          }
         } else {
           // UPSERT pattern to prevent duplicate key violation
           console.log('Creating new connection with UPSERT for:', myConnectionId);
