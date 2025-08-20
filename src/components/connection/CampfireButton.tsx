@@ -30,7 +30,7 @@ export const CampfireButton = memo(({
     <div 
       onClick={onClick}
       className={cn(
-        "w-32 h-32 cursor-pointer group transition-all duration-200 relative rounded-full",
+        "w-32 h-32 cursor-pointer group transition-all duration-200 relative rounded-full opacity-0 hover:opacity-100",
         "focus:outline-none focus:ring-4 focus:ring-orange-300/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
         (isLoading || isProcessing || disabled) ? "cursor-wait" : "active:scale-95"
@@ -41,47 +41,11 @@ export const CampfireButton = memo(({
       aria-label="Bağlantı linkini kopyala"
       onKeyDown={handleKeyDown}
     >
-      {/* Magical flame glow effects */}
-      <div 
-        className={cn(
-          "absolute inset-2 rounded-full transition-all duration-500",
-          isValidConnection 
-            ? "bg-orange-300/15 animate-pulse" 
-            : "bg-gray-400/10"
-        )}
-        style={{ imageRendering: 'pixelated' as const }}
-      />
-      <div 
-        className={cn(
-          "absolute inset-4 rounded-full transition-all duration-500",
-          isValidConnection 
-            ? "bg-yellow-200/12 animate-pulse" 
-            : "bg-gray-300/8"
-        )}
-        style={{ 
-          imageRendering: 'pixelated' as const, 
-          animationDelay: '1s'
-        }}
-      />
-      
-      {/* Click ripple effect */}
-      <div 
-        className={cn(
-          "absolute inset-0 rounded-full transition-opacity",
-          "opacity-0 group-active:opacity-100 group-active:animate-ping",
-          isValidConnection ? "bg-orange-300/50" : "bg-gray-400/30"
-        )}
-      />
-      
-      {/* Hover effects */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+      {/* Hafif parıltı efekti - sadece hover'da */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
         <div className={cn(
-          "absolute inset-0 rounded-full opacity-20 blur-xl animate-pulse",
-          isValidConnection ? "bg-orange-400" : "bg-gray-400"
-        )}></div>
-        <div className={cn(
-          "absolute inset-0 rounded-full opacity-15 blur-lg animate-pulse delay-200",
-          isValidConnection ? "bg-yellow-300" : "bg-gray-300"
+          "absolute inset-0 rounded-full opacity-30 blur-lg animate-pulse",
+          isValidConnection ? "bg-orange-300" : "bg-gray-300"
         )}></div>
       </div>
       
