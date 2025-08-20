@@ -318,8 +318,15 @@ const Index = () => {
                       <div className="mb-2">
                         <span className="font-bold text-sm">{t('currentEmail')}</span>
                       </div>
-                      <div className="bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-400 rounded-none p-2">
+                      <div className="bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-400 rounded-none p-2 mb-3">
                         <span className="text-amber-900 font-bold text-sm">{user.email}</span>
+                      </div>
+                      
+                      <div className="mb-2">
+                        <span className="font-bold text-sm">ID Bilgisi</span>
+                      </div>
+                      <div className="bg-gradient-to-b from-blue-100 to-blue-200 border border-blue-400 rounded-none p-2">
+                        <span className="text-blue-900 font-mono text-xs break-all">{user.id}</span>
                       </div>
                     </div>
                   </div>
