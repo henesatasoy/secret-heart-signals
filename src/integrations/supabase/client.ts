@@ -15,3 +15,28 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
   }
 });
+
+// Cleanup function for corrupted auth state
+export const cleanupCorruptedAuthState = () => {
+  try {
+    // Remove all Supabase auth keys from localStorage
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    // Remove from sessionStorage if in use
+    if (typeof sessionStorage !== 'undefined') {
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    }
+    
+    console.log('✅ Auth state cleaned up successfully');
+  } catch (error) {
+    console.error('❌ Error cleaning up auth state:', error);
+  }
+};
