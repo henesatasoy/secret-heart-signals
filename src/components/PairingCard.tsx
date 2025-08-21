@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { useConnection } from "@/hooks/useConnection";
+// useConnection import'u kaldırıldı - props üzerinden geliyor
 import { useConnectionLink } from "@/hooks/useConnectionLink";
 import { useClipboard } from "@/hooks/useClipboard";
 import { CampfireButton } from "@/components/connection/CampfireButton";
@@ -13,12 +13,25 @@ interface ScrollConnectionProps {
   className?: string;
   connectionId: string;
   onConnect?: (partnerId: string) => void;
+  // Propslar üzerinden connection state'i al
+  isConnected: boolean;
+  partnerId: string | null;
+  connectWith: (partnerId: string) => Promise<void>;
+  isLoading: boolean;
 }
 
-const ScrollConnection = memo(({ className, connectionId, onConnect }: ScrollConnectionProps) => {
+const ScrollConnection = memo(({ 
+  className, 
+  connectionId, 
+  onConnect,
+  isConnected,
+  partnerId,
+  connectWith,
+  isLoading 
+}: ScrollConnectionProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const { isConnected, partnerId, connectWith, isLoading } = useConnection(connectionId);
+  // useConnection hook'unu kaldır - props'tan al
   const { connectionLink, isValidConnection } = useConnectionLink(connectionId);
   const { copied, copyToClipboard, cleanup } = useClipboard();
   const processedRef = useRef(false);

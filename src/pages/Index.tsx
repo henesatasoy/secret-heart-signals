@@ -362,6 +362,10 @@ const Index = () => {
               connectionId={user?.id || ''} 
               className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-30"
               onConnect={handleConnect}
+              isConnected={isConnected}
+              partnerId={partnerId}
+              connectWith={connectWith}
+              isLoading={isLoading}
             />
           </>
         ) : (
