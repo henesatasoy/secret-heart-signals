@@ -13,16 +13,8 @@ export const useConnection = (myConnectionId: string) => {
   const { executeWithRetry } = useConnectionRetry()
   const { executeWithNetworkRetry } = useNetworkRetry()
   
-  // Single initialization flag to prevent re-running
-  const [initialized, setInitialized] = useState(false)
-
   // Initialize and load connection state with proper error handling
   useEffect(() => {
-    // Prevent multiple initializations
-    if (initialized) {
-      return;
-    }
-    
     if (!isValidConnection) {
       console.log('Skipping connection init - invalid connection ID:', myConnectionId);
       setError('Invalid connection ID')
@@ -158,12 +150,11 @@ export const useConnection = (myConnectionId: string) => {
         }
       } finally {
         setLoading(false)
-        setInitialized(true) // Mark as initialized
       }
     }
 
     initConnection()
-  }, [isValidConnection, myConnectionId]) // Sadece stable values
+  }, [isValidConnection, myConnectionId]) // Sadece bu dependency'leri bırak
 
   // Listen for connection updates with improved error handling and debouncing  
   useEffect(() => {

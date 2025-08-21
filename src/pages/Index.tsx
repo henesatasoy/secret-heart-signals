@@ -149,14 +149,16 @@ const Index = () => {
     };
    }, [navigate]);
 
-  // Show connection video only once when first connected - with proper memoization
+  // Show connection video only once when first connected - with better control
+  const [hasShownVideo, setHasShownVideo] = useState(false);
   const hasConnection = useMemo(() => isConnected && partnerId, [isConnected, partnerId]);
   
   useEffect(() => {
-    if (hasConnection && !showConnectionVideo) {
+    if (hasConnection && !hasShownVideo && !showConnectionVideo) {
+      setHasShownVideo(true);
       setShowConnectionVideo(true);
     }
-  }, [hasConnection, showConnectionVideo]);
+  }, [hasConnection, hasShownVideo, showConnectionVideo]);
 
   // Video handles navigation via onEnded event - no timer needed
 
