@@ -15,6 +15,10 @@ export const useConnection = (myConnectionId: string) => {
 
   // Initialize and load connection state with proper error handling
   useEffect(() => {
+    // Prevent re-initialization if already connected or loading
+    if (connectionState.isConnected || connectionState.isLoading) {
+      return;
+    }
     if (!isValidConnection) {
       console.log('Skipping connection init - invalid connection ID:', myConnectionId);
       setError('Invalid connection ID')
@@ -154,7 +158,7 @@ export const useConnection = (myConnectionId: string) => {
     }
 
     initConnection()
-  }, [isValidConnection, myConnectionId]) // SADECE bu ikisi - diğer hooklar kaldırıldı
+  }, [isValidConnection, myConnectionId, connectionState.isConnected, connectionState.isLoading]) // Stable dependencies
 
   // Listen for connection updates with improved error handling and debouncing  
   useEffect(() => {
