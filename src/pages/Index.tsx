@@ -151,12 +151,10 @@ const Index = () => {
 
   // Show connection video only once when first connected
   useEffect(() => {
-    if (isConnected && partnerId) {
+    if (isConnected && partnerId && !showConnectionVideo) {
       setShowConnectionVideo(true);
-    } else if (!isConnected || !partnerId) {
-      setShowConnectionVideo(false);
     }
-  }, [isConnected, partnerId]); // Remove showConnectionVideo from dependencies to prevent loop
+  }, [isConnected, partnerId, showConnectionVideo]);
 
   // Video handles navigation via onEnded event - no timer needed
 
