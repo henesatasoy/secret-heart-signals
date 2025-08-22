@@ -268,22 +268,22 @@ const Index = () => {
               onClick={() => setShowSettingsMenu(false)}
             />
             
-            {/* Settings Menu */}
-            <div className="absolute top-10 left-0 z-50 bg-gradient-to-b from-stone-200 to-stone-300 border-3 border-stone-600 rounded-none shadow-[6px_6px_0px_0px_rgba(68,64,60,1)] p-4 w-64">
-              <h3 className="text-stone-800 font-mono font-bold mb-4 text-lg">{t('settings')}</h3>
+            {/* Settings Menu - Vibrant Style */}
+            <div className="absolute top-10 left-0 z-50 vibrant-notification w-64 backdrop-blur-lg">
+              <h3 className="notification-font-bold text-white mb-4 text-lg">{t('settings')}</h3>
               
               {/* Language Settings */}
               <div className="mb-4 relative">
                 <button 
                   onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                  className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2"
+                  className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
                 >
-                  <span className="text-slate-800 font-mono font-bold">{t('languageSettings')}</span>
+                  <span className="notification-font-bold">{t('languageSettings')}</span>
                 </button>
                 
                 {/* Language Submenu */}
                 {showLanguageMenu && (
-                  <div className="mt-2 bg-gradient-to-b from-stone-100 to-stone-200 border-2 border-stone-500 rounded-none shadow-[4px_4px_0px_0px_rgba(68,64,60,1)] p-2">
+                  <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-2">
                     {getLanguages().map((lang) => (
                       <button
                         key={lang.code}
@@ -291,10 +291,10 @@ const Index = () => {
                           changeLanguage(lang.code);
                           setShowLanguageMenu(false);
                         }}
-                        className={`w-full text-left p-2 mb-1 last:mb-0 rounded-none border transition-all ${
+                        className={`w-full text-left p-2 mb-1 last:mb-0 rounded-lg border transition-all duration-300 notification-font ${
                           language === lang.code 
-                            ? 'bg-gradient-to-b from-amber-200 to-amber-300 border-amber-500 text-amber-900 font-bold' 
-                            : 'bg-gradient-to-b from-gray-200 to-gray-300 border-gray-500 text-gray-800 hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-400'
+                            ? 'bg-white/30 border-white/50 text-white notification-font-bold' 
+                            : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
                         }`}
                       >
                         {lang.name}
@@ -308,27 +308,27 @@ const Index = () => {
               <div className="mb-4 relative">
                 <button 
                   onClick={() => setShowAccountMenu(!showAccountMenu)}
-                  className="w-full text-left p-3 bg-gradient-to-b from-slate-300 to-slate-400 border-2 border-slate-600 rounded-none shadow-[3px_3px_0px_0px_rgba(71,85,105,1)] hover:shadow-[2px_2px_0px_0px_rgba(71,85,105,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all mb-2"
+                  className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
                 >
-                  <span className="text-slate-800 font-mono font-bold">{t('accountInfo')}</span>
+                  <span className="notification-font-bold">{t('accountInfo')}</span>
                 </button>
                 
                 {/* Account Submenu */}
                 {showAccountMenu && user && (
-                  <div className="mt-2 bg-gradient-to-b from-stone-100 to-stone-200 border-2 border-stone-500 rounded-none shadow-[4px_4px_0px_0px_rgba(68,64,60,1)] p-3">
-                    <div className="text-stone-800 font-mono">
+                  <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-3">
+                    <div className="text-white notification-font">
                       <div className="mb-2">
-                        <span className="font-bold text-sm">{t('currentEmail')}</span>
+                        <span className="notification-font-bold text-sm">{t('currentEmail')}</span>
                       </div>
-                      <div className="bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-400 rounded-none p-2 mb-3">
-                        <span className="text-amber-900 font-bold text-sm">{user.email}</span>
+                      <div className="bg-white/20 border border-white/40 rounded-lg p-2 mb-3 backdrop-blur-sm">
+                        <span className="text-white notification-font-bold text-sm">{user.email}</span>
                       </div>
                       
                       <div className="mb-2">
-                        <span className="font-bold text-sm">ID Bilgisi</span>
+                        <span className="notification-font-bold text-sm">ID Bilgisi</span>
                       </div>
-                      <div className="bg-gradient-to-b from-blue-100 to-blue-200 border border-blue-400 rounded-none p-2">
-                        <span className="text-blue-900 font-mono text-xs break-all">{user.id}</span>
+                      <div className="bg-white/20 border border-white/40 rounded-lg p-2 backdrop-blur-sm">
+                        <span className="text-white/90 notification-font text-xs break-all">{user.id}</span>
                       </div>
                     </div>
                   </div>
@@ -338,9 +338,9 @@ const Index = () => {
               {/* Logout Button */}
               <button
                 onClick={handleSignOut}
-                className="w-full text-left p-3 bg-gradient-to-b from-red-400 to-red-600 border-2 border-red-700 rounded-none shadow-[3px_3px_0px_0px_rgba(127,29,29,1)] hover:shadow-[2px_2px_0px_0px_rgba(127,29,29,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                className="w-full text-left p-3 bg-red-500/20 border border-red-400/50 rounded-xl backdrop-blur-sm hover:bg-red-500/30 transition-all duration-300 text-red-200 notification-font"
               >
-                <span className="text-red-900 font-mono font-bold">{t('logout')}</span>
+                <span className="notification-font-bold">{t('logout')}</span>
               </button>
             </div>
           </>
