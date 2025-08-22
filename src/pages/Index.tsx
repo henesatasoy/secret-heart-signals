@@ -9,7 +9,7 @@ import { useConnection } from "@/hooks/useConnection";
 import { useLanguage } from "@/hooks/useLanguage";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { initializeMobileFeatures, hapticFeedback, showLocalNotification } from "@/services/mobile";
+import { initializeMobileFeatures, hapticFeedback, showLocalNotification, getNotificationSettings, setNotificationSettings } from "@/services/mobile";
 import type { User, Session } from '@supabase/supabase-js';
 
 const Index = () => {
@@ -18,8 +18,10 @@ const Index = () => {
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [showNotificationMenu, setShowNotificationMenu] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [showConnectionVideo, setShowConnectionVideo] = useState(false);
+  const [notificationSettings, setNotificationSettingsState] = useState(() => getNotificationSettings());
   const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -280,7 +282,63 @@ const Index = () => {
                 >
                   <span className="notification-font-bold">{t('languageSettings')}</span>
                 </button>
+              
+              {/* Notification Settings */}
+              <div className="mb-4 relative">
+                <button 
+                  onClick={() => setShowNotificationMenu(!showNotificationMenu)}
+                  className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
+                >
+                  <span className="notification-font-bold">{t('notificationSettings')}</span>
+                </button>
                 
+                {/* Notification Submenu */}
+                {showNotificationMenu && (
+                  <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-3">
+                    <div className="space-y-3">
+                      {/* Vibration Setting */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-white notification-font text-sm">{t('vibrationEnabled')}</span>
+                        <button
+                          onClick={() => {
+                            const newSettings = { ...notificationSettings, vibrationEnabled: !notificationSettings.vibrationEnabled };
+                            setNotificationSettings(newSettings.vibrationEnabled, newSettings.soundEnabled);
+                            setNotificationSettingsState(newSettings);
+                            hapticFeedback.light();
+                          }}
+                          className={`w-12 h-6 rounded-full transition-all duration-300 ${
+                            notificationSettings.vibrationEnabled ? 'bg-green-400' : 'bg-white/30'
+                          }`}
+                        >
+                          <div className={`w-5 h-5 rounded-full bg-white transition-all duration-300 ${
+                            notificationSettings.vibrationEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                          }`} />
+                        </button>
+                      </div>
+                      
+                      {/* Sound Setting */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-white notification-font text-sm">{t('soundEnabled')}</span>
+                        <button
+                          onClick={() => {
+                            const newSettings = { ...notificationSettings, soundEnabled: !notificationSettings.soundEnabled };
+                            setNotificationSettings(newSettings.vibrationEnabled, newSettings.soundEnabled);
+                            setNotificationSettingsState(newSettings);
+                            hapticFeedback.light();
+                          }}
+                          className={`w-12 h-6 rounded-full transition-all duration-300 ${
+                            notificationSettings.soundEnabled ? 'bg-green-400' : 'bg-white/30'
+                          }`}
+                        >
+                          <div className={`w-5 h-5 rounded-full bg-white transition-all duration-300 ${
+                            notificationSettings.soundEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                          }`} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
                 {/* Language Submenu */}
                 {showLanguageMenu && (
                   <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-2">

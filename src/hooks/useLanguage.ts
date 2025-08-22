@@ -17,9 +17,16 @@ const translations = {
     
     // Settings
     settings: "Ayarlar",
-    languageSettings: "🌍 Dil Ayarları",
+    languageSettings: "🌍 Dil Ayarları", 
+    notificationSettings: "🔔 Bildirim Ayarları",
     accountInfo: "👤 Hesap Bilgileri",
     logout: "🚪 Çıkış Yap",
+    
+    // Notification Settings
+    vibrationEnabled: "Titreşim",
+    soundEnabled: "Bildirim Sesi",
+    enabled: "Açık",
+    disabled: "Kapalı",
     
     // Languages
     turkish: "Türkçe",
@@ -48,8 +55,15 @@ const translations = {
     // Settings
     settings: "Settings",
     languageSettings: "🌍 Language Settings",
+    notificationSettings: "🔔 Notification Settings", 
     accountInfo: "👤 Account Info",
     logout: "🚪 Logout",
+    
+    // Notification Settings
+    vibrationEnabled: "Vibration",
+    soundEnabled: "Notification Sound",
+    enabled: "Enabled",
+    disabled: "Disabled",
     
     // Languages
     turkish: "Turkish",
@@ -78,8 +92,15 @@ const translations = {
     // Settings
     settings: "Configuración",
     languageSettings: "🌍 Configuración de Idioma",
-    accountInfo: "👤 Información de Cuenta",
+    notificationSettings: "🔔 Configuración de Notificaciones",
+    accountInfo: "👤 Información de Cuenta", 
     logout: "🚪 Cerrar Sesión",
+    
+    // Notification Settings
+    vibrationEnabled: "Vibración",
+    soundEnabled: "Sonido de Notificación",
+    enabled: "Habilitado",
+    disabled: "Deshabilitado",
     
     // Languages
     turkish: "Turco",
