@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -41,6 +42,13 @@
     --scroll: 35 30% 85%;
     --wax: 0 60% 70%;
     --quill: 25 40% 45%;
+    
+    /* Vibrant notification colors */
+    --notification-gradient-start: 280 100% 70%;
+    --notification-gradient-middle: 260 100% 75%;
+    --notification-gradient-end: 180 100% 70%;
+    --notification-border: 320 100% 80%;
+    --notification-text: 0 0% 100%;
   }
 
   .dark {
@@ -70,6 +78,13 @@
     --scroll: 35 30% 15%;
     --wax: 0 60% 60%;
     --quill: 25 40% 65%;
+    
+    /* Dark mode vibrant notification colors */
+    --notification-gradient-start: 280 100% 65%;
+    --notification-gradient-middle: 260 100% 70%;
+    --notification-gradient-end: 180 100% 65%;
+    --notification-border: 320 100% 75%;
+    --notification-text: 0 0% 100%;
   }
 }
 
@@ -176,4 +191,69 @@
 
 .pixel-glow {
   animation: pixel-glow 1.5s ease-in-out infinite;
+}
+
+/* Modern Notification Font */
+.notification-font {
+  font-family: 'Orbitron', 'Arial', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.notification-font-bold {
+  font-family: 'Orbitron', 'Arial', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Vibrant Notification Box */
+.vibrant-notification {
+  background: linear-gradient(135deg, 
+    hsl(var(--notification-gradient-start)) 0%, 
+    hsl(var(--notification-gradient-middle)) 50%, 
+    hsl(var(--notification-gradient-end)) 100%);
+  border: 2px solid hsl(var(--notification-border));
+  border-radius: 16px;
+  padding: 12px 16px;
+  color: hsl(var(--notification-text));
+  box-shadow: 
+    0 4px 20px hsl(var(--notification-gradient-start) / 0.3),
+    0 8px 40px hsl(var(--notification-gradient-end) / 0.2),
+    inset 0 1px 0 hsl(var(--notification-border) / 0.5);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transform: translateZ(0);
+}
+
+.vibrant-notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    hsl(var(--notification-text) / 0.1), 
+    transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Mobile optimized notification */
+@media (max-width: 640px) {
+  .vibrant-notification {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
 }
