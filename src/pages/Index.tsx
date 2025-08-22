@@ -24,6 +24,15 @@ const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
+  // Test notification function
+  const showTestNotification = () => {
+    toast({
+      title: "✨ Yeni Mesaj!",
+      description: "Sevgilin sana güzel bir mektup gönderdi. Kalbin çok hızlı atıyor! 💕",
+      duration: 5000,
+    });
+  };
+  
   // Enhanced connection management with proper validation
   const connectionId = useMemo(() => user?.id || '', [user?.id]);
   const { isConnected, partnerId, isLoading, error, connectWith, disconnectPartner } = useConnection(connectionId);
@@ -359,6 +368,16 @@ const Index = () => {
           </div>
         ) : !isConnected ? (
           <>
+            {/* Test Notification Button */}
+            <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-30">
+              <button
+                onClick={showTestNotification}
+                className="pixel-button notification-font text-white bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-primary transition-all duration-300 px-6 py-3 text-sm"
+              >
+                🔔 Test Bildirimi Göster
+              </button>
+            </div>
+            
             {/* Connection handler - handles both click and URL processing */}
             <ScrollConnection 
               connectionId={user?.id || ''} 
