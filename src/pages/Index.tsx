@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { Heart, Sparkles, Moon, Sun, Settings, LogOut } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { Heart, Sparkles, Moon, Sun, Settings, LogOut, Upload } from "lucide-react";
 import { LetterCard } from "@/components/NudgeCard";
 import { ScrollConnection } from "@/components/PairingCard";
 import { ManuscriptStats } from "@/components/StatsCard";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useMessages } from "@/hooks/useMessages";
 import { useConnection } from "@/hooks/useConnection";
@@ -22,6 +23,9 @@ const Index = () => {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [showConnectionVideo, setShowConnectionVideo] = useState(false);
   const [notificationSettings, setNotificationSettingsState] = useState(() => getNotificationSettings());
+  const [selectedSound, setSelectedSound] = useState(() => localStorage.getItem('notification-sound') || 'dove');
+  const [customSoundName, setCustomSoundName] = useState(() => localStorage.getItem('custom-sound-name') || '');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { language, changeLanguage, t, getLanguages } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -292,7 +296,7 @@ const Index = () => {
                   <span className="notification-font-bold">{t('notificationSettings')}</span>
                 </button>
                 
-                {/* Notification Submenu */}
+                 {/* Notification Submenu */}
                 {showNotificationMenu && (
                   <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-3">
                     <div className="space-y-3">
@@ -335,6 +339,93 @@ const Index = () => {
                           }`} />
                         </button>
                       </div>
+                      
+                      {/* Sound Selection */}
+                      {notificationSettings.soundEnabled && (
+                        <div className="space-y-3 pt-3 border-t border-white/20">
+                          <span className="text-white notification-font text-sm">{t('notificationSound')}</span>
+                          
+                          {/* Predefined Sounds */}
+                          <div className="space-y-2">
+                            {['dove', 'bell', 'chime', 'ping'].map((sound) => (
+                              <button
+                                key={sound}
+                                onClick={() => {
+                                  setSelectedSound(sound);
+                                  localStorage.setItem('notification-sound', sound);
+                                  // Test play the sound
+                                  const audio = new Audio(`/sounds/${sound === 'dove' ? 'dove_coo.mp3' : `${sound}.mp3`}`);
+                                  audio.volume = 0.3;
+                                  audio.play().catch(console.error);
+                                  hapticFeedback.light();
+                                }}
+                                className={`w-full text-left p-2 rounded-lg border transition-all duration-300 notification-font ${
+                                  selectedSound === sound 
+                                    ? 'bg-blue-500/30 border-blue-400/50 text-white notification-font-bold' 
+                                    : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
+                                }`}
+                              >
+                                {t(sound as any)} {selectedSound === sound && '✓'}
+                              </button>
+                            ))}
+                            
+                            {/* Custom Sound Option */}
+                            <button
+                              onClick={() => {
+                                setSelectedSound('custom');
+                                localStorage.setItem('notification-sound', 'custom');
+                                hapticFeedback.light();
+                              }}
+                              className={`w-full text-left p-2 rounded-lg border transition-all duration-300 notification-font ${
+                                selectedSound === 'custom' 
+                                  ? 'bg-purple-500/30 border-purple-400/50 text-white notification-font-bold' 
+                                  : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
+                              }`}
+                            >
+                              {t('customSound')} {selectedSound === 'custom' && '✓'}
+                            </button>
+                            
+                            {/* Custom Sound Upload */}
+                            {selectedSound === 'custom' && (
+                              <div className="space-y-2 p-2 bg-white/5 rounded-lg border border-white/10">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="flex items-center gap-2 px-3 py-2 bg-purple-500/20 border border-purple-400/50 rounded-lg text-white notification-font text-sm hover:bg-purple-500/30 transition-all duration-300"
+                                  >
+                                    <Upload size={16} />
+                                    {t('uploadSound')}
+                                  </button>
+                                  <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="audio/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        setCustomSoundName(file.name);
+                                        localStorage.setItem('custom-sound-name', file.name);
+                                        // You would upload the file to storage here
+                                        // For now, just store the name
+                                        toast({
+                                          title: t('soundUploaded'),
+                                          description: file.name,
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </div>
+                                {customSoundName && (
+                                  <div className="text-white/70 notification-font text-xs">
+                                    {t('currentCustomSound')}: {customSoundName}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -378,16 +469,20 @@ const Index = () => {
                       <div className="mb-2">
                         <span className="notification-font-bold text-sm">{t('currentEmail')}</span>
                       </div>
-                      <div className="bg-white/20 border border-white/40 rounded-lg p-2 mb-3 backdrop-blur-sm">
-                        <span className="text-white notification-font-bold text-sm">{user.email}</span>
-                      </div>
+                      <Input
+                        value={user.email || ''}
+                        readOnly
+                        className="mb-3 bg-white/20 border-white/40 text-white notification-font-bold text-sm placeholder:text-white/60 focus:border-white/60"
+                      />
                       
                       <div className="mb-2">
                         <span className="notification-font-bold text-sm">ID Bilgisi</span>
                       </div>
-                      <div className="bg-white/20 border border-white/40 rounded-lg p-2 backdrop-blur-sm">
-                        <span className="text-white/90 notification-font text-xs break-all">{user.id}</span>
-                      </div>
+                      <Input
+                        value={user.id}
+                        readOnly
+                        className="bg-white/20 border-white/40 text-white/90 notification-font text-xs"
+                      />
                     </div>
                   </div>
                 )}

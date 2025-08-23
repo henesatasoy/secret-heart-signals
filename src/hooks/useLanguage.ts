@@ -25,6 +25,15 @@ const translations = {
     // Notification Settings
     vibrationEnabled: "Titreşim",
     soundEnabled: "Bildirim Sesi",
+    notificationSound: "Bildirim Sesi Seçimi",
+    customSound: "Özel Ses",
+    uploadSound: "Ses Yükle",
+    soundUploaded: "Ses Yüklendi",
+    currentCustomSound: "Mevcut Özel Ses",
+    dove: "Güvercin",
+    bell: "Zil",
+    chime: "Çıngırak", 
+    ping: "Ping",
     enabled: "Açık",
     disabled: "Kapalı",
     
@@ -62,6 +71,15 @@ const translations = {
     // Notification Settings
     vibrationEnabled: "Vibration",
     soundEnabled: "Notification Sound",
+    notificationSound: "Notification Sound Selection",
+    customSound: "Custom Sound",
+    uploadSound: "Upload Sound",
+    soundUploaded: "Sound Uploaded",
+    currentCustomSound: "Current Custom Sound",
+    dove: "Dove",
+    bell: "Bell",
+    chime: "Chime",
+    ping: "Ping", 
     enabled: "Enabled",
     disabled: "Disabled",
     
@@ -98,7 +116,16 @@ const translations = {
     
     // Notification Settings
     vibrationEnabled: "Vibración",
-    soundEnabled: "Sonido de Notificación",
+    soundEnabled: "Sonido de Notificación", 
+    notificationSound: "Selección de Sonido de Notificación",
+    customSound: "Sonido Personalizado",
+    uploadSound: "Subir Sonido",
+    soundUploaded: "Sonido Subido",
+    currentCustomSound: "Sonido Personalizado Actual",
+    dove: "Paloma",
+    bell: "Campana",
+    chime: "Campanilla",
+    ping: "Ping",
     enabled: "Habilitado",
     disabled: "Deshabilitado",
     
