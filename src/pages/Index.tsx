@@ -18,9 +18,7 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [selectedMood, setSelectedMood] = useState<"happy" | "romantic" | "silly" | "sleepy">("romantic");
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
-  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
-  const [showNotificationMenu, setShowNotificationMenu] = useState(false);
-  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [activeSettingsSection, setActiveSettingsSection] = useState<string | null>(null);
   const [showConnectionVideo, setShowConnectionVideo] = useState(false);
   const [notificationSettings, setNotificationSettingsState] = useState(() => getNotificationSettings());
   const [selectedSound, setSelectedSound] = useState(() => localStorage.getItem('notification-sound') || 'dove');
@@ -280,24 +278,24 @@ const Index = () => {
               
               {/* Language Settings */}
               <div className="mb-4 relative">
-                <button 
-                  onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                  className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
-                >
-                  <span className="notification-font-bold">{t('languageSettings')}</span>
-                </button>
-              
-              {/* Notification Settings */}
-              <div className="mb-4 relative">
-                <button 
-                  onClick={() => setShowNotificationMenu(!showNotificationMenu)}
-                  className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
-                >
-                  <span className="notification-font-bold">{t('notificationSettings')}</span>
-                </button>
-                
-                 {/* Notification Submenu */}
-                {showNotificationMenu && (
+                 <button 
+                   onClick={() => setActiveSettingsSection(activeSettingsSection === 'language' ? null : 'language')}
+                   className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
+                 >
+                   <span className="notification-font-bold">{t('languageSettings')}</span>
+                 </button>
+               
+               {/* Notification Settings */}
+               <div className="mb-4 relative">
+                 <button 
+                   onClick={() => setActiveSettingsSection(activeSettingsSection === 'notification' ? null : 'notification')}
+                   className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
+                 >
+                   <span className="notification-font-bold">{t('notificationSettings')}</span>
+                 </button>
+                 
+                  {/* Notification Submenu */}
+                 {activeSettingsSection === 'notification' && (
                   <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-3">
                     <div className="space-y-3">
                       {/* Vibration Setting */}
@@ -430,40 +428,40 @@ const Index = () => {
                   </div>
                 )}
               </div>
-                {/* Language Submenu */}
-                {showLanguageMenu && (
-                  <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-2">
-                    {getLanguages().map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => {
-                          changeLanguage(lang.code);
-                          setShowLanguageMenu(false);
-                        }}
-                        className={`w-full text-left p-2 mb-1 last:mb-0 rounded-lg border transition-all duration-300 notification-font ${
-                          language === lang.code 
-                            ? 'bg-white/30 border-white/50 text-white notification-font-bold' 
-                            : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
-                        }`}
-                      >
-                        {lang.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                 {/* Language Submenu */}
+                 {activeSettingsSection === 'language' && (
+                   <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-2">
+                     {getLanguages().map((lang) => (
+                       <button
+                         key={lang.code}
+                         onClick={() => {
+                           changeLanguage(lang.code);
+                           setActiveSettingsSection(null);
+                         }}
+                         className={`w-full text-left p-2 mb-1 last:mb-0 rounded-lg border transition-all duration-300 notification-font ${
+                           language === lang.code 
+                             ? 'bg-white/30 border-white/50 text-white notification-font-bold' 
+                             : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
+                         }`}
+                       >
+                         {lang.name}
+                       </button>
+                     ))}
+                   </div>
+                 )}
+               </div>
               
-              {/* Account Settings */}
-              <div className="mb-4 relative">
-                <button 
-                  onClick={() => setShowAccountMenu(!showAccountMenu)}
-                  className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
-                >
-                  <span className="notification-font-bold">{t('accountInfo')}</span>
-                </button>
-                
-                {/* Account Submenu */}
-                {showAccountMenu && user && (
+               {/* Account Settings */}
+               <div className="mb-4 relative">
+                 <button 
+                   onClick={() => setActiveSettingsSection(activeSettingsSection === 'account' ? null : 'account')}
+                   className="w-full text-left p-3 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 mb-2 text-white notification-font"
+                 >
+                   <span className="notification-font-bold">{t('accountInfo')}</span>
+                 </button>
+                 
+                 {/* Account Submenu */}
+                 {activeSettingsSection === 'account' && user && (
                   <div className="mt-2 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-3">
                     <div className="text-white notification-font">
                       <div className="mb-2">
