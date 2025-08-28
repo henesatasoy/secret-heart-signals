@@ -161,10 +161,10 @@ const Settings = () => {
       
       {/* Settings Content */}
       <div 
-        className="relative z-10 min-h-screen flex flex-col p-4"
+        className="relative z-10 flex flex-col p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-fit">
           <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm border border-white/20">
             <TabsTrigger 
               value="language" 
