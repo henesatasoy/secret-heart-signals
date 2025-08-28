@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Bell, UserIcon, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -9,13 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const { language, changeLanguage, getLanguages, t } = useLanguage();
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('language');
   const { toast } = useToast();
   
   // Initialize user state
@@ -146,10 +147,6 @@ const Settings = () => {
     }
   }, []);
 
-  const toggleSection = (section: string) => {
-    setActiveSection(activeSection === section ? null : section);
-  };
-
   return (
     <div className="min-h-screen relative overflow-hidden bg-black">
       {/* Full screen background GIF */}
@@ -174,146 +171,153 @@ const Settings = () => {
           <h1 className="notification-font-bold text-white text-2xl">{t('settings')}</h1>
         </div>
 
-        {/* Settings Sections */}
-        <div className="flex-1 p-4 space-y-4">
-          {/* Language Settings */}
-          <div className="vibrant-notification backdrop-blur-lg">
-            <button 
-              onClick={() => toggleSection('language')}
-              className="w-full text-left p-4 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 text-white notification-font"
-            >
-              <span className="notification-font-bold text-lg">{t('languageSettings')}</span>
-            </button>
-            
-            {activeSection === 'language' && (
-              <div className="mt-4 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-4">
-                {getLanguages().map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      changeLanguage(lang.code);
-                      setActiveSection(null);
-                    }}
-                    className={`w-full text-left p-3 mb-2 last:mb-0 rounded-lg border transition-all duration-300 notification-font ${
-                      language === lang.code 
-                        ? 'bg-white/30 border-white/50 text-white notification-font-bold' 
-                        : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
-                    }`}
-                  >
-                    {lang.name}
-                  </button>
-                ))}
+        {/* Tabbed Settings */}
+        <div className="flex-1 p-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm border border-white/20">
+              <TabsTrigger 
+                value="language" 
+                className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Dil
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                Bildirim
+              </TabsTrigger>
+              <TabsTrigger 
+                value="account" 
+                className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
+              >
+                <UserIcon className="w-4 h-4 mr-2" />
+                Hesap
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Language Tab */}
+            <TabsContent value="language" className="mt-6">
+              <div className="bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-6">
+                <h3 className="notification-font-bold text-white text-lg mb-4">{t('languageSettings')}</h3>
+                <div className="space-y-3">
+                  {getLanguages().map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => changeLanguage(lang.code)}
+                      className={`w-full text-left p-4 rounded-lg border transition-all duration-300 notification-font ${
+                        language === lang.code 
+                          ? 'bg-white/30 border-white/50 text-white notification-font-bold' 
+                          : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
+                      }`}
+                    >
+                      {lang.name}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
+            </TabsContent>
 
-          {/* Notification Settings */}
-          <div className="vibrant-notification backdrop-blur-lg">
-            <button 
-              onClick={() => toggleSection('notification')}
-              className="w-full text-left p-4 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 text-white notification-font"
-            >
-              <span className="notification-font-bold text-lg">{t('notificationSettings')}</span>
-            </button>
-            
-            {activeSection === 'notification' && (
-              <div className="mt-4 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-4 space-y-4">
-                {/* Vibration Toggle */}
-                <div className="flex items-center justify-between">
-                  <span className="notification-font text-white">Titreşim</span>
-                  <Switch
-                    checked={vibrationEnabled}
-                    onCheckedChange={handleVibrationToggle}
-                  />
-                </div>
-
-                {/* Sound Toggle */}
-                <div className="flex items-center justify-between">
-                  <span className="notification-font text-white">Bildirim Sesi</span>
-                  <Switch
-                    checked={notificationSoundEnabled}
-                    onCheckedChange={handleSoundToggle}
-                  />
-                </div>
-
-                {/* Sound Selection */}
-                {notificationSoundEnabled && (
-                  <div className="space-y-2">
-                    <span className="notification-font text-white text-sm">Ses Seçin</span>
-                    <Select value={selectedSound} onValueChange={handleSoundChange}>
-                      <SelectTrigger className="bg-white/10 border-white/30 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/90 border-white/30">
-                        <SelectItem value="dove" className="text-white">Güvercin</SelectItem>
-                        <SelectItem value="bell" className="text-white">Zil</SelectItem>
-                        <SelectItem value="chime" className="text-white">Çan</SelectItem>
-                        <SelectItem value="ping" className="text-white">Ping</SelectItem>
-                        <SelectItem value="custom" className="text-white">Özel</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Custom Sound Upload */}
-                {notificationSoundEnabled && selectedSound === 'custom' && (
-                  <div className="space-y-2">
-                    <span className="notification-font text-white text-sm">Özel Ses Yükle</span>
-                    <Input
-                      type="file"
-                      accept="audio/*"
-                      onChange={handleCustomSoundUpload}
-                      className="bg-white/10 border-white/30 text-white file:bg-white/20 file:text-white file:border-0"
+            {/* Notifications Tab */}
+            <TabsContent value="notifications" className="mt-6">
+              <div className="bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-6">
+                <h3 className="notification-font-bold text-white text-lg mb-6">{t('notificationSettings')}</h3>
+                <div className="space-y-6">
+                  {/* Vibration Toggle */}
+                  <div className="flex items-center justify-between">
+                    <span className="notification-font text-white">Titreşim</span>
+                    <Switch
+                      checked={vibrationEnabled}
+                      onCheckedChange={handleVibrationToggle}
                     />
                   </div>
+
+                  {/* Sound Toggle */}
+                  <div className="flex items-center justify-between">
+                    <span className="notification-font text-white">Bildirim Sesi</span>
+                    <Switch
+                      checked={notificationSoundEnabled}
+                      onCheckedChange={handleSoundToggle}
+                    />
+                  </div>
+
+                  {/* Sound Selection */}
+                  {notificationSoundEnabled && (
+                    <div className="space-y-3">
+                      <span className="notification-font text-white text-sm">Ses Seçin</span>
+                      <Select value={selectedSound} onValueChange={handleSoundChange}>
+                        <SelectTrigger className="bg-white/10 border-white/30 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/90 border-white/30">
+                          <SelectItem value="dove" className="text-white">Güvercin</SelectItem>
+                          <SelectItem value="bell" className="text-white">Zil</SelectItem>
+                          <SelectItem value="chime" className="text-white">Çan</SelectItem>
+                          <SelectItem value="ping" className="text-white">Ping</SelectItem>
+                          <SelectItem value="custom" className="text-white">Özel</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Custom Sound Upload */}
+                  {notificationSoundEnabled && selectedSound === 'custom' && (
+                    <div className="space-y-3">
+                      <span className="notification-font text-white text-sm">Özel Ses Yükle</span>
+                      <Input
+                        type="file"
+                        accept="audio/*"
+                        onChange={handleCustomSoundUpload}
+                        className="bg-white/10 border-white/30 text-white file:bg-white/20 file:text-white file:border-0"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Account Tab */}
+            <TabsContent value="account" className="mt-6">
+              <div className="bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-6">
+                <h3 className="notification-font-bold text-white text-lg mb-6">{t('accountInfo')}</h3>
+                {user && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="notification-font text-white text-sm block mb-2">E-posta</label>
+                      <Input
+                        type="email"
+                        value={user.email || ''}
+                        readOnly
+                        className="bg-white/10 border-white/30 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="notification-font text-white text-sm block mb-2">Kullanıcı ID</label>
+                      <Input
+                        type="text"
+                        value={user.id}
+                        readOnly
+                        className="bg-white/10 border-white/30 text-white font-mono text-xs"
+                      />
+                    </div>
+                    
+                    {/* Sign Out Button */}
+                    <div className="pt-6">
+                      <Button
+                        onClick={handleSignOut}
+                        variant="destructive"
+                        className="w-full bg-red-600/80 hover:bg-red-700/80 text-white notification-font-bold"
+                      >
+                        Çıkış Yap
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-
-          {/* Account Settings */}
-          <div className="vibrant-notification backdrop-blur-lg">
-            <button 
-              onClick={() => toggleSection('account')}
-              className="w-full text-left p-4 bg-white/10 border border-white/30 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 text-white notification-font"
-            >
-              <span className="notification-font-bold text-lg">{t('accountInfo')}</span>
-            </button>
-            
-            {activeSection === 'account' && user && (
-              <div className="mt-4 bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-4 space-y-4">
-                <div>
-                  <label className="notification-font text-white text-sm block mb-2">E-posta</label>
-                  <Input
-                    type="email"
-                    value={user.email || ''}
-                    readOnly
-                    className="bg-white/10 border-white/30 text-white"
-                  />
-                </div>
-                <div>
-                  <label className="notification-font text-white text-sm block mb-2">Kullanıcı ID</label>
-                  <Input
-                    type="text"
-                    value={user.id}
-                    readOnly
-                    className="bg-white/10 border-white/30 text-white font-mono text-xs"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sign Out Button */}
-          <div className="pt-4">
-            <Button
-              onClick={handleSignOut}
-              variant="destructive"
-              className="w-full bg-red-600/80 hover:bg-red-700/80 text-white notification-font-bold"
-            >
-              Çıkış Yap
-            </Button>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
