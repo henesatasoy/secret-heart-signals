@@ -164,7 +164,7 @@ const Settings = () => {
         className="relative z-10 flex flex-col p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-fit">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-fit mt-8">
           <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm border border-white/20">
             <TabsTrigger 
               value="language" 
