@@ -309,13 +309,13 @@ const Index = () => {
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                 <div className="bg-gradient-to-b from-emerald-300 to-emerald-500 border-4 border-emerald-700 rounded-none shadow-[6px_6px_0px_0px_rgba(4,120,87,1)] p-8">
                   <Heart className="h-16 w-16 mx-auto mb-4 text-emerald-900" />
-                  <h2 className="text-emerald-900 font-mono font-bold text-2xl mb-2">Bağlandı! 💕</h2>
-                  <p className="text-emerald-800 font-mono">Mesajlaşmak için tıkla</p>
+                  <h2 className="text-emerald-900 font-mono font-bold text-2xl mb-2">{t('connected')}</h2>
+                  <p className="text-emerald-800 font-mono">{t('clickToMessage')}</p>
                   <button 
                     onClick={() => navigate('/messages')}
                     className="mt-4 px-6 py-2 bg-emerald-600 text-white font-mono font-bold rounded-none hover:bg-emerald-700 transition-colors"
                   >
-                    Mesajlaşmaya Git
+                    {t('goToMessages')}
                   </button>
                 </div>
               </div>

@@ -183,21 +183,21 @@ const Settings = () => {
               className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
             >
               <Globe className="w-4 h-4 mr-2" />
-              Dil
+              {t('languageSettings').split(' ')[1]}
             </TabsTrigger>
             <TabsTrigger 
               value="notifications" 
               className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
             >
               <Bell className="w-4 h-4 mr-2" />
-              Bildirim
+              {t('notificationSettings').split(' ')[1]}
             </TabsTrigger>
             <TabsTrigger 
               value="account" 
               className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
             >
               <UserIcon className="w-4 h-4 mr-2" />
-              Hesap
+              {t('accountInfo').split(' ')[1]}
             </TabsTrigger>
           </TabsList>
 
@@ -230,7 +230,7 @@ const Settings = () => {
               <div className="space-y-6">
                 {/* Vibration Toggle */}
                 <div className="flex items-center justify-between">
-                  <span className="notification-font text-white">Titreşim</span>
+                  <span className="notification-font text-white">{t('vibrationEnabled')}</span>
                   <Switch
                     checked={vibrationEnabled}
                     onCheckedChange={handleVibrationToggle}
@@ -239,7 +239,7 @@ const Settings = () => {
 
                 {/* Sound Toggle */}
                 <div className="flex items-center justify-between">
-                  <span className="notification-font text-white">Bildirim Sesi</span>
+                  <span className="notification-font text-white">{t('soundEnabled')}</span>
                   <Switch
                     checked={notificationSoundEnabled}
                     onCheckedChange={handleSoundToggle}
@@ -249,17 +249,17 @@ const Settings = () => {
                 {/* Sound Selection */}
                 {notificationSoundEnabled && (
                   <div className="space-y-3">
-                    <span className="notification-font text-white text-sm">Ses Seçin</span>
+                    <span className="notification-font text-white text-sm">{t('notificationSound')}</span>
                     <Select value={selectedSound} onValueChange={handleSoundChange}>
                       <SelectTrigger className="bg-white/10 border-white/30 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-black/90 border-white/30">
-                        <SelectItem value="dove" className="text-white">Güvercin</SelectItem>
-                        <SelectItem value="bell" className="text-white">Zil</SelectItem>
-                        <SelectItem value="chime" className="text-white">Çan</SelectItem>
-                        <SelectItem value="ping" className="text-white">Ping</SelectItem>
-                        <SelectItem value="custom" className="text-white">Özel</SelectItem>
+                        <SelectItem value="dove" className="text-white">{t('dove')}</SelectItem>
+                        <SelectItem value="bell" className="text-white">{t('bell')}</SelectItem>
+                        <SelectItem value="chime" className="text-white">{t('chime')}</SelectItem>
+                        <SelectItem value="ping" className="text-white">{t('ping')}</SelectItem>
+                        <SelectItem value="custom" className="text-white">{t('customSound')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -268,7 +268,7 @@ const Settings = () => {
                 {/* Custom Sound Upload */}
                 {notificationSoundEnabled && selectedSound === 'custom' && (
                   <div className="space-y-3">
-                    <span className="notification-font text-white text-sm">Özel Ses Yükle</span>
+                    <span className="notification-font text-white text-sm">{t('uploadSound')}</span>
                     <Input
                       type="file"
                       accept="audio/*"
@@ -288,7 +288,7 @@ const Settings = () => {
               {user && (
                 <div className="space-y-4">
                   <div>
-                    <label className="notification-font text-white text-sm block mb-2">E-posta</label>
+                    <label className="notification-font text-white text-sm block mb-2">{t('email')}</label>
                     <Input
                       type="email"
                       value={user.email || ''}
@@ -297,7 +297,7 @@ const Settings = () => {
                     />
                   </div>
                   <div>
-                    <label className="notification-font text-white text-sm block mb-2">Kullanıcı ID</label>
+                    <label className="notification-font text-white text-sm block mb-2">{t('userId')}</label>
                     <Input
                       type="text"
                       value={user.id}
@@ -313,7 +313,7 @@ const Settings = () => {
                       variant="destructive"
                       className="w-full bg-red-600/80 hover:bg-red-700/80 text-white notification-font-bold"
                     >
-                      Çıkış Yap
+                      {t('logout')}
                     </Button>
                   </div>
                 </div>
