@@ -80,19 +80,31 @@ const Settings = () => {
     }
   }, [t, toast]);
 
+  const playSoundPreview = useCallback((sound: string) => {
+    if (sound === 'custom') {
+      const customSound = localStorage.getItem('customNotificationSound');
+      if (customSound) {
+        const audio = new Audio(customSound);
+        audio.play().catch(console.log);
+      }
+    } else {
+      // Burada farklı sesler için farklı ses dosyaları çalabilirsiniz
+      playDoveSound(); // Şimdilik hepsi için dove sesi
+    }
+  }, []);
+
   const handleSoundChange = useCallback(async (sound: string) => {
     setSelectedSound(sound);
     localStorage.setItem('selectedNotificationSound', sound);
     
-    if (notificationSoundEnabled) {
-      playDoveSound();
-    }
+    // Seçilen sesi preview olarak çal
+    playSoundPreview(sound);
     
     toast({
       title: t('settings'),
       description: `Ses değiştirildi: ${sound}`
     });
-  }, [notificationSoundEnabled, t, toast]);
+  }, [playSoundPreview, t, toast]);
 
   const handleCustomSoundUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -193,12 +205,12 @@ const Settings = () => {
           <TabsContent value="language" className="mt-6">
             <div className="bg-white/10 border border-white/20 rounded-xl backdrop-blur-sm p-6">
               <h3 className="notification-font-bold text-white text-lg mb-4">{t('languageSettings')}</h3>
-              <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                 {getLanguages().map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => changeLanguage(lang.code)}
-                    className={`w-full text-left p-4 rounded-lg border transition-all duration-300 notification-font ${
+                    className={`text-left p-3 rounded-lg border transition-all duration-300 notification-font text-sm ${
                       language === lang.code 
                         ? 'bg-white/30 border-white/50 text-white notification-font-bold' 
                         : 'bg-white/5 border-white/20 text-white/80 hover:bg-white/15'
