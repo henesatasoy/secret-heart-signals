@@ -177,27 +177,27 @@ const Settings = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-fit mt-16">
-          <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm border border-white/20">
+          <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm border border-white/20 h-auto">
             <TabsTrigger 
               value="language" 
-              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
+              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font text-xs px-2 py-3 flex flex-col items-center gap-1"
             >
-              <Globe className="w-4 h-4 mr-2" />
-              {t('language')}
+              <Globe className="w-4 h-4" />
+              <span className="truncate max-w-full">{t('language')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="notifications" 
-              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
+              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font text-xs px-2 py-3 flex flex-col items-center gap-1"
             >
-              <Bell className="w-4 h-4 mr-2" />
-              {t('notifications')}
+              <Bell className="w-4 h-4" />
+              <span className="truncate max-w-full">{t('notifications')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="account" 
-              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
+              className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font text-xs px-2 py-3 flex flex-col items-center gap-1"
             >
-              <UserIcon className="w-4 h-4 mr-2" />
-              {t('account')}
+              <UserIcon className="w-4 h-4" />
+              <span className="truncate max-w-full">{t('account')}</span>
             </TabsTrigger>
           </TabsList>
 
