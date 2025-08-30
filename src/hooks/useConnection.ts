@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { useLanguage } from '@/hooks/useLanguage'
 import { useConnectionValidation } from '@/hooks/useConnectionValidation'
 import { useConnectionState, type ConnectionState } from '@/hooks/useConnectionState'
 import { useConnectionRetry } from '@/hooks/useConnectionRetry'
@@ -8,6 +9,7 @@ import { useNetworkRetry } from '@/hooks/useNetworkRetry'
 
 export const useConnection = (myConnectionId: string) => {
   const { toast } = useToast()
+  const { t } = useLanguage()
   const { isValidConnection, validatePartnerConnection, isSelfConnection } = useConnectionValidation(myConnectionId)
   const { connectionState, setLoading, setError, setConnected, updateConnectionState } = useConnectionState()
   const { executeWithRetry } = useConnectionRetry()
@@ -120,12 +122,12 @@ export const useConnection = (myConnectionId: string) => {
         }
       } catch (error) {
         console.error('💥 Connection initialization error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata'
+        const errorMessage = error instanceof Error ? error.message : t('unknownError')
         
         // Enhanced error handling for auth issues
         let userMessage = errorMessage
         if (errorMessage.includes('Session validation failed') || errorMessage.includes('No valid session')) {
-          userMessage = 'Oturum geçersiz - lütfen tekrar giriş yapın'
+          userMessage = t('invalidSession')
           // Force redirect to auth page for session issues
           setTimeout(() => {
             window.location.href = '/auth'
@@ -135,7 +137,7 @@ export const useConnection = (myConnectionId: string) => {
         } else if (errorMessage.includes('timeout') || errorMessage.includes('Failed to fetch')) {
           userMessage = 'Bağlantı zaman aşımı - internet bağlantınızı kontrol edin'
         } else if (errorMessage.includes('connection')) {
-          userMessage = 'Sunucu bağlantısı kurulamadı'
+          userMessage = t('serverConnectionFailed')
         }
         
         setError(userMessage)
@@ -143,7 +145,7 @@ export const useConnection = (myConnectionId: string) => {
         // Only show toast for non-network errors (network errors already show toast)
         if (!errorMessage.includes('Failed to fetch') && !errorMessage.includes('timeout')) {
           toast({
-            title: "Bağlantı hatası", 
+            title: t('connectionError'), 
             description: userMessage,
             variant: "destructive"
           });
@@ -270,7 +272,7 @@ export const useConnection = (myConnectionId: string) => {
       .subscribe((status) => {
         console.log('Realtime subscription status:', status)
         if (status === 'CHANNEL_ERROR') {
-          setError('Gerçek zamanlı bağlantı hatası')
+          setError(t('realtimeConnectionError'))
         }
       })
 
@@ -447,26 +449,26 @@ export const useConnection = (myConnectionId: string) => {
         setConnected(partnerConnectionId, true)
         
         toast({
-          title: "Bağlantı kuruldu! 💕",
-          description: "Sevgilinle artık mesajlaşabilirsin",
+          title: t('connected'),
+          description: t('canNowMessage'),
         })
       } else {
-        throw new Error('Bağlantı doğrulanamadı - lütfen tekrar deneyin');
+        throw new Error(t('cantValidateConnection'));
       }
       
     } catch (error) {
       console.error('Connection error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bağlantı hatası'
+      const errorMessage = error instanceof Error ? error.message : t('unknownConnectionError')
       
       setError(errorMessage)
       
       toast({
-        title: "Bağlantı hatası",
+        title: t('connectionError'),
         description: errorMessage,
         variant: "destructive"
       })
     }
-  }, [isValidConnection, myConnectionId, toast, setLoading, setConnected, setError, validatePartnerConnection, isSelfConnection])
+  }, [isValidConnection, myConnectionId, toast, t, setLoading, setConnected, setError, validatePartnerConnection, isSelfConnection])
 
   const disconnectPartner = useCallback(async () => {
     try {
@@ -506,7 +508,7 @@ export const useConnection = (myConnectionId: string) => {
       const myDisconnectResult = results[0]
       if (myDisconnectResult.status === 'rejected') {
         console.error('Error disconnecting my connection:', myDisconnectResult.reason);
-        throw new Error('Kendi bağlantınız koparılamadı');
+        throw new Error(t('cantDisconnectSelf'));
       }
 
       const partnerDisconnectResult = results[1]
@@ -518,23 +520,23 @@ export const useConnection = (myConnectionId: string) => {
       setConnected(null, false)
       
       toast({
-        title: "Bağlantı koptu 💔",
-        description: "Artık bağlı değilsiniz",
+        title: t('disconnected'),
+        description: t('notConnectedAnymore'),
       });
       
     } catch (error) {
       console.error('Error in disconnectPartner:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bağlantı hatası'
+      const errorMessage = error instanceof Error ? error.message : t('unknownConnectionError')
       
       setError(errorMessage)
       
       toast({
-        title: "Bağlantı koparılamadı",
+        title: t('cantDisconnect'),
         description: errorMessage,
         variant: "destructive",
       });
     }
-  }, [myConnectionId, connectionState.partnerId, toast, setLoading, setConnected, setError])
+  }, [myConnectionId, connectionState.partnerId, toast, t, setLoading, setConnected, setError])
 
   // Return enhanced state with backward compatibility
   return { 

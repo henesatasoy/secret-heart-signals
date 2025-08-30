@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface CampfireButtonProps {
   onClick: () => void;
@@ -19,6 +20,7 @@ export const CampfireButton = memo(({
   copied,
   disabled = false
 }: CampfireButtonProps) => {
+  const { t } = useLanguage();
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -61,7 +63,7 @@ export const CampfireButton = memo(({
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
           <div className="bg-green-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <CheckCircle className="w-3 h-3" />
-            Kopyalandı!
+            {t('copiedShort')}
           </div>
         </div>
       )}

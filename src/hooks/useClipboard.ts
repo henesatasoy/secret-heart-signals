@@ -1,11 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
 import { hapticFeedback } from '@/services/mobile';
 
 export const useClipboard = () => {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const copyToClipboard = useCallback(async (text: string, options?: {
     successTitle?: string;
@@ -56,25 +58,25 @@ export const useClipboard = () => {
       }, 3000);
       
       toast({
-        title: options?.successTitle || "Kopyalandı! 💕",
-        description: options?.successDescription || "İçerik panoya kopyalandı",
+        title: options?.successTitle || t('linkCopied'),
+        description: options?.successDescription || t('copiedToClipboard'),
       });
       
       return true;
       
     } catch (err) {
       console.error('Clipboard error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
+      const errorMessage = err instanceof Error ? err.message : t('unknownError');
       
       toast({
-        title: options?.errorTitle || "Kopyalama hatası",
-        description: options?.errorDescription || `Hata: ${errorMessage}. Lütfen manuel olarak kopyala`,
+        title: options?.errorTitle || t('copyError'),
+        description: options?.errorDescription || `${t('error')}: ${errorMessage}. ${t('manualCopy')}`,
         variant: "destructive",
       });
       
       return false;
     }
-  }, [toast]);
+  }, [toast, t]);
 
   // Cleanup on unmount
   const cleanup = useCallback(() => {
