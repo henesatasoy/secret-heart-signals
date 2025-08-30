@@ -183,21 +183,21 @@ const Settings = () => {
               className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
             >
               <Globe className="w-4 h-4 mr-2" />
-              {t('languageSettings').split(' ')[1]}
+              {t('language')}
             </TabsTrigger>
             <TabsTrigger 
               value="notifications" 
               className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
             >
               <Bell className="w-4 h-4 mr-2" />
-              {t('notificationSettings').split(' ')[1]}
+              {t('notifications')}
             </TabsTrigger>
             <TabsTrigger 
               value="account" 
               className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 notification-font"
             >
               <UserIcon className="w-4 h-4 mr-2" />
-              {t('accountInfo').split(' ')[1]}
+              {t('account')}
             </TabsTrigger>
           </TabsList>
 

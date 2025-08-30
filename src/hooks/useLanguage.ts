@@ -18,8 +18,11 @@ const translations = {
     // Settings
     settings: "Ayarlar",
     languageSettings: "🌍 Dil Ayarları", 
+    language: "Dil",
     notificationSettings: "🔔 Bildirim Ayarları",
+    notifications: "Bildirim",
     accountInfo: "👤 Hesap Bilgileri",
+    account: "Hesap",
     logout: "🚪 Çıkış Yap",
     
     // Notification Settings
@@ -124,8 +127,11 @@ const translations = {
     // Settings
     settings: "Settings",
     languageSettings: "🌍 Language Settings",
-    notificationSettings: "🔔 Notification Settings", 
+    language: "Language",
+    notificationSettings: "🔔 Notification Settings",
+    notifications: "Notifications", 
     accountInfo: "👤 Account Info",
+    account: "Account",
     logout: "🚪 Logout",
     
     // Notification Settings
@@ -179,8 +185,11 @@ const translations = {
     // Settings
     settings: "Configuración",
     languageSettings: "🌍 Configuración de Idioma",
+    language: "Idioma",
     notificationSettings: "🔔 Configuración de Notificaciones",
-    accountInfo: "👤 Información de Cuenta", 
+    notifications: "Notificaciones",
+    accountInfo: "👤 Información de Cuenta",
+    account: "Cuenta", 
     logout: "🚪 Cerrar Sesión",
     
     // Notification Settings
@@ -234,8 +243,11 @@ const translations = {
     // Settings
     settings: "Einstellungen",
     languageSettings: "🌍 Spracheinstellungen",
+    language: "Sprache",
     notificationSettings: "🔔 Benachrichtigungseinstellungen",
+    notifications: "Benachrichtigungen",
     accountInfo: "👤 Kontoinformationen",
+    account: "Konto",
     logout: "🚪 Abmelden",
     
     // Notification Settings
@@ -289,8 +301,11 @@ const translations = {
     // Settings
     settings: "الإعدادات",
     languageSettings: "🌍 إعدادات اللغة",
+    language: "اللغة",
     notificationSettings: "🔔 إعدادات الإشعارات",
+    notifications: "الإشعارات",
     accountInfo: "👤 معلومات الحساب",
+    account: "الحساب",
     logout: "🚪 تسجيل الخروج",
     
     // Notification Settings
@@ -344,8 +359,11 @@ const translations = {
     // Settings
     settings: "Paramètres",
     languageSettings: "🌍 Paramètres de langue",
+    language: "Langue",
     notificationSettings: "🔔 Paramètres de notification",
+    notifications: "Notifications",
     accountInfo: "👤 Informations du compte",
+    account: "Compte",
     logout: "🚪 Se déconnecter",
     
     // Notification Settings
@@ -399,8 +417,11 @@ const translations = {
     // Settings
     settings: "设置",
     languageSettings: "🌍 语言设置",
+    language: "语言",
     notificationSettings: "🔔 通知设置",
+    notifications: "通知",
     accountInfo: "👤 账户信息",
+    account: "账户",
     logout: "🚪 退出登录",
     
     // Notification Settings
@@ -454,8 +475,11 @@ const translations = {
     // Settings
     settings: "सेटिंग्स",
     languageSettings: "🌍 भाषा सेटिंग्स",
+    language: "भाषा",
     notificationSettings: "🔔 नोटिफिकेशन सेटिंग्स",
+    notifications: "नोटिफिकेशन",
     accountInfo: "👤 खाता जानकारी",
+    account: "खाता",
     logout: "🚪 लॉग आउट",
     
     // Notification Settings
@@ -509,8 +533,11 @@ const translations = {
     // Settings
     settings: "Настройки",
     languageSettings: "🌍 Языковые настройки",
+    language: "Язык",
     notificationSettings: "🔔 Настройки уведомлений",
+    notifications: "Уведомления",
     accountInfo: "👤 Информация об аккаунте",
+    account: "Аккаунт",
     logout: "🚪 Выйти",
     
     // Notification Settings
@@ -564,8 +591,11 @@ const translations = {
     // Settings
     settings: "設定",
     languageSettings: "🌍 言語設定",
+    language: "言語",
     notificationSettings: "🔔 通知設定",
+    notifications: "通知",
     accountInfo: "👤 アカウント情報",
+    account: "アカウント",
     logout: "🚪 ログアウト",
     
     // Notification Settings
@@ -619,8 +649,11 @@ const translations = {
     // Settings
     settings: "সেটিংস",
     languageSettings: "🌍 ভাষা সেটিংস",
+    language: "ভাষা",
     notificationSettings: "🔔 বিজ্ঞপ্তি সেটিংস",
+    notifications: "বিজ্ঞপ্তি",
     accountInfo: "👤 অ্যাকাউন্ট তথ্য",
+    account: "অ্যাকাউন্ট",
     logout: "🚪 লগ আউট",
     
     // Notification Settings
@@ -674,8 +707,11 @@ const translations = {
     // Settings
     settings: "Cài đặt",
     languageSettings: "🌍 Cài đặt ngôn ngữ",
+    language: "Ngôn ngữ",
     notificationSettings: "🔔 Cài đặt thông báo",
+    notifications: "Thông báo",
     accountInfo: "👤 Thông tin tài khoản",
+    account: "Tài khoản",
     logout: "🚪 Đăng xuất",
     
     // Notification Settings
