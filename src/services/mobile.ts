@@ -108,7 +108,11 @@ export const playBackgroundMusic = () => {
   const settings = getNotificationSettings();
   if (settings.backgroundMusicEnabled && typeof Audio !== 'undefined') {
     if (!backgroundAudio) {
-      backgroundAudio = new Audio('/sounds/ambient-forest.mp3');
+      // Check for custom background music first
+      const customMusic = localStorage.getItem('customBackgroundMusic');
+      const musicSource = customMusic || '/sounds/ambient-forest.mp3';
+      
+      backgroundAudio = new Audio(musicSource);
       backgroundAudio.loop = true;
       backgroundAudio.volume = 0.3;
     }

@@ -46,6 +46,7 @@ const Settings = () => {
     localStorage.getItem('background-music-enabled') !== 'false'
   );
   const [customSoundFile, setCustomSoundFile] = useState<File | null>(null);
+  const [customBackgroundMusicFile, setCustomBackgroundMusicFile] = useState<File | null>(null);
 
   const handleVibrationToggle = useCallback(async (enabled: boolean) => {
     setVibrationEnabled(enabled);
@@ -145,6 +146,26 @@ const Settings = () => {
       toast({
         title: t('settings'),
         description: 'Lütfen ses dosyası seçin',
+        variant: 'destructive'
+      });
+    }
+  }, [t, toast]);
+
+  const handleBackgroundMusicUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type.startsWith('audio/')) {
+      setCustomBackgroundMusicFile(file);
+      const url = URL.createObjectURL(file);
+      localStorage.setItem('customBackgroundMusic', url);
+      
+      toast({
+        title: t('settings'),
+        description: 'Arka plan müziği yüklendi!'
+      });
+    } else {
+      toast({
+        title: t('settings'),
+        description: 'Lütfen geçerli bir ses dosyası seçin',
         variant: 'destructive'
       });
     }
@@ -266,6 +287,22 @@ const Settings = () => {
                     checked={notificationSoundEnabled}
                     onCheckedChange={handleSoundToggle}
                   />
+                </div>
+
+                {/* Background Music Upload */}
+                <div className="space-y-2">
+                  <span className="notification-font text-white">{t('uploadBackgroundMusic')}</span>
+                  <Input
+                    type="file"
+                    accept="audio/*"
+                    onChange={handleBackgroundMusicUpload}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  />
+                  {customBackgroundMusicFile && (
+                    <p className="text-green-400 text-sm">
+                      Yüklenen: {customBackgroundMusicFile.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* Background Music Toggle */}
