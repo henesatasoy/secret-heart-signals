@@ -3,7 +3,7 @@ import { ArrowLeft, Bell, UserIcon, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/hooks/useLanguage';
-import { hapticFeedback, playDoveSound } from '@/services/mobile';
+import { hapticFeedback, playDoveSound, setNotificationSettings, toggleBackgroundMusic } from '@/services/mobile';
 import type { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -42,6 +42,9 @@ const Settings = () => {
   const [selectedSound, setSelectedSound] = useState(() => 
     localStorage.getItem('selectedNotificationSound') || 'dove'
   );
+  const [backgroundMusicEnabled, setBackgroundMusicEnabled] = useState(() => 
+    localStorage.getItem('background-music-enabled') !== 'false'
+  );
   const [customSoundFile, setCustomSoundFile] = useState<File | null>(null);
 
   const handleVibrationToggle = useCallback(async (enabled: boolean) => {
@@ -79,6 +82,25 @@ const Settings = () => {
       });
     }
   }, [t, toast]);
+
+  const handleBackgroundMusicToggle = useCallback(async (enabled: boolean) => {
+    setBackgroundMusicEnabled(enabled);
+    setNotificationSettings(vibrationEnabled, notificationSoundEnabled, enabled);
+    
+    if (enabled) {
+      toggleBackgroundMusic();
+      toast({
+        title: t('settings'),
+        description: 'Arka plan müziği etkinleştirildi'
+      });
+    } else {
+      toggleBackgroundMusic();
+      toast({
+        title: t('settings'),
+        description: 'Arka plan müziği kapatıldı'
+      });
+    }
+  }, [vibrationEnabled, notificationSoundEnabled, t, toast]);
 
   const playSoundPreview = useCallback((sound: string) => {
     if (sound === 'custom') {
@@ -243,6 +265,15 @@ const Settings = () => {
                   <Switch
                     checked={notificationSoundEnabled}
                     onCheckedChange={handleSoundToggle}
+                  />
+                </div>
+
+                {/* Background Music Toggle */}
+                <div className="flex items-center justify-between">
+                  <span className="notification-font text-white">{t('backgroundMusic')}</span>
+                  <Switch
+                    checked={backgroundMusicEnabled}
+                    onCheckedChange={handleBackgroundMusicToggle}
                   />
                 </div>
 

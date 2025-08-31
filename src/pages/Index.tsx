@@ -10,7 +10,7 @@ import { useConnection } from "@/hooks/useConnection";
 import { useLanguage } from "@/hooks/useLanguage";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { initializeMobileFeatures, hapticFeedback, showLocalNotification, getNotificationSettings, setNotificationSettings } from "@/services/mobile";
+import { initializeMobileFeatures, hapticFeedback, showLocalNotification, getNotificationSettings, setNotificationSettings, playBackgroundMusic, stopBackgroundMusic } from "@/services/mobile";
 import type { User, Session } from '@supabase/supabase-js';
 
 const Index = () => {
@@ -166,9 +166,46 @@ const Index = () => {
 
   // Video handles navigation via onEnded event - no timer needed
 
-  // Initialize mobile features on app start
+  // Initialize mobile features and background music on app start
   useEffect(() => {
     initializeMobileFeatures();
+    
+    // Start background music when user is authenticated
+    if (user) {
+      // Delay to avoid autoplay restrictions on page load
+      const timer = setTimeout(() => {
+        playBackgroundMusic();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
+
+  // Handle user interaction to enable audio context (required for autoplay)
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      const settings = getNotificationSettings();
+      if (settings.backgroundMusicEnabled && user) {
+        playBackgroundMusic();
+      }
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+  }, [user]);
+
+  // Clean up background music on unmount
+  useEffect(() => {
+    return () => {
+      stopBackgroundMusic();
+    };
   }, []);
 
   const predefinedLetters = [

@@ -28,6 +28,7 @@ const translations = {
     // Notification Settings
     vibrationEnabled: "Titreşim",
     soundEnabled: "Bildirim Sesi",
+    backgroundMusic: "Arka Plan Müziği",
     notificationSound: "Bildirim Sesi Seçimi",
     customSound: "Özel Ses",
     uploadSound: "Ses Yükle",
@@ -155,6 +156,7 @@ const translations = {
     // Notification Settings
     vibrationEnabled: "Vibration",
     soundEnabled: "Notification Sound",
+    backgroundMusic: "Background Music",
     notificationSound: "Notification Sound Selection",
     customSound: "Custom Sound",
     uploadSound: "Upload Sound",
@@ -249,7 +251,8 @@ const translations = {
     
     // Notification Settings
     vibrationEnabled: "Vibración",
-    soundEnabled: "Sonido de Notificación", 
+    soundEnabled: "Sonido de Notificación",
+    backgroundMusic: "Música de Fondo", 
     notificationSound: "Selección de Sonido de Notificación",
     customSound: "Sonido Personalizado",
     uploadSound: "Subir Sonido",
@@ -345,6 +348,7 @@ const translations = {
     // Notification Settings
     vibrationEnabled: "Vibration",
     soundEnabled: "Benachrichtigungston",
+    backgroundMusic: "Hintergrundmusik",
     notificationSound: "Benachrichtigungston auswählen",
     customSound: "Benutzerdefinierter Ton",
     uploadSound: "Ton hochladen",

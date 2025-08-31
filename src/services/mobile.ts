@@ -10,16 +10,21 @@ export const isMobile = () => Capacitor.isNativePlatform();
 export const getNotificationSettings = () => {
   const vibrationEnabled = localStorage.getItem('vibration-enabled');
   const soundEnabled = localStorage.getItem('sound-enabled');
+  const backgroundMusicEnabled = localStorage.getItem('background-music-enabled');
   
   return {
     vibrationEnabled: vibrationEnabled !== 'false', // Default to true
-    soundEnabled: soundEnabled !== 'false' // Default to true
+    soundEnabled: soundEnabled !== 'false', // Default to true
+    backgroundMusicEnabled: backgroundMusicEnabled !== 'false' // Default to true
   };
 };
 
-export const setNotificationSettings = (vibration: boolean, sound: boolean) => {
+export const setNotificationSettings = (vibration: boolean, sound: boolean, backgroundMusic?: boolean) => {
   localStorage.setItem('vibration-enabled', vibration.toString());
   localStorage.setItem('sound-enabled', sound.toString());
+  if (backgroundMusic !== undefined) {
+    localStorage.setItem('background-music-enabled', backgroundMusic.toString());
+  }
 };
 
 // Haptic feedback functions
@@ -93,6 +98,44 @@ export const initializeMobileFeatures = async () => {
     console.log('Mobile features initialized');
   } catch (error) {
     console.error('Failed to initialize mobile features:', error);
+  }
+};
+
+// Background music management
+let backgroundAudio: HTMLAudioElement | null = null;
+
+export const playBackgroundMusic = () => {
+  const settings = getNotificationSettings();
+  if (settings.backgroundMusicEnabled && typeof Audio !== 'undefined') {
+    if (!backgroundAudio) {
+      backgroundAudio = new Audio('/sounds/ambient-forest.mp3');
+      backgroundAudio.loop = true;
+      backgroundAudio.volume = 0.3;
+    }
+    
+    // Handle autoplay restrictions
+    const playPromise = backgroundAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        console.log('Autoplay prevented, will start after user interaction');
+      });
+    }
+  }
+};
+
+export const stopBackgroundMusic = () => {
+  if (backgroundAudio) {
+    backgroundAudio.pause();
+    backgroundAudio.currentTime = 0;
+  }
+};
+
+export const toggleBackgroundMusic = () => {
+  const settings = getNotificationSettings();
+  if (backgroundAudio && !backgroundAudio.paused) {
+    stopBackgroundMusic();
+  } else if (settings.backgroundMusicEnabled) {
+    playBackgroundMusic();
   }
 };
 
